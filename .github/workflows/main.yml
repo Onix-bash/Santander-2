@@ -29,12 +29,7 @@ jobs:
           name: Scan Results
           path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
 
-       # - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: Scan Results
-          path: broker-portal
+      - uses: actions/checkout@v4
 
       - name: Show Results
         uses: phoenix-actions/test-reporting@v8
@@ -52,10 +47,7 @@ jobs:
   #   needs: scan_main
 
   #   steps:
-     
-          
-
-          
+               
 #Works!
       # - uses: actions/upload-artifact@v4
       #   if: always()

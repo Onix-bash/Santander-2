@@ -54,7 +54,7 @@ jobs:
         with:
           # artifact: Scan Results
           name: Broker Portal Scan
-          path: broker-portal/*.xml
+          path: ${{steps.scanner.outputs.output_directory}}/broker-portal/*.xml
           reporter: java-junit
           fail-on-error: 'false'
                

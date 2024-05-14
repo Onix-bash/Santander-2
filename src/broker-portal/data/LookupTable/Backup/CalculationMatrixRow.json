@@ -1,0 +1,22 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "CalculationMatrixRow",
+                "referenceId": "CalculationMatrixRowRef1"
+            },
+            "Name": "66971adb32404eb2b680c29c2ea557ea",
+            "InputData": "{\n \"RuleName\": \"Test\",\n \"Decision\": \"REFER\"\n}",
+            "OutputData": "{\n \"DecisionMessage\": \"Test DS\"\n}"
+        },
+        {
+            "attributes": {
+                "type": "CalculationMatrixRow",
+                "referenceId": "CalculationMatrixRowRef2"
+            },
+            "Name": "905275532569697f85627d41637d2b5z",
+            "InputData": "{\"RuleName\": \"Remortgage Address vs. Current Address\", \"Decision\": \"REFER\"}",
+            "OutputData": "{\"DecisionMessage\": \"No applicant currently lives in the property to be re-mortgaged\"}"
+        }
+    ]
+}

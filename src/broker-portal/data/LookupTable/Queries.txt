@@ -1,0 +1,3 @@
+sf data export tree --query "SELECT Name, CalculationMatrix.Id, VersionNumber FROM CalculationMatrixVersion WHERE CalculationMatrix.Name ='RuleOutcome' AND IsEnabled = TRUE LIMIT 1"
+
+sf data export tree --query "SELECT Name, Inputdata, OutputData FROM CalculationMatrixRow WHERE CalculationMatrixVersionId = '0lN2600000000EUEAY'"

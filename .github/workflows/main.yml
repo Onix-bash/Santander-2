@@ -24,178 +24,61 @@ jobs:
           chmod +x ./bash.sh
           ./bash.sh
 
-#      - uses: actions/upload-artifact@v3
-#        with:
-#          name: Scan Results
-#          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Scan Results
+          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
 
-      - uses: phoenix-actions/test-reporting@v8
+  scan_broker_portal:
+    runs-on: ubuntu-latest
+    name: Broker Portal
+    container:
+      image: salesforce/cli:latest-full
+    outputs:
+      output_path: ${{steps.scanner.outputs.output_directory}}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Scanner
+        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+
+      - name: Run Scanner
+        id: scanner
+        run: |
+          chmod +x ./bash.sh
+          ./bash.sh
+      - name: Show Results
+        uses: phoenix-actions/test-reporting@v8
         if: always()
         with:
-          name: Broker Portal Scan 1
+          name: Broker Portal Scan
           path: ${{steps.scanner.outputs.output_directory}}/broker-portal/*.xml
           reporter: java-junit
           fail-on-error: 'false'
 
-      - uses: phoenix-actions/test-reporting@v8
+  scan_application_logging:
+    runs-on: ubuntu-latest
+    name: Application Logging
+    container:
+      image: salesforce/cli:latest-full
+    outputs:
+      output_path: ${{steps.scanner.outputs.output_directory}}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Scanner
+        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+
+      - name: Run Scanner
+        id: scanner
+        run: |
+          chmod +x ./bash.sh
+          ./bash.sh
+      - name: Show Results
+        uses: phoenix-actions/test-reporting@v8
         if: always()
         with:
-          name: Broker Portal Scan 2
-          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
+          name: Broker Portal Scan
+          path: ${{steps.scanner.outputs.output_directory}}/application-logging/*.xml
           reporter: java-junit
           fail-on-error: 'false'
-
-      - uses: phoenix-actions/test-reporting@v8
-        if: always()
-        with:
-          name: Broker Portal Scan 3
-          path: output/broker-portal/*.xml
-          reporter: java-junit
-          fail-on-error: 'false'
-#Works!
-      # - uses: actions/upload-artifact@v4
-      #   if: always()
-      #   with:
-      #     name: Scan Results Broker Portal 2
-      #     path: broker-portal/*
-
-      
-#  scan_application_logging:
-#    runs-on: ubuntu-latest
-#    name: Application Logging
-#    needs: scan_main
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - uses: actions/upload-artifact@v4
-#        with:
-#          name: Scan Results
-#          path: application-logging/*.xml
-
-#      - name: Show Results 1
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Scan Results
-#          name: Broker Portal Scan 1
-#          path: broker-portal/*.xml
-#          reporter: java-junit
-#          fail-on-error: 'false'
-
-#      #  Test Artifact
-#
-#      - uses: actions/download-artifact@v3
-#        if: always()
-#        with:
-#          name: Test Artifact
-#
-#      - name: Show Results 2
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Test Artifact
-#          name: Broker Portal Scan 2
-#          path: math-homework.txt
-#          reporter: java-junit
-#          fail-on-error: 'false'
-
-#      - name: Show Results 1
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Scan Results
-#          name: Broker Portal Scan 1
-#          path: 'output/broker-portal/*.xml'
-#          reporter: java-junit
-#          fail-on-error: 'false'
-#
-#      - name: Show Results 2
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Scan Results
-#          name: Broker Portal Scan 2
-#          path: '../output/broker-portal/*.xml'
-#          reporter: java-junit
-#          fail-on-error: 'false'
-#
-#      - name: Show Results 3
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Scan Results
-#          name: Broker Portal Scan 3
-#          path: '/home/runner/work/Santander/Santander/output/broker-portal/*.xml'
-#          reporter: java-junit
-#          fail-on-error: 'false'
-#
-#      - name: Show Results 4
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Scan Results
-#          name: Broker Portal Scan 4
-#          path: 'broker-portal/*.xml'
-#          reporter: java-junit
-#          fail-on-error: 'false'
-#
-#      - name: Show Results 5
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Scan Results
-#          name: Broker Portal Scan 5
-#          path: './broker-portal/*.xml'
-#          reporter: java-junit
-#          fail-on-error: 'false'
-#
-#      - name: Show Results 6
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          artifact: Scan Results
-#          name: Broker Portal Scan 6
-#          path: '*.xml'
-#          reporter: java-junit
-#          fail-on-error: 'false'
-
-#      - name: Show Results
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          name: Show Scanner Results
-#          path: output/broker-portal/*.xml
-#          reporter: java-junit
-#          fail-on-error: 'false'
-
-#  broker_portal:
-#    runs-on: ubuntu-latest
-#    name: Scan Broker Portal
-#    container:
-#      image: salesforce/cli:latest-full
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Install Scanner
-#        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
-#
-#      - name: Run Scanner
-#        id: scanner
-#        run: |
-#          chmod +x ./bash.sh
-#          ./bash.sh broker-portal
-#
-#      - uses: actions/upload-artifact@master
-#        with:
-#          name: Store Results
-#          path: output/broker-portal/*.html
-#
-#      - name: Show Results
-#        uses: phoenix-actions/test-reporting@v8
-#        if: always()
-#        with:
-#          name: Show Scanner Results
-#          path: output/broker-portal/*.xml
-#          reporter: java-junit
-#          fail-on-error: 'false'

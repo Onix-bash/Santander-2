@@ -3,7 +3,6 @@
 pmd_config_path="config/scanner/pmd_config.xml"
 ignored_modules=(
   "destructiveChanges"
-  "application-logging"
 )
 output_directory="output"
 ( mkdir -p $output_directory )
@@ -16,6 +15,14 @@ do_scan() {
       ( mkdir -p "$module_directory" )
 
       set_report_output "all-engines" "xml"
+            run_scanner "default" "junit"
+            set_report_output "all-engines" "html"
+            run_scanner "default" "html"
+
+            set_report_output "pmd" "xml"
+            run_scanner "pmd" "junit"
+            set_report_output "pmd" "html"
+            run_scanner "pmd" "html"
       run_scanner "default" "junit"
     fi
   done

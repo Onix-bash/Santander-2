@@ -53,8 +53,6 @@ jobs:
           name: Scan Results
           path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
 
-      - uses: actions/checkout@v4
-
       - name: Show Results
         uses: phoenix-actions/test-reporting@v8
         if: always()

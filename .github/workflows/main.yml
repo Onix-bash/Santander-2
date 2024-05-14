@@ -46,14 +46,19 @@ jobs:
         if: always()
         with:
           name: Scan Results for Broker Portal
-          path: /home/runner/work/Santander/Santander/broker-portal/*.xml
+          path: broker-portal
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Scan Results for Broker Portal
-          path: output/broker-portal/*.xml
+          path: ./broker-portal/
 
+      # - uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #     name: Scan Results for Broker Portal
+      #     path: '*.xml'
 #  scan_application_logging:
 #    runs-on: ubuntu-latest
 #    name: Application Logging

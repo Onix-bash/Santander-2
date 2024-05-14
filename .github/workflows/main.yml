@@ -48,11 +48,6 @@ jobs:
           chmod +x ./bash.sh
           ./bash.sh
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Scan Results
-          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
-
       - name: Show Results
         uses: phoenix-actions/test-reporting@v8
         if: always()

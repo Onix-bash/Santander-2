@@ -29,13 +29,7 @@ jobs:
           name: Scan Results
           path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
 
-  scan_broker_portal:
-    runs-on: ubuntu-latest
-    name: Broker Portal
-    needs: scan_main
-
-    steps:
-      - uses: actions/checkout@v4
+       # - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
         with:
@@ -51,6 +45,14 @@ jobs:
           path: broker-portal/*.xml
           reporter: java-junit
           fail-on-error: 'false'
+
+  # scan_broker_portal:
+  #   runs-on: ubuntu-latest
+  #   name: Broker Portal
+  #   needs: scan_main
+
+  #   steps:
+     
           
 
           

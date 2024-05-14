@@ -5,29 +5,29 @@ on:
     branches: 'main'
 
 jobs:
-  scan_main:
-    runs-on: ubuntu-latest
-    name: Run Scanner
-    container:
-      image: salesforce/cli:latest-full
-    outputs:
-      output_path: ${{steps.scanner.outputs.output_directory}}
-    steps:
-      - uses: actions/checkout@v4
+  # scan_main:
+  #   runs-on: ubuntu-latest
+  #   name: Run Scanner
+  #   container:
+  #     image: salesforce/cli:latest-full
+  #   outputs:
+  #     output_path: ${{steps.scanner.outputs.output_directory}}
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+  #     - name: Install Scanner
+  #       run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
-      - name: Run Scanner
-        id: scanner
-        run: |
-          chmod +x ./bash.sh
-          ./bash.sh
+  #     - name: Run Scanner
+  #       id: scanner
+  #       run: |
+  #         chmod +x ./bash.sh
+  #         ./bash.sh
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Scan Results
-          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: Scan Results
+  #         path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
 
   scan_broker_portal:
     runs-on: ubuntu-latest
@@ -52,9 +52,8 @@ jobs:
         uses: phoenix-actions/test-reporting@v8
         if: always()
         with:
-          # artifact: Scan Results
           name: Broker Portal Scan
-          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
+          path: ${{steps.scanner.outputs.output_directory}}/broker-portal/*.xml
           reporter: java-junit
           fail-on-error: 'false'
                

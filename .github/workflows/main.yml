@@ -29,6 +29,30 @@ jobs:
           name: Scan Results
           path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
 
+  scan_broker_portal:
+    runs-on: ubuntu-latest
+    name: Broker Portal
+    container:
+      image: salesforce/cli:latest-full
+    outputs:
+      output_path: ${{steps.scanner.outputs.output_directory}}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Scanner
+        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+
+      - name: Run Scanner
+        id: scanner
+        run: |
+          chmod +x ./bash.sh
+          ./bash.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Scan Results
+          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
+
       - uses: actions/checkout@v4
 
       - name: Show Results
@@ -40,13 +64,6 @@ jobs:
           path: broker-portal/*.xml
           reporter: java-junit
           fail-on-error: 'false'
-
-  # scan_broker_portal:
-  #   runs-on: ubuntu-latest
-  #   name: Broker Portal
-  #   needs: scan_main
-
-  #   steps:
                
 #Works!
       # - uses: actions/upload-artifact@v4

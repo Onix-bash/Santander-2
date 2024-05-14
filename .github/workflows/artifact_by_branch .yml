@@ -1,4 +1,4 @@
-name: CI Reporting
+name: CI Reporting (artifact)
 
 on:
   push:

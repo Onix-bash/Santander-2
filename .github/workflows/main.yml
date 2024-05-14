@@ -40,24 +40,28 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: Scan Results
-          path: broker-portal/*.xml
+          path: broker-portal
 
-      # - uses: actions/upload-artifact@v4
-      #   if: always()
-      #   with:
-      #     name: Scan Results for Broker Portal
-      #     path: /home/runner/work/Santander/Santander/broker-portal/*.xml
-
-      - uses: actions/upload-artifact@v4
+      - name: Show Results
+        uses: phoenix-actions/test-reporting@v8
         if: always()
         with:
-          name: Scan Results for Broker Portal
-          path: /broker-portal/*.xml
+          # artifact: Scan Results
+          name: Broker Portal Scan
+          path: broker-portal/*.xml
+          reporter: java-junit
+          fail-on-error: 'false'
+          
+
+          
+#Works!
       # - uses: actions/upload-artifact@v4
       #   if: always()
       #   with:
-      #     name: Scan Results for Broker Portal
-      #     path: '*.xml'
+      #     name: Scan Results Broker Portal 2
+      #     path: broker-portal/*
+
+      
 #  scan_application_logging:
 #    runs-on: ubuntu-latest
 #    name: Application Logging

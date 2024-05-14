@@ -6,7 +6,6 @@ on:
 
 jobs:
   scan_main:
-    permissions: write-all
     runs-on: ubuntu-latest
     name: Run Scanner
     container:

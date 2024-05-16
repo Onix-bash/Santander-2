@@ -1,8 +1,6 @@
 name: CI Reporting
 
-on:
-  push:
-    branches: 'main'
+on: 'workflow_dispatch'
 
 env:
   BROKER_PORTAL: broker-portal

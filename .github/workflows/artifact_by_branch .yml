@@ -29,7 +29,7 @@ jobs:
           path: output/*/*.html
 
   scan_broker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest    
     name: Broker Portal - Run Scanner
     needs: scan_main
     steps:
@@ -41,12 +41,17 @@ jobs:
           name: All Scan Results
 
       - name: Store Artifacts for Broker Portal
+        id: scan_broker_report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Scan Results for Broker Portal
           path: broker-portal/*
-
+      - name: Show Output URL
+        if: always()
+        run: |
+         echo "Output URL: ${{ steps.show_broker_results.outputs.url }}"
+         echo "${{ steps.scan_broker_report.outputs}}" 
       # - name: Show Scan results for Broker Portal
       #   id: show_broker_results
       #   uses: dorny/test-reporter@f7638778046c83f8feeca64ef3d1ec19d1bbccf0

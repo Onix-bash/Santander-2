@@ -12,20 +12,29 @@ jobs:
       image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-      - name: Show Output URL
+      - name: Look for unused librairies
+        run: |
+          mvn dependency:analyze-report --no-transfer-progress
+      - name: Convert HTML to Markdown
+        id: html2markdown
         if: always()
+        uses: rknj/html2markdown@v0.1.0
+        with:
+          html-file: "report.html"
+      - name: Create issue with report
+        if: always()
+        uses: dacbd/create-issue-action@main
+        with: 
+          body: |
+            ${{ steps.html2markdown.outputs.markdown-content }}
+          assignees: rknj
+      - name: Show content of generated markdown file
+        if: always()
+        run: |
+          cat ${{ steps.html2markdown.outputs.markdown-file }}
         # run: |
         #  cat ./report.html >> $GITHUB_STEP_SUMMARY
-      - uses: actions/github-script@v6
-        if: always()
-        with:         
-          script: |
-            const output = cat ./report.html
-            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-            await core.summary
-              .addHeading('Terraform plan report')
-              .addRaw(output)
-              .write()
+     
 
   #     - name: Install Scanner
   #       run: sf plugins install @salesforce/sfdx-scanner@latest-beta

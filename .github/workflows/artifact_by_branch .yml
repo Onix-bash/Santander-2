@@ -48,6 +48,7 @@ jobs:
           path: broker-portal/*
 
       - name: Show Scan results for Broker Portal
+        id: show_broker_results
         uses: dorny/test-reporter@f7638778046c83f8feeca64ef3d1ec19d1bbccf0
         if: always()
         with:
@@ -57,13 +58,12 @@ jobs:
           reporter: java-junit
           fail-on-empty: 'false'
           fail-on-error: 'false'
-      - name: Set job summary with HTML link
+      - name: Show Output URL
         if: always()
         run: |
-          echo "## Scan Results for Broker Portal"
-          echo "View scan results in HTML format: ${{ steps.show_broker_results.outputs.url }}"
-          scan_results_url=${{ steps.show_broker_results.outputs.url }}"
-          echo "::set-output name=scan_results_url::${scan_results_url}"  
+         echo "Output URL: ${{ steps.show_broker_results.outputs.url }}"
+         scan_results_url="https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}"
+         echo "::set-output name=scan_results_url::${scan_results_url}"
         
   show_summary:
     runs-on: ubuntu-latest

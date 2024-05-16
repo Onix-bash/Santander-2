@@ -57,11 +57,12 @@ jobs:
           reporter: java-junit
           fail-on-empty: 'false'
           fail-on-error: 'false'
-      - name: Show Scan results
-        id: show_scan_results
+      - name: Set job summary with HTML link
+        if: always()
         run: |
-          # Logic to generate HTML link
-          scan_results_url="https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}"
+          echo "## Scan Results for Broker Portal"
+          echo "View scan results in HTML format: ${{ steps.show_broker_results.outputs.url }}"
+          scan_results_url=${{ steps.show_broker_results.outputs.url }}"
           echo "::set-output name=scan_results_url::${scan_results_url}"  
         
   show_summary:

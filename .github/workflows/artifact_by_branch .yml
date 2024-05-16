@@ -61,7 +61,9 @@ jobs:
       - name: Show Output URL
         if: always()
         run: |
-         echo "Output URL: ${{ steps.show_broker_results.outputs.html_url }}"
+         echo "Output URL: ${{ steps.show_broker_results.outputs.url_html }}"
+         echo "Passed: ${{ steps.show_broker_results.outputs.passed }}"
+         echo "URL: ${{ steps.show_broker_results.outputs.url }}"
          echo "${{ steps.show_broker_results.outputs.html_url }}" >> $GITHUB_STEP_SUMMARY
         
   show_summary:

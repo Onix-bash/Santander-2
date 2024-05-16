@@ -61,9 +61,8 @@ jobs:
       - name: Show Output URL
         if: always()
         run: |
-         echo "Output URL: ${{ steps.show_broker_results.outputs.url }}"
-         scan_results_url="https://github.com/${GITHUB_REPOSITORY}/runs/${GITHUB_RUN_ID}"
-         echo "::set-output name=scan_results_url::${scan_results_url}"
+         echo "Output URL: ${{ steps.show_broker_results.outputs.html_url }}"
+         echo "${{ steps.show_broker_results.outputs.html_url }}" >> $GITHUB_STEP_SUMMARY
         
   show_summary:
     runs-on: ubuntu-latest
@@ -74,4 +73,5 @@ jobs:
         id: step_two
         run: |
           echo "## Scan Results for Broker Portal"
-          echo "View scan results in HTML format: ${{ needs.scan_main.outputs.scan_results_url }}"
+          cat $GITHUB_STEP_SUMMARY 
+    

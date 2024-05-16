@@ -15,7 +15,7 @@ jobs:
       - name: Show Output URL
         if: always()
         run: |
-         cat ./report.html >> $GITHUB_STEP_SUMMARY
+         echo "{cat ./report.html}" >> $GITHUB_STEP_SUMMARY
 
   #     - name: Install Scanner
   #       run: sf plugins install @salesforce/sfdx-scanner@latest-beta

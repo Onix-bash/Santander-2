@@ -1,8 +1,10 @@
 name: CI Reporting
 
-on:
-  push:
-    branches: 'main'
+on: 'workflow_dispatch'
+
+env:
+  BROKER_PORTAL: broker-portal
+  APPLICATION_LOGGING: application-logging
 
 jobs:
   scan_main:
@@ -23,7 +25,6 @@ jobs:
         run: |
           chmod +x ./bash.sh
           ./bash.sh
-
       - uses: actions/upload-artifact@v4
         with:
           name: Scan Results
@@ -52,7 +53,7 @@ jobs:
         if: always()
         with:
           name: Broker Portal Scan
-          path: ${{steps.scanner.outputs.output_directory}}/broker-portal/*.xml
+          path: ${{steps.scanner.outputs.output_directory}}/${{env.BROKER_PORTAL}}/*.xml
           reporter: java-junit
           fail-on-error: 'false'
 
@@ -78,7 +79,7 @@ jobs:
         uses: phoenix-actions/test-reporting@v8
         if: always()
         with:
-          name: Broker Portal Scan
-          path: ${{steps.scanner.outputs.output_directory}}/application-logging/*.xml
+          name: Application Logging Scan
+          path: ${{steps.scanner.outputs.output_directory}}/${{env.APPLICATION_LOGGING}}/*.xml
           reporter: java-junit
           fail-on-error: 'false'

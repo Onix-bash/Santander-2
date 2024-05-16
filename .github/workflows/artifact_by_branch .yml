@@ -47,12 +47,12 @@ jobs:
           name: Scan Results for Broker Portal
           path: broker-portal/*
 
-      # - name: Show Scan results for Broker Portal
-      #   uses: dorny/test-reporter@f7638778046c83f8feeca64ef3d1ec19d1bbccf0
-      #   if: always()
-      #   with:
-      #     artifact: Scan Results for Broker Portal
-      #     name: Broker Portal - Show Results
-      #     path: '*.xml'
-      #     reporter: java-junit
-      #     fail-on-empty: 'false'
+      - name: Show Scan results for Broker Portal
+        uses: dorny/test-reporter@f7638778046c83f8feeca64ef3d1ec19d1bbccf0
+        if: always()
+        with:
+          artifact: Scan Results for Broker Portal
+          name: Broker Portal - Show Results
+          path: '*.xml'
+          reporter: java-junit
+          fail-on-empty: 'false'

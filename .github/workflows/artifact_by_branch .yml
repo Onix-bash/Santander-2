@@ -3,8 +3,8 @@ name: CI Reporting Artifact
 on:
   # push:
   #   branches: 'main'
-  schedule:
-    - cron: '25 13 * * *'
+  schedule:  
+    - cron: '32 13 * * *'
 
 jobs:
   scan_main:

@@ -1,28 +1,12 @@
-<table>
-    <tr>
-        <th>Module</th>
-        <th>Failed</th>
-    </tr>
-    <tr>
-        <td><a href="#user-content-broker-portal" title="broker-portal">broker-portal</a></td>
-        <td>3</td>
-    </tr>
-    <tr>
-        <td><a href="#user-content-application-logging" title="application-logging">
-            application-logging</a></td>
-        <td>2</td>
-    </tr>
-</table>
-
-<job-summary id="user-content-broker-portal">
-<table >
+<details><summary>broker-portal (Failded: 3)</summary>
+    <table>
     <tr>
         <th>Threshold</th>
         <th>Component Name</th>
         <th>Text</th>
     </tr>
     <tr>
-        <td colspan="3" align="center">Broker Portal</td>
+        <td id="broker-portal" colspan="3" align="center">Broker Portal</td>
     </tr>
     <tr>
         <td>1</td>
@@ -52,17 +36,19 @@
             <br/>Column: 12
             <br/><a href="https://docs.pmd-code.org/pmd-doc-7.0.0/pmd_rules_apex_documentation.html#apexdoc" title="rule">See rule</a></td>
     </tr>
-</table></job-summary>
-<job-summary id="user-content-application-logging">
-
-
-<table>
- <tr>
+</table>
+</details>
+<details><summary>application-logging (Failded: 2)</summary>
+ <table>
+    <tr>
         <th>Threshold</th>
         <th>Component Name</th>
         <th>Text</th>
     </tr>
-     <tr>
+    <tr>
+        <td colspan="3" align="center">Application Logging</td>
+    </tr>
+    <tr>
         <td>1</td>
         <td>cvPage.js</td>
         <td>'username' is assigned a value but never used
@@ -81,5 +67,11 @@
             <br/><a href="https://eslint.org/docs/latest/rules/no-empty" title="rule">See rule</a></td>
     </tr>
 </table>
-</job-summary>
-
+</details>
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('table').forEach(table => {
+        table.style.backgroundColor = 'lightgray'; // or any other color you prefer
+    });
+});
+</script>

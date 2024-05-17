@@ -23,7 +23,7 @@ jobs:
         run: |
           chmod +x ./bash.sh
           ./bash.sh
-          cat .output/report.html >> $GITHUB_STEP_SUMMARY
+          cat output/report.html >> $GITHUB_STEP_SUMMARY
 
         
 

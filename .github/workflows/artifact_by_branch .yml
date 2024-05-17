@@ -12,72 +12,64 @@ jobs:
       image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
-
-      - name: Run Scanner
-        id: scanner
+      - name: Look for unused librairies
         run: |
-          chmod +x ./bash.sh
-          ./bash.sh
+          cat ./report.html >> $GITHUB_STEP_SUMMARY
+        
 
-      - name: Store Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: All Scan Results
-          path: output/*/*.html
+        #     - name: Install Scanner
+        #       run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
-  scan_broker:
-    runs-on: ubuntu-latest    
-    name: Broker Portal - Run Scanner
-    needs: scan_main
-    steps:
-      - uses: actions/checkout@v4
+        #     - name: Run Scanner
+        #       id: scanner
+        #       run: |
+        #         chmod +x ./bash.sh
+        #         ./bash.sh
 
-      - name: Download Scan Results
-        uses: actions/download-artifact@v4
-        with:
-          name: All Scan Results
+        #     - name: Store Artifacts
+        #       uses: actions/upload-artifact@v4
+        #       with:
+        #         name: All Scan Results
+        #         path: output/*/*.html
 
-      - name: Store Artifacts for Broker Portal
-        id: scan_broker_report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: Scan Results for Broker Portal
-          path: broker-portal/*
-      - name: Show Output URL
-        if: always()
-        run: |
-         echo "Output URL: ${{ steps.show_broker_results.outputs.url }}"
-         echo "${{ steps.scan_broker_report.outputs}}" 
-      # - name: Show Scan results for Broker Portal
-      #   id: show_broker_results
-      #   uses: dorny/test-reporter@f7638778046c83f8feeca64ef3d1ec19d1bbccf0
-      #   if: always()
-      #   with:
-      #     artifact: Scan Results for Broker Portal
-      #     name: Broker Portal - Show Results
-      #     path: '*.xml'
-      #     reporter: java-junit
-      #     fail-on-empty: 'false'
-      #     fail-on-error: 'false'
-      # - name: Show Output URL
-      #   if: always()
+        # scan_broker:
+        #   runs-on: ubuntu-latest
+        #   name: Broker Portal - Run Scanner
+        #   needs: scan_main
+        #   steps:
+        #     - uses: actions/checkout@v4
+
+        #     - name: Download Scan Results
+        #       uses: actions/download-artifact@v4
+        #       with:
+        #         name: All Scan Results
+
+        #     - name: Store Artifacts for Broker Portal
+        #       id: scan_broker_report
+        #       uses: actions/upload-artifact@v4
+        #       if: always()
+        #       with:
+        #         name: Scan Results for Broker Portal
+        #         path: broker-portal/*
+        #     - name: Show Output URL
+        #       if: always()
+        #       run: |
+        #        echo "Output URL: ${{ steps.show_broker_results.outputs.url }}"
+        #        echo "${{ steps.scan_broker_report.outputs}}"
+        # - name: Show Scan results for Broker Portal
+        #   id: show_broker_results
+        #   uses: dorny/test-reporter@f7638778046c83f8feeca64ef3d1ec19d1bbccf0
+        #   if: always()
+        #   with:
+        #     artifact: Scan Results for Broker Portal
+        #     name: Broker Portal - Show Results
+        #     path: '*.xml'
+        #     reporter: java-junit
+        #     fail-on-empty: 'false'
+        #     fail-on-error: 'false'
+        # - name: Show Output URL
+        #   if: always()
         # run: |
         #  echo "Output URL: ${{ steps.show_broker_results.outputs.url_html }}"
         #  echo "${{ steps.show_broker_results.outputs.url_html }}" >> $GITHUB_STEP_SUMMARY
         
-  show_summary:
-    runs-on: ubuntu-latest
-    name: Show Summary
-    needs: scan_broker
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use the value
-        id: show_summary
-        run: |
-          echo "## Scan Results for Broker Portal"
-          cat $GITHUB_OUTPUT
-    

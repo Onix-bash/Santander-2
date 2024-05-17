@@ -8,8 +8,6 @@ jobs:
   scan_main:
     runs-on: ubuntu-latest
     name: Run Scanner and Store Artifacts
-    container:
-      image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
       - name: Look for unused librairies

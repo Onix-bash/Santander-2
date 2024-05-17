@@ -1,22 +1,79 @@
 <table>
   <tr>
-    <th>Name</th>
-    <th>Age</th>
-    <th>Location</th>
+    <th>Module</th>
+    <th>Failede</th>
   </tr>
   <tr>
-    <td>John Doe</td>
-    <td>30</td>
-    <td>New York</td>
+    <td><a href="#brokerPortal" title="broker-portal">broker-portal</a></td>
+    <td>5</td>
   </tr>
   <tr>
-    <td>Jane Smith</td>
-    <td>25</td>
-    <td>Los Angeles</td>
+    <td><a href="#applicationLogging"title="application-logging">
+    application-logging</a></td>
+    <td>2</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>Threshold</th>
+    <th>Component Name</th>
+    <th>Text</th>
   </tr>
   <tr>
-    <td>Michael Brown</td>
-    <td>35</td>
-    <td>Chicago</td>
+  <td id="brokerPortal" colspan="3" align="center">Broker Portal</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>CommunitiesLanding.page</td>
+    <td>Avoid calling VF action upon page load 
+    <br/>Category: Security - VfCsrf 
+    <br/>File: /Users/stanislavgrinko/Work/Projects/GitHub/Santander/toScan/broker-portal/main/default/pages/CommunitiesLanding.page 
+    <br/>Line: 1 
+    <br/>Column: 90 
+    <br/><a href="https://docs.pmd-code.org/pmd-doc-7.0.0/pmd_rules_visualforce_security.html#vfcsrf" title="rule">See rule</failure></td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>CommunitiesLandingController.cls</td>
+    <td>Missing ApexDoc @description Category: Documentation - ApexDoc 
+    <br/>File: /Users/stanislavgrinko/Work/Projects/GitHub/Santander/toScan/broker-portal/main/default/classes/CommunitiesLandingController.cls 
+    <br/>Line: 4 
+    <br/>Column: 21 
+    <br/><a href="https://docs.pmd-code.org/pmd-doc-7.0.0/pmd_rules_apex_documentation.html#apexdoc" title="rule">See rule</td>
+   
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>CommunitiesLandingController.cls</td>
+    <td>Missing ApexDoc comment Category: Documentation - ApexDoc 
+    <br/>File: /Users/stanislavgrinko/Work/Projects/GitHub/Santander/toScan/broker-portal/main/default/classes/CommunitiesLandingController.cls 
+    <br/>Line: 7 
+    <br/>Column: 12
+    <br/><a href="https://docs.pmd-code.org/pmd-doc-7.0.0/pmd_rules_apex_documentation.html#apexdoc" title="rule">See rule</td>
+   
+  </tr>
+   <tr>
+  <td id="applicationLogging" colspan="3" align="center">Application Logging</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>cvPage.js</td>
+    <td>'username' is assigned a value but never used 
+    <br/>File:/Users/stanislavgrinko/Work/Projects/GitHub/Santander/src/application-logging/lwc/cvPage/cvPage.js
+    <br/>Line: 101 
+    <br/>Column: 15
+    <br/><a href="https://eslint.org/docs/latest/rules/no-unused-vars" title="rule">See rule</td>
+   
+  </tr>
+   <tr>
+    <td>2</td>
+    <td>cvPage.js</td>
+    <td>Empty block statement.
+    <br/>File:/Users/stanislavgrinko/Work/Projects/GitHub/Santander/src/application-logging/lwc/cvPage/cvPage.js
+    <br/>Line: 202
+    <br/>Column: 29
+    <br/><a href="https://eslint.org/docs/latest/rules/no-empty" title="rule">See rule</td>
+   
   </tr>
 </table>

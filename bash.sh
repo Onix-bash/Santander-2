@@ -64,7 +64,7 @@ create_details_report() {
     cat <<EOL
 <details id="$module_name" class="mx-3"><summary>$module_name</summary>
 <p></p>
-<table class="rounded-top-2 color-bg-subtle">
+<table>
 <tr>
   <th>Threshold</th>
   <th>Component Name</th>

@@ -71,9 +71,9 @@ show_scanner_results() {
   csv_data=$(< "$csv_file")
 
   # Calculate the number of failed entries (rows)
-  fail_count=$(echo "$csv_data" | awk -F',' 'NR > 1 {count++} END {print count}')
+  local fail_count=$(awk 'NR > 1 { count++ } END { print count+0 }' "$csv_file")
   if [ "$fail_count" -eq 0 ]; then
-      return
+     return
   fi
 
   # Write the module's detailed report

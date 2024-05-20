@@ -141,7 +141,5 @@ unit_tables() {
   rm $summary_table $details_file
 }
 
-git config --global --add safe.directory "*"
-
 do_scan
 exit

@@ -76,7 +76,7 @@ show_scanner_results() {
   # Write the module's detailed report
   {
     cat <<EOL
-<details id="$module_full_name" class="mx-3"><summary>$module_full_name</summary>
+<details id="$module_full_name" class="mx-3"><summary>$module_name($scan_mode)</summary>
 <p></p>
 <table>
 <tr>
@@ -129,7 +129,7 @@ EOL
   {
     cat <<EOL
   <tr>
-    <td><a href="#user-content-$module_full_name" title="$module_full_name">$module_full_name</a></td>
+    <td><a href="#user-content-$module_full_name" title="$module_full_name">$module_name($scan_mode)</a></td>
     <td>$fail_count</td>
   </tr>
 EOL

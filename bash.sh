@@ -102,7 +102,7 @@ EOL
       printf "            <br/>File: %s\n", file
       printf "            <br/>Line: %s\n", line
       printf "            <br/>Column: %s\n", column
-      printf "            <br/><a href=\"%s\" title=\"%s\">%s</a></td>\n", url, rule, rule
+      printf "            <br/><a href=\"%s\" target=\"_blank\" title=\"%s\">%s</a></td>\n", url, rule, rule
       printf "    </tr>\n"
     }'
 

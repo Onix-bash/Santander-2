@@ -52,14 +52,14 @@ create_details_report() {
   local module_name=$1
   local csv_file=$2
 
-  # Read CSV data from file
+  #Read CSV data from file
   csv_data=$(< "$csv_file")
 
-  # Calculate the number of failed entries (rows)
+  #Calculate the number of failed entries (rows)
   fail_count=$(echo "$csv_data" | awk -F',' 'NR > 1 {count++} END {print count}')
   module_fail_counts["$module_name"]=$fail_count
 
-  # Write the module's detailed report
+  #Write the module's detailed report
   {
     cat <<EOL
 <details id="$module_name" class="mx-3"><summary>$module_name</summary>
@@ -72,14 +72,14 @@ create_details_report() {
 </tr>
 EOL
 
-    # Process CSV data to generate table rows
+    #Process CSV data to generate table rows
     echo "$csv_data" | awk -F',' 'NR > 1 {
-      # Remove leading and trailing quotes
+      #Remove leading and trailing quotes
       for (i = 1; i <= NF; i++) {
           gsub(/^"|"$/, "", $i)
       }
 
-      # Extract values
+      #Extract values
       threshold = $2
       file = $3
       line = $4
@@ -89,11 +89,11 @@ EOL
       url = $8
       category = $9
 
-      # Extract component name from file path
+      #Extract component name from file path
       split(file, path_parts, "/")
       component = path_parts[length(path_parts)]
 
-      # Print table row
+      #Print table row
       printf "    <tr>\n"
       printf "        <td>%s</td>\n", threshold
       printf "        <td>%s</td>\n", component
@@ -106,14 +106,13 @@ EOL
       printf "    </tr>\n"
     }'
 
-    # Close the table and details tags
     cat <<EOL
 </table>
 </details>
 EOL
   } >> "$details_file"
 
-  # Append module info to the summary table
+  #Append module info to the summary table
   {
     cat <<EOL
 <tr>
@@ -133,7 +132,6 @@ unit_tables() {
     echo "        <th>Failed</th>"
     echo "    </tr>"
     cat $summary_table
-    # Close the summary_table
     echo "</table>"
     echo "<br/>"
     cat $details_file
@@ -144,7 +142,6 @@ unit_tables() {
 }
 
 git config --global --add safe.directory "*"
-echo "output_directory=$output_directory" >> "$GITHUB_OUTPUT"
 
 do_scan
 exit

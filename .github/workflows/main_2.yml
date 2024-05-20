@@ -25,4 +25,4 @@ jobs:
           export GITHUB_REF_NAME="${{ github.ref_name }}"
           chmod +x ./bash.sh
           ./bash.sh
-          cat ${{steps.scanner.outputs.output_directory}}/report.html >> $GITHUB_STEP_SUMMARY
+           cat output/report.html >> $GITHUB_STEP_SUMMARY

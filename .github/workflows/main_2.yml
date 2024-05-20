@@ -11,38 +11,27 @@ jobs:
   scan_1:
     runs-on: ubuntu-latest
     name: Scan Results
-    # container:
-    #   image: salesforce/cli:latest-full
+    container:
+      image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-   
 
-
-      # - name: Install Scanner
-      #   run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+      - name: Install Scanner
+        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
       - name: Run Scanner
         id: scanner
         run: |
-                  echo "Home: ${HOME}"
-                  echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
-                  echo "GITHUB_ACTIONS: ${GITHUB_ACTIONS}"
-                  echo "GITHUB_ACTOR: ${GITHUB_ACTOR}"
-                  echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}"
-                  echo "GITHUB_EVENT_NAME: ${GITHUB_EVENT_NAME}"
-                  echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
-                  echo "GITHUB_SHA: ${GITHUB_SHA}"
-                  echo "GITHUB_REF: ${GITHUB_REF}"
-      #     export GITHUB_WORKSPACE="${{ github.workspace }}"
-      #     chmod +x ./bash.sh
-      #     ./bash.sh
+          chmod +x ./bash.sh
+          ./bash.sh
 
-      # - name: Show Scan Results
-      #   run: |
-      #     cat output/report.html >> $GITHUB_STEP_SUMMARY
+      - name: Show Scan Results
+        run: |
+          export GITHUB_REPOSITORY="${{ github.repository }}"
+          cat output/report.html >> $GITHUB_STEP_SUMMARY
 
-      # - name: Store Artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: Daily Scan Results in HTML
-      #     path: output/*/*.html
+      - name: Store Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Daily Scan Results in HTML
+          path: output/*/*.html

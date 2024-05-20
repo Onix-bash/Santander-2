@@ -5,52 +5,49 @@ ignored_modules=(
   "destructiveChanges"
 )
 output_directory="output"
-( mkdir -p $output_directory )
+mkdir -p "$output_directory"
 
 report_file="$output_directory/report.html"
+details_file="$output_directory/details_file.html"
+summary_table="$output_directory/summary_table.html"
+
+
+declare -A module_fail_counts
 
 do_scan() {
   for module in src/*; do
     module_name=${module##*/}
     if ! [[ ${ignored_modules[*]} =~ (^|[[:space:]])"$module_name"($|[[:space:]]) ]]; then
       module_directory="$output_directory"/"$module_name"
-      ( mkdir -p "$module_directory" )
+      mkdir -p "$module_directory"
 
-#      set_report_output "all-engines" "xml"
-#            run_scanner "default" "junit"
-#            set_report_output "all-engines" "html"
-#            run_scanner "default" "html"
-#
-#            set_report_output "pmd" "xml"
-#            run_scanner "pmd" "junit"
-#            set_report_output "pmd" "html"
-#            run_scanner "pmd" "html"
+      set_report_output "all-engines" "csv"
+      run_scanner "default" "csv"
+      csv_file="$report_output_path"
 
-            set_report_output "all-engines" "csv"
-            run_scanner "default" "csv"
-            csv_file="$report_output_path"
-
-            set_report_output "pmd" "csv"
-            run_scanner "pmd" "csv"
-            run_markdown_html "$module_name" "$csv_file"
+      set_report_output "pmd" "csv"
+      run_scanner "pmd" "csv"
+      create_details_report "$module_name" "$csv_file"
     fi
   done
+
+  unit_tables
 }
 
 set_report_output() {
-  report_name=$1-"$module_name"-$(date +"%Y-%m-%d")-$(date +"%H-%M-%S").$2
-  report_output_path="$module_directory"/"$report_name"
+  report_name="$1-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$2"
+  report_output_path="$module_directory/$report_name"
 }
 
 run_scanner() {
-  scanner_config="--target $module --format $2 --outfile "$report_output_path""
-  if [[ $1 == *"pmd"* ]]; then
+  local scanner_config="--target $module --format $2 --outfile $report_output_path"
+  if [[ $1 == "pmd" ]]; then
     scanner_config+=" --engine pmd --pmdconfig $pmd_config_path"
   fi
   sf scanner run $scanner_config
 }
 
-run_markdown_html() {
+create_details_report() {
   local module_name=$1
   local csv_file=$2
 
@@ -59,20 +56,31 @@ run_markdown_html() {
 
   # Calculate the number of failed entries (rows)
   fail_count=$(echo "$csv_data" | awk -F',' 'NR > 1 {count++} END {print count}')
+  module_fail_counts["$module_name"]=$fail_count
 
-  # Write the initial HTML and table headers
+  # Append module info to the summary table
   {
     cat <<EOL
-<details><summary>$module_name (Failed: $fail_count)</summary>
-    <table border="1">
-    <tr>
-        <th>Threshold</th>
-        <th>Component Name</th>
-        <th>Text</th>
-    </tr>
-    <tr>
-        <td colspan="3" align="center">$module_name</td>
-    </tr>
+<tr>
+  <td><a href="#user-content-$module_name" title="$module_name">$module_name</a></td>
+  <td>$fail_count</td>
+</tr>
+EOL
+  } >> $summary_table
+
+  # Write the module's detailed report
+  {
+    cat <<EOL
+<details id="$module_name"><summary>$module_name</summary>
+<table border="1">
+<tr>
+  <th>Threshold</th>
+  <th>Component Name</th>
+  <th>Text</th>
+</tr>
+<tr>
+  <td colspan="3" align="center">$module_name</td>
+</tr>
 EOL
 
     # Process CSV data to generate table rows
@@ -111,35 +119,31 @@ EOL
 
     # Close the table and details tags
     cat <<EOL
-    </table>
+</table>
 </details>
 EOL
-  } >> "$report_file"
+  } >> "$details_file"
 }
 
-#set_report_output() {
-#  report_name=$1-"$module_name"-$(date +"%Y-%m-%d")-$(date +"%H-%M-%S").$2
-#  report_output_path="$module_directory"/"$report_name"
-#}
-#
-#run_scanner() {
-#  scanner_config="--target src/$module_name --format $2 --outfile "$report_output_path""
-#  if [[ $1 == *"pmd"* ]]; then
-#    scanner_config+=" --engine pmd --pmdconfig $pmd_config_path"
-#  fi
-#  sf scanner run $scanner_config
-#}
-#
-#module_name=$1
-#if ! [[ ${ignored_modules[*]} =~ (^|[[:space:]])"$module_name"($|[[:space:]]) ]]; then
-#  module_directory="$output_directory"/"$module_name"
-#  ( mkdir -p "$module_directory" )
-#  set_report_output "all-engines" "xml"
-#  run_scanner "default" "junit"
-#fi
+unit_tables() {
+  {
+    echo "<table border='1'>"
+    echo "    <tr>"
+    echo "        <th>Module</th>"
+    echo "        <th>Failed</th>"
+    echo "    </tr>"
+    cat $summary_table
+    echo "</table>"
 
+    echo "<br/>"
+    cat $details_file
+  } > $report_file
+
+  rm $summary_table $details_file
+}
 
 git config --global --add safe.directory "*"
 echo "output_directory=$output_directory" >> "$GITHUB_OUTPUT"
 
-do_scan "$@"; exit
+do_scan
+exit

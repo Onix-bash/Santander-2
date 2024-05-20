@@ -62,9 +62,9 @@ create_details_report() {
   #Write the module's detailed report
   {
     cat <<EOL
-<details id="$module_name" class="mx-3"><summary>$module_name</summary>
+<details class="mx-3"><summary>$module_name</summary>
 <p></p>
-<table>
+<table id="$module_name">
 <tr>
   <th>Threshold</th>
   <th>Component Name</th>

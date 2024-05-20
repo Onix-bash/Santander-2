@@ -25,10 +25,14 @@ do_scan() {
 
       set_report_output "all-engines" "csv"
       run_scanner "default" "csv"
+      default_csv_file="$report_output_path"
 
       set_report_output "pmd" "csv"
       run_scanner "pmd" "csv"
-      create_details_report "$module_name" "$report_output_path"
+      pmd_csv_file="$report_output_path"
+
+      create_details_report "$module_name" "$default_csv_file"
+      create_details_report "$module_name" "$pmd_csv_file"
     fi
   done
 

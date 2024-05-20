@@ -119,7 +119,7 @@ EOL
       } else {
         file_path = file
       }
-      github_link = "https://github.com/"github_repository/file_path
+      github_link = "https://github.com/" github_repository "/" file_path
 
       # Print Table Row
       printf "    <tr>\n"

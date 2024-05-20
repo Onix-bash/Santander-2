@@ -11,27 +11,31 @@ jobs:
   scan_1:
     runs-on: ubuntu-latest
     name: Scan Results
-    container:
-      image: salesforce/cli:latest-full
+    # container:
+    #   image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
+         run:|
+         echo "$GITHUB_REPOSITORY"
+         echo "$GITHUB_CONTEXT"
 
-      - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
-      - name: Run Scanner
-        id: scanner
-        run: |
-          export GITHUB_WORKSPACE="${{ github.workspace }}"
-          chmod +x ./bash.sh
-          ./bash.sh
+      # - name: Install Scanner
+      #   run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
-      - name: Show Scan Results
-        run: |
-          cat output/report.html >> $GITHUB_STEP_SUMMARY
+      # - name: Run Scanner
+      #   id: scanner
+      #   run: |
+      #     export GITHUB_WORKSPACE="${{ github.workspace }}"
+      #     chmod +x ./bash.sh
+      #     ./bash.sh
 
-      - name: Store Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Daily Scan Results in HTML
-          path: output/*/*.html
+      # - name: Show Scan Results
+      #   run: |
+      #     cat output/report.html >> $GITHUB_STEP_SUMMARY
+
+      # - name: Store Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: Daily Scan Results in HTML
+      #     path: output/*/*.html

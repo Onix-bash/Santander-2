@@ -13,8 +13,6 @@ report_file="$output_directory/report.html"
 details_file="$output_directory/details_file.html"
 summary_table="$output_directory/summary_table.html"
 
-declare -A module_fail_counts
-
 do_scan() {
   for module in src/*; do
     module_name=${module##*/}
@@ -57,14 +55,13 @@ create_details_report() {
 
   #Calculate the number of failed entries (rows)
   fail_count=$(echo "$csv_data" | awk -F',' 'NR > 1 {count++} END {print count}')
-  module_fail_counts["$module_name"]=$fail_count
 
   #Write the module's detailed report
   {
     cat <<EOL
-<details class="mx-3"><summary>$module_name</summary>
+<details id="$module_name" class="mx-3"><summary>$module_name</summary>
 <p></p>
-<table id="$module_name">
+<table>
 <tr>
   <th>Threshold</th>
   <th>Component Name</th>

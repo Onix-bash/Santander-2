@@ -7,6 +7,9 @@ ignored_modules=(
 output_directory="output"
 mkdir -p "$output_directory"
 
+github_repo_url="${GITHUB_REPOSITORY_URL}"
+branch="${GITHUB_REF_NAME}"
+
 report_file="$output_directory/report.html"
 
 # Create temporary files
@@ -22,11 +25,10 @@ do_scan() {
 
       set_report_output "all-engines" "csv"
       run_scanner "default" "csv"
-      csv_file="$report_output_path"
 
       set_report_output "pmd" "csv"
       run_scanner "pmd" "csv"
-      create_details_report "$module_name" "$csv_file"
+      create_details_report "$module_name" "$report_output_path"
     fi
   done
 
@@ -89,11 +91,12 @@ EOL
       # Extract component name from file path
       split(file, path_parts, "/")
       component = path_parts[length(path_parts)]
+      github_link = github_repo_url "/blob/" branch "/" file "#L" line
 
       # Print table row
       printf "    <tr>\n"
       printf "        <td>%s</td>\n", threshold
-      printf "        <td>%s</td>\n", component
+      printf "        <td><a href=\"%s\" target=\"_blank\">%s</a></td>\n", github_link, component
       printf "        <td>%s\n", description
       printf "            <br/>Category: %s - %s\n", category, rule
       printf "            <br/>File: %s\n", file

@@ -21,12 +21,8 @@ jobs:
       - name: Run Scanner
         id: scanner
         run: |
+          export GITHUB_REPOSITORY_URL="${{ github.repositoryUrl }}"
+          export GITHUB_REF_NAME="${{ github.ref_name }}"
           chmod +x ./bash.sh
           ./bash.sh
-          cat output/report.html >> $GITHUB_STEP_SUMMARY
-
-        
-
-        
-       
-        
+          cat ${{steps.scanner.outputs.output_directory}}/report.html >> $GITHUB_STEP_SUMMARY

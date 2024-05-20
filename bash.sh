@@ -13,7 +13,7 @@ report_file="$output_directory/report.html"
 details_file="$output_directory/details_file.html"
 summary_table="$output_directory/summary_table.html"
 
-github_workspace="${GITHUB_WORKSPACE}"
+github_repository="${GITHUB_REPOSITORY}"
 
 start() {
   # Run Scanner
@@ -119,7 +119,7 @@ EOL
       } else {
         file_path = file
       }
-      github_link = github_workspace/file_path
+      github_link = "https://github.com/"github_repository/file_path
 
       # Print Table Row
       printf "    <tr>\n"

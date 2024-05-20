@@ -67,6 +67,11 @@ show_scanner_results() {
 
   local module_full_name="${module_name}_${scan_mode}"
 
+  local row_count=$(awk 'NR > 1 { count++ } END { print count+0 }' "$csv_file")
+  if [ "$row_count" -eq 0 ]; then
+    return
+  fi
+
   # Read CSV data from file
   csv_data=$(< "$csv_file")
 

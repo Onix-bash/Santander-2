@@ -13,6 +13,8 @@ report_file="$output_directory/report.html"
 details_file="$output_directory/details_file.html"
 summary_table="$output_directory/summary_table.html"
 
+github_workspace="${GITHUB_WORKSPACE}"
+
 start() {
   # Run Scanner
   for module in src/*; do
@@ -110,10 +112,19 @@ EOL
       split(file, path_parts, "/")
       component = path_parts[length(path_parts)]
 
+      # Extract file path starting from "src"
+      src_index = index(file, "src/")
+      if (src_index > 0) {
+       file_path = substr(file, src_index + 4)
+      } else {
+        file_path = file
+      }
+      github_link = github_workspace/file_path
+
       # Print Table Row
       printf "    <tr>\n"
       printf "        <td>%s</td>\n", threshold
-      printf "        <td>%s</td>\n", component
+      printf "        <td><a href=\"%s\" target=\"_blank\">%s</a></td>\n", github_link, component
       printf "        <td>%s\n", description
       printf "            <br/>Category: %s - %s\n", category, rule
       printf "            <br/>File: %s\n", file

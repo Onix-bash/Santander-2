@@ -92,7 +92,7 @@ show_scanner_results() {
 EOL
 
     # Parse CSV into GIT Markdown
-    echo "$csv_data" | awk -F',' 'NR > 1 {
+    echo "$csv_data" | awk -F',' -v repo="$github_repository" 'NR > 1 {
       # Remove leading and trailing quotes
       for (i = 1; i <= NF; i++) {
           gsub(/^"|"$/, "", $i)
@@ -119,7 +119,7 @@ EOL
       } else {
         file_path = file
       }
-      github_link = "https://github.com/" github_repository "/" file_path
+      github_link = "https://github.com/" repo "/" file_path
 
       # Print Table Row
       printf "    <tr>\n"

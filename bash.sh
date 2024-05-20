@@ -8,9 +8,10 @@ output_directory="output"
 mkdir -p "$output_directory"
 
 report_file="$output_directory/report.html"
+
+#Create temporary files
 details_file="$output_directory/details_file.html"
 summary_table="$output_directory/summary_table.html"
-
 
 declare -A module_fail_counts
 
@@ -58,28 +59,16 @@ create_details_report() {
   fail_count=$(echo "$csv_data" | awk -F',' 'NR > 1 {count++} END {print count}')
   module_fail_counts["$module_name"]=$fail_count
 
-  # Append module info to the summary table
-  {
-    cat <<EOL
-<tr>
-  <td><a href="#user-content-$module_name" title="$module_name">$module_name</a></td>
-  <td>$fail_count</td>
-</tr>
-EOL
-  } >> $summary_table
-
   # Write the module's detailed report
   {
     cat <<EOL
-<details id="$module_name"><summary>$module_name</summary>
-<table border="1">
+<details id="$module_name" class="mx-3"><summary>$module_name</summary>
+<p></p>
+<table class="rounded-top-2 color-bg-subtle">
 <tr>
   <th>Threshold</th>
   <th>Component Name</th>
   <th>Text</th>
-</tr>
-<tr>
-  <td colspan="3" align="center">$module_name</td>
 </tr>
 EOL
 
@@ -123,22 +112,34 @@ EOL
 </details>
 EOL
   } >> "$details_file"
+
+  # Append module info to the summary table
+  {
+    cat <<EOL
+<tr>
+  <td><a href="#user-content-$module_name" title="$module_name">$module_name</a></td>
+  <td>$fail_count</td>
+</tr>
+EOL
+  } >> $summary_table
 }
 
 unit_tables() {
+  #Combine two tables into final report file
   {
-    echo "<table border='1'>"
+    echo "<table class='mx-3 my-3'>"
     echo "    <tr>"
     echo "        <th>Module</th>"
     echo "        <th>Failed</th>"
     echo "    </tr>"
     cat $summary_table
+    # Close the summary_table
     echo "</table>"
-
     echo "<br/>"
     cat $details_file
   } > $report_file
 
+  #Delete temporary files
   rm $summary_table $details_file
 }
 

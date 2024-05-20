@@ -15,17 +15,17 @@ jobs:
     #   image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-         run:|
-         echo "$GITHUB_REPOSITORY"
-         echo "$GITHUB_CONTEXT"
+   
 
 
       # - name: Install Scanner
       #   run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
-      # - name: Run Scanner
-      #   id: scanner
-      #   run: |
+      - name: Run Scanner
+        id: scanner
+        run: |
+          echo "$GITHUB_REPOSITORY"
+          echo "$GITHUB_BASE_REF"
       #     export GITHUB_WORKSPACE="${{ github.workspace }}"
       #     chmod +x ./bash.sh
       #     ./bash.sh

@@ -18,13 +18,14 @@ jobs:
 
       - name: Set up environment
         run: |
-         echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-             GIT_BRANCH="${{ github.head_ref }}"
+           echo "GIT_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
           else
-            GIT_BRANCH="${{ github.ref#refs/heads/ }}"
-          fi
-          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
+           GIT_BRANCH=${{ github.ref }}
+           GIT_BRANCH=${GIT_BRANCH#refs/heads/}
+           echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
+         fi
 
       - name: Install Scanner
         run: sf plugins install @salesforce/sfdx-scanner@latest-beta

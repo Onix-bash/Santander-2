@@ -14,7 +14,7 @@ details_file="$output_directory/details_file.html"
 summary_table="$output_directory/summary_table.html"
 
 github_repository="${GITHUB_REPOSITORY}"
-github_sha="${GITHUB_SHA}"
+github_branch="${GIT_BRANCH}"
 
 start() {
   # Run Scanner
@@ -93,7 +93,7 @@ show_scanner_results() {
 EOL
 
     # Parse CSV into GIT Markdown
-    echo "$csv_data" | awk -F',' -v repo="$github_repository" -v branch="$github_sha" 'NR > 1 {
+    echo "$csv_data" | awk -F',' -v repo="$github_repository" -v branch="$github_branch" 'NR > 1 {
       # Remove leading and trailing quotes
       for (i = 1; i <= NF; i++) {
           gsub(/^"|"$/, "", $i)

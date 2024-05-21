@@ -28,6 +28,7 @@ jobs:
       - name: Show Scan Results
         run: |
           export GITHUB_REPOSITORY="${{ github.repository }}"
+          export GITHUB_SHA: ${{ github.sha }}
           cat output/report.html >> $GITHUB_STEP_SUMMARY
 
       - name: Store Artifacts

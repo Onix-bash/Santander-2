@@ -19,7 +19,7 @@ jobs:
       - name: Deploy modules
         run: |
             echo "GITHUB_OUTPUT=${{ github.output }}" >> $GITHUB_ENV
-            IFS=',' read -r -a module_array <<< "${{ github.event.inputs.modules }}"
+            
             # Run the deployment script with the provided modules
             chmod +x ./scripts/runDeployment.sh
             ./scripts/runDeployment.sh "${module_array[@]}"

@@ -32,8 +32,8 @@ jobs:
       - name: Run Scanner
         id: scanner
         run: |
-          chmod +x ./bash.sh
-          ./bash.sh
+          chmod +x ./scripts/reporting.sh
+          ./scripts/reporting.sh
 
       - name: Show Scan Results
         run: |

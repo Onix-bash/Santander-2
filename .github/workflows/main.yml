@@ -1,85 +1,27 @@
-name: CI Reporting
+name: Check deployments
 
-on: 'workflow_dispatch'
+on:
+  pull_request
 
 env:
   BROKER_PORTAL: broker-portal
   APPLICATION_LOGGING: application-logging
 
 jobs:
-  scan_main:
+  scan_1:
     runs-on: ubuntu-latest
-    name: Run Scanner
+    name: Scan Results
     container:
       image: salesforce/cli:latest-full
-    outputs:
-      output_path: ${{steps.scanner.outputs.output_directory}}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
-
-      - name: Run Scanner
-        id: scanner
+      - name: Deploy modules
         run: |
-          chmod +x ./bash.sh
-          ./bash.sh
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Scan Results
-          path: ${{steps.scanner.outputs.output_directory}}/*/*.xml
-
-  scan_broker_portal:
-    runs-on: ubuntu-latest
-    name: Broker Portal
-    container:
-      image: salesforce/cli:latest-full
-    outputs:
-      output_path: ${{steps.scanner.outputs.output_directory}}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
-
-      - name: Run Scanner
-        id: scanner
-        run: |
-          chmod +x ./bash.sh
-          ./bash.sh
-      - name: Show Results
-        uses: phoenix-actions/test-reporting@v8
-        if: always()
-        with:
-          name: Broker Portal Scan
-          path: ${{steps.scanner.outputs.output_directory}}/${{env.BROKER_PORTAL}}/*.xml
-          reporter: java-junit
-          fail-on-error: 'false'
-
-  scan_application_logging:
-    runs-on: ubuntu-latest
-    name: Application Logging
-    container:
-      image: salesforce/cli:latest-full
-    outputs:
-      output_path: ${{steps.scanner.outputs.output_directory}}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
-
-      - name: Run Scanner
-        id: scanner
-        run: |
-          chmod +x ./bash.sh
-          ./bash.sh
-      - name: Show Results
-        uses: phoenix-actions/test-reporting@v8
-        if: always()
-        with:
-          name: Application Logging Scan
-          path: ${{steps.scanner.outputs.output_directory}}/${{env.APPLICATION_LOGGING}}/*.xml
-          reporter: java-junit
-          fail-on-error: 'false'
+            echo "GITHUB_OUTPUT=${{ github.output }}" >> $GITHUB_ENV
+            IFS=',' read -r -a module_array <<< "${{ github.event.inputs.modules }}"
+            # Run the deployment script with the provided modules
+            chmod +x ./scripts/runDeployment.sh
+            ./scripts/runDeployment.sh "${module_array[@]}"
+          
+          

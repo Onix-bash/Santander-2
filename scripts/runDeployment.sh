@@ -18,5 +18,5 @@ else
   # Track "Deployment Id" allowing to Cancel the Job
   deployment_id=$(sf project deploy start --manifest sourcePackage.xml --post-destructive-changes "src/destructiveChanges/destructiveChanges.xml" --test-level RunLocalTests -o target-org --ignore-conflicts --ignore-warnings --async --json | jq -r .result.id)
   echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
-  sf project deploy resume --job-id $deployment_id
+  sf project deploy resume --job-id "$deployment_id"
 fi

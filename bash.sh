@@ -116,7 +116,7 @@ EOL
       # Extract file path starting from "src"
       src_index = index(file, "src/")
       if (src_index > 0) {
-       file_path = substr(file, src_index + 4)
+       file_path = substr(file, src_index)
       } else {
         file_path = file
       }

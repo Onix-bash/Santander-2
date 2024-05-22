@@ -25,17 +25,10 @@ jobs:
           sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
           chmod +x scripts/changedModules.sh
           scripts/changedModules.sh
+          chmod +x scripts/runDeployment.sh
+          scripts/runDeployment.sh "${module_array[@]}"
 #          Find Changed Modules
         env:
           GITHUB_OUTPUT: $GITHUB_ENV  # Redirect GITHUB_OUTPUT to a known environment variable
-
-      - name: Deploy Modules
-        if: steps.find_changed_modules.outputs.changed_modules != ''
-        run: |
-          chmod +x scripts/runDeployment.sh
-          # Read the changed_modules from the environment variable and convert to array
-          IFS=',' read -r -a module_array <<< "${{ steps.find_changed_modules.outputs.changed_modules }}"
-          scripts/runDeployment.sh "${module_array[@]}"
-        env:
           SKIP_ORG_INTERACTION: false
           

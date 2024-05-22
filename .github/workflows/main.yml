@@ -22,8 +22,8 @@ jobs:
       
         run: |
          echo ls
-         chmod +x ./changedModules.sh
-         ./scripts/changedModules.sh
+         chmod +x scripts/changedModules.sh
+         scripts/changedModules.sh
           git config --global --add safe.directory "*"
           sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
 #          Find Changed Modules
@@ -33,10 +33,10 @@ jobs:
       - name: Deploy Modules
         if: steps.find_changed_modules.outputs.changed_modules != ''
         run: |
-          chmod +x ./runDeployment.sh
+          chmod +x scripts/runDeployment.sh
           # Read the changed_modules from the environment variable and convert to array
           IFS=',' read -r -a module_array <<< "${{ steps.find_changed_modules.outputs.changed_modules }}"
-          ./runDeployment.sh "${module_array[@]}"
+          scripts/runDeployment.sh "${module_array[@]}"
         env:
           SKIP_ORG_INTERACTION: false
           

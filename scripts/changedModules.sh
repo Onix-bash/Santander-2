@@ -5,7 +5,7 @@ nextStep() {
   if [ -n "$1" ]; then
     source_paths_to_deploy=()
     for module in "$@"; do
-        source_paths_to_deploy+=("src/$module")
+        source_paths_to_deploy+=("../src/$module")
     done
   fi
   echo "--- Starting deployment for modules: ${source_paths_to_deploy[*]}"
@@ -14,7 +14,7 @@ nextStep() {
   else
     sf project generate manifest --source-dir "${source_paths_to_deploy[@]}" --name sourcePackage
     # Track "Deployment Id" allowing to Cancel the Job
-    deployment_id=$(sf project deploy start --manifest sourcePackage.xml --post-destructive-changes "src/destructiveChanges/destructiveChanges.xml" --test-level RunLocalTests -o target-org --ignore-conflicts --ignore-warnings --async --json | jq -r .result.id)
+    deployment_id=$(sf project deploy start --manifest sourcePackage.xml --post-destructive-changes "../src/destructiveChanges/destructiveChanges.xml" --test-level RunLocalTests -o target-org --ignore-conflicts --ignore-warnings --async --json | jq -r .result.id)
     echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
     sf project deploy resume --job-id "$deployment_id"
   fi

@@ -1,11 +1,10 @@
 name: Check deployments
 
 on:
-  pull_request
-
-env:
-  BROKER_PORTAL: broker-portal
-  APPLICATION_LOGGING: application-logging
+  pull_request:
+    branches:
+      - develop
+      - feature/deploy-test
 
 jobs:
   scan_1:
@@ -16,12 +15,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy modules
+      - name: Install SFDX GitDelta Plugin
+        run: echo y | sf plugins:install sfdx-git-delta
+
+      - name: Create data packages for new, modified or deleted metadata
+      
         run: |
-            echo "GITHUB_OUTPUT=${{ github.output }}" >> $GITHUB_ENV
-            IFS=',' read -r -a module_array <<< "${{ github.event.inputs.modules }}"
-            # Run the deployment script with the provided modules
-            chmod +x ./scripts/runDeployment.sh
-            ./scripts/runDeployment.sh "${module_array[@]}"
-          
-          
+         chmod +x scripts/changedModules.sh
+         scripts/changedModules.sh
+          git config --global --add safe.directory "*"
+          sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
+          cat package/package.xml
+#          Find Changed Modules
+        env:
+          GITHUB_OUTPUT: $GITHUB_ENV  # Redirect GITHUB_OUTPUT to a known environment variable
+
+      - name: Deploy Modules
+        if: steps.find_changed_modules.outputs.changed_modules != ''
+        run: |
+          chmod +x scripts/runDeployment.sh
+          # Read the changed_modules from the environment variable and convert to array
+          IFS=',' read -r -a module_array <<< "${{ steps.find_changed_modules.outputs.changed_modules }}"
+          scripts/runDeployment.sh "${module_array[@]}"
+        env:
+          SKIP_ORG_INTERACTION: false
+        

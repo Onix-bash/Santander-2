@@ -36,9 +36,9 @@ jobs:
       - name: Deploy Modules
         if: steps.find_changed_modules.outputs.changed_modules != ''
         run: |
-               chmod +x ./scripts/runDeployment.sh
+          chmod +x ./scripts/runDeployment.sh
           # Read the changed_modules from the environment variable and convert to array
-               IFS=',' read -r -a module_array <<< "${{ steps.find_changed_modules.outputs.changed_modules }}"
-               ./scripts/runDeployment.sh "${module_array[@]}"
+          IFS=',' read -r -a module_array <<< "${{ steps.find_changed_modules.outputs.changed_modules }}"
+          ./scripts/runDeployment.sh "${module_array[@]}"
         env:
           SKIP_ORG_INTERACTION: false

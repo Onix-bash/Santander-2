@@ -1,7 +1,6 @@
 #!/bin/bash
 
-git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm #fix for dubious ownership issue TODO check more deeply for better solution
-
+git config --global --add safe.directory "*"
 source_to_check_changes="origin/develop"
 
 if [ -n "$1" ]; then

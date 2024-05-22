@@ -19,8 +19,7 @@
     "mochawesome-fixture": "cd \"reports/mochawesome\" && npm test"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dorny/test-check.git"
+    "type": "git"
   },
   "keywords": [
     "actions",

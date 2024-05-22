@@ -1,11 +1,10 @@
 name: Check deployments
 
 on:
-  pull_request
-
-env:
-  BROKER_PORTAL: broker-portal
-  APPLICATION_LOGGING: application-logging
+  pull_request:
+    branches:
+      - develop
+      - feature/deploy-test
 
 jobs:
   scan_1:
@@ -15,13 +14,21 @@ jobs:
       image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Deploy modules
+      - name: Create data packages for new, modified or deleted metadata
+
         run: |
-            echo "GITHUB_OUTPUT=${{ github.output }}" >> $GITHUB_ENV
-            IFS=',' read -r -a module_array <<< "${{ github.event.inputs.modules }}"
-            # Run the deployment script with the provided modules
-            chmod +x ./scripts/runDeployment.sh
-            ./scripts/runDeployment.sh "${module_array[@]}"
-          
-          
+          echo y | sf plugins:install sfdx-git-delta
+          git config --global --add safe.directory "*"
+          sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
+          chmod +x scripts/changedModules.sh
+          scripts/changedModules.sh
+          chmod +x scripts/runDeployment.sh
+          scripts/runDeployment.sh "${module_array[@]}"
+        #          Find Changed Modules
+        env:
+          GITHUB_OUTPUT: $GITHUB_ENV  # Redirect GITHUB_OUTPUT to a known environment variable
+          SKIP_ORG_INTERACTION: false
+

@@ -3,9 +3,9 @@
 git config --global --add safe.directory "*"
 source_to_check_changes="origin/develop"
 
-if [ -n "$1" ]; then
-  source_to_check_changes=$1
-fi
+#if [ -n "$1" ]; then
+#  source_to_check_changes=$1
+#fi
 
 
 echo "Starting to look for changed modules against $source_to_check_changes..."

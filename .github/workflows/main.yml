@@ -1,11 +1,10 @@
 name: Check deployments
 
 on:
-  pull_request
-
-env:
-  BROKER_PORTAL: broker-portal
-  APPLICATION_LOGGING: application-logging
+  pull_request:
+    branches:
+      - develop
+      - feature/deploy-test
 
 jobs:
   scan_1:
@@ -21,9 +20,8 @@ jobs:
 
       - name: Create data packages for new, modified or deleted metadata
         run: |
-          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm 
+#          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
           sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
-          cat ./src/package.xml 
 
       - name: Find Changed Modules
         id: find_changed_modules
@@ -42,3 +40,4 @@ jobs:
           ./scripts/runDeployment.sh "${module_array[@]}"
         env:
           SKIP_ORG_INTERACTION: false
+          

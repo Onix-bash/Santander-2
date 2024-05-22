@@ -21,9 +21,9 @@ jobs:
 
       - name: Create data packages for new, modified or deleted metadata
         run: |
-         git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm 
-         sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
-         cat ./src/package.xml 
+          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm 
+          sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
+          cat ./src/package.xml 
 
       - name: Find Changed Modules
         id: find_changed_modules
@@ -36,11 +36,9 @@ jobs:
       - name: Deploy Modules
         if: steps.find_changed_modules.outputs.changed_modules != ''
         run: |
-         chmod +x ./scripts/runDeployment.sh
-        # Read the changed_modules from the environment variable and convert to array
-         IFS=',' read -r -a module_array <<< "${{ steps.find_changed_modules.outputs.changed_modules }}" 
-         ./scripts/runDeployment.sh "${module_array[@]}"
+               chmod +x ./scripts/runDeployment.sh
+          # Read the changed_modules from the environment variable and convert to array
+               IFS=',' read -r -a module_array <<< "${{ steps.find_changed_modules.outputs.changed_modules }}"
+               ./scripts/runDeployment.sh "${module_array[@]}"
         env:
-         SKIP_ORG_INTERACTION: false
-          
-          
+          SKIP_ORG_INTERACTION: false

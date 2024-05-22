@@ -15,12 +15,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install SFDX GitDelta Plugin
-        run: echo y | sf plugins:install sfdx-git-delta
-
       - name: Create data packages for new, modified or deleted metadata
       
         run: |
+          echo y | sf plugins:install sfdx-git-delta
           git config --global --add safe.directory "*"
           sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
           cat package/package.xml

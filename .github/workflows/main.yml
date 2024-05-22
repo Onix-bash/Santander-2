@@ -24,6 +24,7 @@ jobs:
           sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
           # Find Changed Modules
            chmod +x ./scripts/changedModules.sh
+
           ./scripts/changedModules.sh origin/develop
         env:
           GITHUB_OUTPUT: $GITHUB_ENV  # Redirect GITHUB_OUTPUT to a known environment variable

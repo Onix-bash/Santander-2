@@ -21,11 +21,11 @@ jobs:
       - name: Create data packages for new, modified or deleted metadata
       
         run: |
-         chmod +x scripts/changedModules.sh
-         scripts/changedModules.sh
           git config --global --add safe.directory "*"
           sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
           cat package/package.xml
+          chmod +x scripts/changedModules.sh
+          scripts/changedModules.sh
 #          Find Changed Modules
         env:
           GITHUB_OUTPUT: $GITHUB_ENV  # Redirect GITHUB_OUTPUT to a known environment variable

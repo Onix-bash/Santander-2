@@ -24,7 +24,8 @@ jobs:
          chmod +x scripts/changedModules.sh
          scripts/changedModules.sh
           git config --global --add safe.directory "*"
-          sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
+          sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
+          cat package/package.xml
 #          Find Changed Modules
         env:
           GITHUB_OUTPUT: $GITHUB_ENV  # Redirect GITHUB_OUTPUT to a known environment variable

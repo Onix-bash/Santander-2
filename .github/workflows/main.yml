@@ -20,8 +20,8 @@ jobs:
 
       - name: Create data packages for new, modified or deleted metadata
         run: |
-          git config --global --add safe.directory "*"
-          sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
+#          git config --global --add safe.directory "*"
+#          sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
           # Find Changed Modules
            chmod +x ./scripts/changedModules.sh
 

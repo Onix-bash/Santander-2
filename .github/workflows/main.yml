@@ -10,18 +10,17 @@ jobs:
   scan_1:
     runs-on: ubuntu-latest
     name: Scan Results
-    # container:
-    #   image: salesforce/cli:latest-full
+    container:
+      image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
 
-      # - name: Install SFDX GitDelta Plugin
-      #   run: echo y | sf plugins:install sfdx-git-delta
+      - name: Install SFDX GitDelta Plugin
+        run: echo y | sf plugins:install sfdx-git-delta
 
       - name: Create data packages for new, modified or deleted metadata
       
         run: |
-         echo ls
          chmod +x scripts/changedModules.sh
          scripts/changedModules.sh
           git config --global --add safe.directory "*"

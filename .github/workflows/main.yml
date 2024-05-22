@@ -1,11 +1,9 @@
 name: Check deployments
 
 on:
-  pull_request
-
-env:
-  BROKER_PORTAL: broker-portal
-  APPLICATION_LOGGING: application-logging
+  pull_request:
+    branches:
+      - develop
 
 jobs:
   scan_1:
@@ -23,7 +21,6 @@ jobs:
         run: |
           git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm 
           sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
-          cat ./src/package.xml 
 
       - name: Find Changed Modules
         id: find_changed_modules

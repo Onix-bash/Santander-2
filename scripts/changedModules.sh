@@ -10,7 +10,7 @@ fi
 
 echo "Starting to look for changed modules against $source_to_check_changes..."
 # Array of your module directories
-modules=( $( cd ../src/ ;ls -1p | grep / | sed 's/^\(.*\)/\1/') )
+modules=( $( cd src/ ;ls -1p | grep / | sed 's/^\(.*\)/\1/') )
  #externalize module names
 # Base branch to compare against, adjust according to your workflow
 

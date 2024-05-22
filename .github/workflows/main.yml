@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - develop
+      - feature/deploy-test
 
 jobs:
   scan_1:
@@ -19,7 +20,7 @@ jobs:
 
       - name: Create data packages for new, modified or deleted metadata
         run: |
-          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm 
+#          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
           sf sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
 
       - name: Find Changed Modules
@@ -39,3 +40,4 @@ jobs:
           ./scripts/runDeployment.sh "${module_array[@]}"
         env:
           SKIP_ORG_INTERACTION: false
+          

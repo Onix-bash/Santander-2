@@ -14,17 +14,3 @@ jobs:
       image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-        with:
-         fetch-depth: 0
-
-      - name: Create data packages for new, modified or deleted metadata
-      
-        run: |
-#          echo y | sf plugins:install sfdx-git-delta
-#          git config --global --add safe.directory "*"
-#          sfdx sgd:source:delta --to "HEAD" --from "HEAD^" --output ./src --source src/
-#          chmod +x scripts/changedModules.sh
-#          scripts/changedModules.sh
-#          chmod +x scripts/runDeployment.sh
-#          scripts/runDeployment.sh "${module_array[@]}"
-

@@ -14,7 +14,7 @@ modules=( $( cd src/ ;ls -1p | grep / | sed 's/^\(.*\)/\1/') )
  #externalize module names
 # Base branch to compare against, adjust according to your workflow
 
- 
+
 # Loop through each module to check for changes
 for module in "${modules[@]}"; do
     # Check if the module has changes compared to the base branch

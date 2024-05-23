@@ -28,19 +28,12 @@ start() {
       # Run Scanner in CSV for Summary Tab and in HTML type for Storing as Artifacts
       set_report_output "all-engines" "html"
       run_scanner "default" "html"
-      set_report_output "pmd" "html"
-      run_scanner "pmd" "html"
 
       set_report_output "all-engines" "csv"
       run_scanner "default" "csv"
       default_csv_file="$report_output_path"
 
-      set_report_output "pmd" "csv"
-      run_scanner "pmd" "csv"
-      pmd_csv_file="$report_output_path"
-
-      show_scanner_results "$module_name" "$default_csv_file" "default"
-      show_scanner_results "$module_name" "$pmd_csv_file" "custom"
+      show_scanner_results "$module_name" "$default_csv_file" "custom"
     fi
   done
 
@@ -55,11 +48,7 @@ set_report_output() {
 
 # Run Scanner using different Engines
 run_scanner() {
-  local scanner_config="--target $module --format $2 --outfile $report_output_path"
-  if [[ $1 == "pmd" ]]; then
-    scanner_config+=" --engine pmd --pmdconfig $pmd_config_path"
-  fi
-  sf scanner run $scanner_config
+  sf scanner run --target $module --format $2 --pmdconfig $pmd_config_path --outfile $report_output_path
 }
 
 # Show Scanner Results on the Job Summary page (from CSV into GIT Markdown)
@@ -92,7 +81,7 @@ show_scanner_results() {
 </tr>
 EOL
 
-    # Parse CSV into GIT Markdown
+# Parse CSV into GIT Markdown
     echo "$csv_data" | awk -F',' -v repo="$github_repository" -v branch="$github_branch" 'NR > 1 {
       # Remove leading and trailing quotes
       for (i = 1; i <= NF; i++) {

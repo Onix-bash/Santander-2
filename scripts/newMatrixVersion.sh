@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
 
 set_input_version() {
+  echo "Current directory: $(pwd)"
   # Prepare JSON for the new Matrix Version
   current_matrix_id=$(jq -r '.records[].CalculationMatrix.Id' CalculationMatrixVersion.json)
-
-  # Create the correct Key and Value
-  set_matrix_id=$(
-    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
-  )
-  echo "$set_matrix_id" > CalculationMatrixVersion.json
-
-  # Delete unnecessary property
-  delete_matrix_property=$(
-    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
-  )
-  echo "$delete_matrix_property" > CalculationMatrixVersion.json
-
-  # Create Inactive Matrix Version from JSON
-  create_matrix_data
+echo "Current matrix id: '$current_matrix_id'"
+#  # Create the correct Key and Value
+#  set_matrix_id=$(
+#    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
+#  )
+#  echo "$set_matrix_id" > CalculationMatrixVersion.json
+#
+#  # Delete unnecessary property
+#  delete_matrix_property=$(
+#    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
+#  )
+#  echo "$delete_matrix_property" > CalculationMatrixVersion.json
+#
+#  # Create Inactive Matrix Version from JSON
+#  create_matrix_data
 }
 
 # Create Matrix Version and Matrix Rows
@@ -94,5 +95,51 @@ delete_matrix_version() {
   sf data delete record --sobject CalculationMatrixVersion --record-id "$new_matrix_version_id"
 }
 
+checkFolders() {
+  # Get git diff output
+  source_to_check_changes="origin/develop"
+  git_diff=$(git diff --name-only $source_to_check_changes)
+
+
+  # Function to extract unique folder names after the "data" folder
+  create_json() {
+      local path=$1
+      local json="{}"
+      while IFS= read -r line; do
+          # Extract the module name and folder name
+          module=$(echo "$line" | sed -n 's|^src/\([^/]*\)/data/.*|\1|p')
+          folder=$(echo "$line" | sed -n 's|^src/[^/]*/data/\([^/]*\)/.*|\1|p')
+
+          # If both module and folder are extracted successfully
+          if [[ -n "$module" && -n "$folder" ]]; then
+              # Update the JSON structure
+              json=$(echo "$json" | jq --arg module "$module" --arg folder "$folder" '.[$module] += [$folder] | .[$module] = (.[$module] | unique)')
+          fi
+      done <<<"$path"
+      echo "$json"
+  }
+
+  json_output=$(create_json "$git_diff")
+  echo "$json_output"
+
+  modules=( $(cd ../src/; ls -1p | grep / | sed 's|/$||') )
+  original_dir=$(pwd)
+  for module in "${modules[@]}"; do
+      echo "$module"
+      if jq -e --arg module "$module" 'has($module)' <<< "$json_output" >/dev/null; then
+         folders=$(jq -r --arg module "$module" '.[$module][]' <<< "$json_output")
+         cd "$original_dir" || exit 1
+                 for folder in $folders; do
+                   # Go to folder with CalculationMatrixVersion.json
+                   cd "../src/$module/data/$folder" || exit 1
+                   set_input_version
+                 done
+      else
+          echo "Folder $module not found in JSON output"
+      fi
+  done
+}
+
+
 # Start
-set_input_version "$@"; exit
+checkFolders "$@"; exit

@@ -27,8 +27,4 @@ jobs:
           scripts/changedModules.sh
           chmod +x scripts/runDeployment.sh
           scripts/runDeployment.sh "${module_array[@]}"
-#          Find Changed Modules
-        env:
-          GITHUB_OUTPUT: $GITHUB_ENV  # Redirect GITHUB_OUTPUT to a known environment variable
-          SKIP_ORG_INTERACTION: false
-          
+

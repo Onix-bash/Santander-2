@@ -140,6 +140,5 @@ checkFolders() {
   done
 }
 
-
 # Start
 checkFolders "$@"; exit

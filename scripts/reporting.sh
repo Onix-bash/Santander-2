@@ -26,38 +26,28 @@ start() {
       mkdir -p "$module_directory"
 
       # Run Scanner in CSV for Summary Tab and in HTML type for Storing as Artifacts
-      set_report_output "all-engines" "html"
-      run_scanner "default" "html"
-
-      set_report_output "all-engines" "csv"
-      run_scanner "default" "csv"
+      run_scanner "html"
+      run_scanner "csv"
       default_csv_file="$report_output_path"
-
-      show_scanner_results "$module_name" "$default_csv_file" "custom"
+      show_scanner_results "$module_name" "$default_csv_file"
     fi
   done
 
   unit_tables
 }
 
-# Set Output Name & Path for each Module
-set_report_output() {
-  report_name="$1-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$2"
-  report_output_path="$module_directory/$report_name"
-}
-
-# Run Scanner using different Engines
+# Run Scanner using All Engines
 run_scanner() {
-  sf scanner run --target $module --format $2 --pmdconfig $pmd_config_path --outfile $report_output_path
+  report_name="all-engines-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$1"
+  report_output_path="$module_directory/$report_name"
+
+  sf scanner run --target $module --format $1 --pmdconfig $pmd_config_path --outfile $report_output_path
 }
 
 # Show Scanner Results on the Job Summary page (from CSV into GIT Markdown)
 show_scanner_results() {
   local module_name=$1
   local csv_file=$2
-  local scan_mode=$3
-
-  local module_full_name="${module_name}_${scan_mode}"
 
   # Read CSV data from file
   csv_data=$(< "$csv_file")
@@ -71,7 +61,7 @@ show_scanner_results() {
   # Write the module's detailed report
   {
     cat <<EOL
-<details id="$module_full_name" class="mx-3"><summary>$module_name ($scan_mode)</summary>
+<details id="$module_name" class="mx-3"><summary>$module_name</summary>
 <p></p>
 <table>
 <tr>
@@ -133,7 +123,7 @@ EOL
   {
     cat <<EOL
   <tr>
-    <td><a href="#user-content-$module_full_name" title="$module_full_name">$module_name ($scan_mode)</a></td>
+    <td><a href="#user-content-$module_name" title="$module_name">$module_name</a></td>
     <td>$fail_count</td>
   </tr>
 EOL

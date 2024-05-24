@@ -16,12 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set environment variables
-        id: set-env
-        run: |
-          GIT_BRANCH=${GITHUB_REF#refs/heads/}
-          echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
-          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
+      # - name: Set environment variables
+      #   id: set-env
+      #   run: |
+      #     GIT_BRANCH=${GITHUB_REF#refs/heads/}
+      #     echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
+      #     echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
 
       - name: Install Scanner
         run: sf plugins install @salesforce/sfdx-scanner@latest-beta

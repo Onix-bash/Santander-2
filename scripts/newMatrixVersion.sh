@@ -3,9 +3,11 @@
 acceptable_folders=(
   "LookupTable"
 )
-source_to_check_changes="feature/deploy-test"
+
+source_to_check_changes="develop"
 
 start() {
+echo "develop"
   # Get git diff output
   git_diff=$(git diff --name-only $source_to_check_changes)
 
@@ -151,4 +153,6 @@ delete_matrix_version() {
 
 
 # Start
+
 start "$@"; exit
+

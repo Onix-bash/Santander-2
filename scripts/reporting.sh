@@ -17,6 +17,7 @@ scanner_results="$output_directory/scanner_results.html"
 #github_repository=$(git config --get remote.origin.url | sed 's/\.git$//')
 #github_branch=$(git branch | grep "*" | sed 's/* //')
 github_repository="${GITHUB_REPOSITORY}"
+cat ${GIT_BRANCH}
 github_branch="${GIT_BRANCH#refs/heads/}"
 start() {
   # Run Scanner
@@ -101,18 +102,19 @@ EOL
       } else {
         file_path = file
       }
+      link_place="_blank"
       github_link = "https://github.com/" repo "/blob/" branch "/" file_path
 
       # Print Table Row
       printf "    <tr>\n"
       printf "        <td>%s</td>\n", threshold
-      printf "        <td><a href=\"%s\" target=\"%s\">%s</a></td>\n", github_link, "_blank", component
+      printf "        <td><a href=\"%s\" target=\"%s\">%s</a></td>\n", github_link, link_place, component
       printf "        <td>%s\n", description
       printf "            <br/>Category: %s - %s\n", category, rule
       printf "            <br/>File: %s\n", file
       printf "            <br/>Line: %s\n", line
       printf "            <br/>Column: %s\n", column
-      printf "            <br/><a href=\"%s\" target=\"%s\" title=\"%s\">%s</a></td>\n", url,"_blank", rule, rule
+      printf "            <br/><a href=\"%s\" target=\"%s\" title=\"%s\">%s</a></td>\n", url, link_place, rule, rule
       printf "    </tr>\n"
     }'
 

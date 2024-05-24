@@ -153,6 +153,5 @@ delete_matrix_version() {
   sf data delete record --sobject CalculationMatrixVersion --record-id $new_matrix_version_id
 }
 
-
 # Start
 start "$@"; exit

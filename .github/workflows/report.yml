@@ -14,16 +14,20 @@ jobs:
     container:
       image: salesforce/cli:latest-full
     steps:
-      - uses: actions/checkout@v4  
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: set-env
+        run: |
+          GIT_BRANCH=${GITHUB_REF#refs/heads/}
+          echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
+          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
 
       - name: Install Scanner
         run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
       - name: Run Scanner
         id: scanner
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GIT_BRANCH: ${{ github.ref#refs/heads/ }}
         run: |
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh

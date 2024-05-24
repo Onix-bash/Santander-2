@@ -16,7 +16,7 @@ scanner_results="$output_directory/scanner_results.html"
 # Setup Environment to be used with Metadata Links
 git config --global --add safe.directory "*"
 github_repository="${GITHUB_REPOSITORY}"
-github_branch="${GITHUB_REF}"
+github_branch="${GIT_BRANCH#refs/heads/}"
 
 start() {
   # Run Scanner

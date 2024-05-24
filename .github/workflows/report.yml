@@ -23,7 +23,7 @@ jobs:
         id: scanner
         env:
           GITHUB_REPOSITORY: ${{ github.repository}}
-          GIT_BRANCH: ${{ github.head_ref#refs/heads/ }}
+          GIT_BRANCH: ${{ github.head_ref }}
         run: |
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh

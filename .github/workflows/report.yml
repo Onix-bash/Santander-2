@@ -15,16 +15,6 @@ jobs:
       image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-      - name: Set up environment
-        run: |
-          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "GIT_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-          else
-            GIT_BRANCH=${{ github.ref }}
-            GIT_BRANCH=${GIT_BRANCH#refs/heads/}
-            echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
-          fi
 
       - name: Install Scanner
         run: sf plugins install @salesforce/sfdx-scanner@latest-beta
@@ -37,7 +27,7 @@ jobs:
 
       - name: Show Scan Results
         run: |
-          cat output/report.html >> $GITHUB_STEP_SUMMARY
+          cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
 
       - name: Store Artifacts
         uses: actions/upload-artifact@v4

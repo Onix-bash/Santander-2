@@ -14,7 +14,6 @@ scanner_summary="$output_directory/scanner_summary.html"
 scanner_results="$output_directory/scanner_results.html"
 
 # Setup Environment to be used with Metadata Links
-git config --global --add safe.directory "*"
 github_repository="${GITHUB_REPOSITORY}"
 github_branch="${GITHUB_REF}"
 
@@ -101,6 +100,7 @@ EOL
       } else {
         file_path = file
       }
+
       github_link = "https://github.com/" repo "/blob/" branch "/" file_path
 
       # Print Table Row
@@ -112,7 +112,7 @@ EOL
       printf "            <br/>File: %s\n", file
       printf "            <br/>Line: %s\n", line
       printf "            <br/>Column: %s\n", column
-      printf "            <br/><a href=\"%s\" target=\"_blank\" title=\"%s\">%s</a></td>\n", url, rule, rule
+      printf "            <br/><a href=\"%s\" title=\"%s\" target=\"_blank\">%s</a></td>\n", url, rule, rule
       printf "    </tr>\n"
     }'
 

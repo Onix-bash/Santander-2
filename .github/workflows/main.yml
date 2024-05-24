@@ -1,16 +1,26 @@
-name: Check deployments
+name: PR Open
 
 on:
   pull_request:
-    branches:
-      - develop
-      - feature/deploy-test
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'src/**'
 
 jobs:
-  scan_1:
+  validate-changes:
     runs-on: ubuntu-latest
-    name: Scan Results
     container:
       image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
+        with:
+         fetch-depth: 0
+
+      - name: Deploy Lookup Tables
+      
+        run: |
+          chmod +x ./scripts/newMatrixVersion.sh
+          ./scripts/newMatrixVersion.sh
+#          chmod +x scripts/runDeployment.sh
+#          scripts/runDeployment.sh "${module_array[@]}"
+

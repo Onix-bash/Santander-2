@@ -9,12 +9,14 @@ ignored_modules=(
 output_directory="output"
 mkdir -p "$output_directory"
 
-report_file="$output_directory/report.html"
-details_file="$output_directory/details_file.html"
-summary_table="$output_directory/summary_table.html"
+scanner_details="$output_directory/scanner_details.html"
+scanner_summary="$output_directory/scanner_summary.html"
+scanner_results="$output_directory/scanner_results.html"
 
+# Setup Environment to be used with Metadata Links
+git config --global --add safe.directory "*"
 github_repository="${GITHUB_REPOSITORY}"
-github_branch="${GIT_BRANCH}"
+github_branch="${GITHUB_REF}"
 
 start() {
   # Run Scanner
@@ -118,7 +120,7 @@ EOL
     </table>
     </details>
 EOL
-  } >> "$details_file"
+  } >> "$scanner_details"
 
   {
     cat <<EOL
@@ -127,7 +129,7 @@ EOL
     <td>$fail_count</td>
   </tr>
 EOL
-  } >> $summary_table
+  } >> $scanner_summary
 }
 
 unit_tables() {
@@ -138,80 +140,11 @@ unit_tables() {
     echo "        <th>Module</th>"
     echo "        <th>Issues</th>"
     echo "    </tr>"
-    cat $summary_table
+    cat $scanner_summary
     echo "</table>"
     echo "<br/>"
-    cat $details_file
-  } > $report_file
+    cat $scanner_details
+  } > $scanner_results
 }
 
 start "$@"; exit
-
-#
-#
-##!/usr/bin/env bash
-#
-#pmd_config_path="config/scanner/pmd_config.xml"
-#ignored_modules=(
-#  "destructiveChanges"
-#)
-#output_directory="output"
-#( mkdir -p $output_directory )
-#
-#do_scan() {
-#  for module in src/*; do
-#    module_name=${module##*/}
-#    if ! [[ ${ignored_modules[*]} =~ (^|[[:space:]])"$module_name"($|[[:space:]]) ]]; then
-#      module_directory="$output_directory"/"$module_name"
-#      ( mkdir -p "$module_directory" )
-#      set_report_output "all-engines" "xml"
-#      run_scanner "default" "junit"
-##      set_report_output "all-engines" "html"
-##      run_scanner "default" "html"
-##
-##      set_report_output "pmd" "xml"
-##      run_scanner "pmd" "junit"
-##      set_report_output "pmd" "html"
-##      run_scanner "pmd" "html"
-#    fi
-#  done
-#}
-#
-#set_report_output() {
-#  report_name=$1-"$module_name"-$(date +"%Y-%m-%d")-$(date +"%H-%M-%S").$2
-#  report_output_path="$module_directory"/"$report_name"
-#}
-#
-#run_scanner() {
-#  scanner_config="--target $module --format $2 --outfile "$report_output_path""
-#  if [[ $1 == *"pmd"* ]]; then
-#    scanner_config+=" --engine pmd --pmdconfig $pmd_config_path"
-#  fi
-#  sf scanner run $scanner_config
-#}
-#
-##set_report_output() {
-##  report_name=$1-"$module_name"-$(date +"%Y-%m-%d")-$(date +"%H-%M-%S").$2
-##  report_output_path="$module_directory"/"$report_name"
-##}
-##
-##run_scanner() {
-##  scanner_config="--target src/$module_name --format $2 --outfile "$report_output_path""
-##  if [[ $1 == *"pmd"* ]]; then
-##    scanner_config+=" --engine pmd --pmdconfig $pmd_config_path"
-##  fi
-##  sf scanner run $scanner_config
-##}
-##
-##module_name=$1
-##if ! [[ ${ignored_modules[*]} =~ (^|[[:space:]])"$module_name"($|[[:space:]]) ]]; then
-##  module_directory="$output_directory"/"$module_name"
-##  ( mkdir -p "$module_directory" )
-##  set_report_output "all-engines" "xml"
-##  run_scanner "default" "junit"
-##fi
-#
-#git config --global --add safe.directory "*"
-##echo "output_directory=$output_directory" >> "$GITHUB_OUTPUT"
-#
-#do_scan "$@"; exit

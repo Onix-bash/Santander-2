@@ -14,12 +14,9 @@ scanner_summary="$output_directory/scanner_summary.html"
 scanner_results="$output_directory/scanner_results.html"
 
 # Setup Environment to be used with Metadata Links
-#github_repository=$(git config --get remote.origin.url | sed 's/\.git$//')
-#github_branch=$(git branch | grep "*" | sed 's/* //')
-# github_repository="${GITHUB_REPOSITORY}"
-# github_branch="${GIT_BRANCH#refs/heads/}"
 github_repository="${GITHUB_REPOSITORY}"
 github_branch="${GITHUB_REF}"
+
 start() {
   # Run Scanner
   for module in src/*; do

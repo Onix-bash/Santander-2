@@ -3,7 +3,7 @@
 acceptable_folders=(
   "LookupTable"
 )
-source_to_check_changes="feature"
+source_to_check_changes="feature/deploy-test"
 
 start() {
   # Get git diff output
@@ -11,24 +11,19 @@ start() {
 
   # Function to extract unique folder names in "src/module_name/data" folder
   create_json() {
-      local changed_files=$1
-      local json="{}"
+    local path=$1
+    local json="{}"
+    while IFS= read -r line; do
+      # Extract the module name and folder name
+      module=$(echo "$line" | sed -n 's|^src/\([^/]*\)/data/.*|\1|p')
+      folder=$(echo "$line" | sed -n 's|^src/[^/]*/data/\([^/]*\)/.*|\1|p')
 
-      while IFS= read -r line; do
-          # Extract the module name and folder name
-          module=$(echo "$line" | sed -n 's|^src/\([^/]*\)/data/.*|\1|p')
-          folder=$(echo "$line" | sed -n 's|^src/[^/]*/data/\([^/]*\)/.*|\1|p')
-
-          # If both module and folder are extracted successfully
-          if [[ -n "$module" && -n "$folder" ]]; then
-              # Update the JSON structure
-
-              json=$(echo "$json" | jq --arg module "$module" --arg folder "$folder" '
-                  if .[$module] == null then .[$module] = [] end | .[$module] += [$folder] | .[$module] |= unique
-              ')
-          fi
-      done <<<"$changed_files"
-      echo "$json"
+      # If both module and folder are extracted successfully
+      if [[ -n "$module" && -n "$folder" ]]; then
+        json=$(echo "$json" | jq --arg module "$module" --arg folder "$folder" '.[$module] += [$folder] | .[$module] = (.[$module] | unique)')
+      fi
+    done <<<"$path"
+    echo "$json"
   }
 
   find_acceptable_folder_files() {
@@ -38,9 +33,9 @@ start() {
          # Check if the folder is acceptable
          if [[ ${acceptable_folders[*]} =~ (^|[[:space:]])"$folder"($|[[:space:]]) ]]; then
            # Go to folder with CalculationMatrixVersion.json
-           cd "src/$module/data/$folder" || exit 1
+           cd "../src/$module/data/$folder" || exit 1
            echo "Start function for folder: '$folder' "return
-           set_input_version
+#           set_input_version
          fi
     done
   }
@@ -49,7 +44,7 @@ start() {
   echo "Json with modules changes: '$json_output'"
 
   # Array of your module directories
-  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
+  modules=( $(cd ../src/; ls -1p | grep / | sed 's|/$||') )
   original_dir=$(pwd)
 
   # Loop through each module to find matrix_data
@@ -152,6 +147,7 @@ disable_matrix_version() {
 delete_matrix_version() {
   sf data delete record --sobject CalculationMatrixVersion --record-id $new_matrix_version_id
 }
+
 
 # Start
 start "$@"; exit

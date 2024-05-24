@@ -14,23 +14,16 @@ jobs:
     container:
       image: salesforce/cli:latest-full
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up environment
-        run: |
-          echo "GITHUB_REPOSITORY=${{ github.repository }}" >> $GITHUB_ENV
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "GIT_BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-          else
-            GIT_BRANCH=${{ github.ref }}
-            GIT_BRANCH=${GIT_BRANCH#refs/heads/}
-            echo "GIT_BRANCH=${GIT_BRANCH}" >> $GITHUB_ENV
-          fi
+      - uses: actions/checkout@v4  
 
       - name: Install Scanner
         run: sf plugins install @salesforce/sfdx-scanner@latest-beta
 
       - name: Run Scanner
         id: scanner
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository}}
+          GIT_BRANCH: ${{ github.head_ref#refs/heads/ }}
         run: |
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh

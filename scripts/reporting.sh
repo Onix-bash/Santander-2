@@ -14,9 +14,8 @@ scanner_summary="$output_directory/scanner_summary.html"
 scanner_results="$output_directory/scanner_results.html"
 
 # Setup Environment to be used with Metadata Links
-git config --global --add safe.directory "*"
-github_repository="${GITHUB_REPOSITORY}"
-github_branch="${GIT_BRANCH#refs/heads/}"
+github_repository=$(git config --get remote.origin.url | sed 's/\.git$//')
+github_branch=$(git branch | grep "*" | sed 's/* //')
 
 start() {
   # Run Scanner

@@ -30,7 +30,7 @@ jobs:
 
       - name: Show Scan Results
         run: |
-          cat output/scanner_results >> $GITHUB_STEP_SUMMARY
+          cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
 
       - name: Store Artifacts
         uses: actions/upload-artifact@v4

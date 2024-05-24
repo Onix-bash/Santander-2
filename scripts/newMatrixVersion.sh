@@ -12,6 +12,7 @@ start() {
   # Function to extract unique folder names in "src/module_name/data" folder
   create_json() {
     local path=$1
+    echo "git_diff: '$git_diff'"
     local json="{}"
     while IFS= read -r line; do
       # Extract the module name and folder name

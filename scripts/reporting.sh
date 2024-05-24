@@ -14,10 +14,10 @@ scanner_summary="$output_directory/scanner_summary.html"
 scanner_results="$output_directory/scanner_results.html"
 
 # Setup Environment to be used with Metadata Links
-github_repository=$(git config --get remote.origin.url | sed 's/\.git$//')
-github_branch=$(git branch | grep "*" | sed 's/* //')
-echo "$github_repositoryt"
-echo "$github_branch"
+#github_repository=$(git config --get remote.origin.url | sed 's/\.git$//')
+#github_branch=$(git branch | grep "*" | sed 's/* //')
+github_repository="${GITHUB_REPOSITORY}"
+github_branch="${GIT_BRANCH#refs/heads/}"
 start() {
   # Run Scanner
   for module in src/*; do
@@ -106,13 +106,13 @@ EOL
       # Print Table Row
       printf "    <tr>\n"
       printf "        <td>%s</td>\n", threshold
-      printf "        <td><a href=\"%s\" target=\"_blank\">%s</a></td>\n", github_link, component
+      printf "        <td><a href=\"%s\" target=\"%s\">%s</a></td>\n", github_link, "_blank", component
       printf "        <td>%s\n", description
       printf "            <br/>Category: %s - %s\n", category, rule
       printf "            <br/>File: %s\n", file
       printf "            <br/>Line: %s\n", line
       printf "            <br/>Column: %s\n", column
-      printf "            <br/><a href=\"%s\" target=\"_blank\" title=\"%s\">%s</a></td>\n", url, rule, rule
+      printf "            <br/><a href=\"%s\" target=\"%s\" title=\"%s\">%s</a></td>\n", url,"_blank", rule, rule
       printf "    </tr>\n"
     }'
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 git config --global --add safe.directory "*"
-source_to_check_changes="origin/develop"
+source_to_check_changes="develop"
 acceptable_folders=(
   "LookupTable"
 )
 
 start() {
-  echo "feature/deploy-test"
+  echo "feature/deploy-test-pr"
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 

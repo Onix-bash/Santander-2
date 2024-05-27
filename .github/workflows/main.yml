@@ -14,10 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-         fetch-depth: 0
-
+         fetch-depth: 2
       - name: Deploy Lookup Tables
-      
         run: |
           echo "Develop branch yml"
           chmod +x ./scripts/newMatrixVersion.sh

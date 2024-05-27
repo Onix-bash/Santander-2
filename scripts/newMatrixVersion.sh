@@ -4,9 +4,9 @@ acceptable_folders=(
   "LookupTable"
 )
 git config --global --add safe.directory "*"
-source_to_check_changes="feature/deploy-test"
+source_to_check_changes="origin/feature/deploy-test"
 git fetch origin
-diff=$(git diff-index --name-only "feature/deploy-test")
+diff=$(git diff-index --name-only "origin/feature/deploy-test")
 echo "$diff"
 
 start() {

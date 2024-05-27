@@ -6,6 +6,10 @@ acceptable_folders=(
 
 git config --global --add safe.directory "*"
 source_to_check_changes="develop"
+if [ -n "$1" ]; then
+  source_to_check_changes=$1
+fi
+
 
 start() {
   echo "deploy-test-pr"
@@ -15,6 +19,7 @@ start() {
 
 for module in "${modules[@]}"; do
     # Get the list of changed files
+    echo "source_to_check_changes: '$source_to_check_changes'"
     git_diff=$(git diff --name-only "$source_to_check_changes")
 
     if echo "$git_diff" | grep -q "src/$module/"; then

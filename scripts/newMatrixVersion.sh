@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 git config --global --add safe.directory "*"
-source_to_check_changes="origin/feature/deploy-test"
+source_to_check_changes="origin/develop"
 acceptable_folders=(
   "LookupTable"
 )
@@ -10,7 +10,7 @@ start() {
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
-  git fetch origin
+#  git fetch origin
   # Initialize an associative array to hold the diffs by module
 
   get_filepath_from_acceptable_folders() {
@@ -46,7 +46,7 @@ start() {
 set_input_version() {
   # Prepare JSON for the new Matrix Version
   current_matrix_id=$(jq -r '.records[].CalculationMatrix.Id' CalculationMatrixVersion.json)
- echo "current_matrix_id:'$current_matrix_id'"
+  echo "current_matrix_id:'$current_matrix_id'"
   # Create the correct Key and Value
 #  set_matrix_id=$(
 #    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
@@ -134,8 +134,6 @@ delete_matrix_version() {
   sf data delete record --sobject CalculationMatrixVersion --record-id $new_matrix_version_id
 }
 
-
 # Start
-
 start "$@"; exit
 

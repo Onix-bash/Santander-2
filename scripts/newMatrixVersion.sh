@@ -4,7 +4,8 @@ acceptable_folders=(
   "LookupTable"
 )
 
-source_to_check_changes="feature/deploy-test"
+git config --global --add safe.directory "*"
+source_to_check_changes="develop"
 
 start() {
   echo "deploy-test-pr"
@@ -14,7 +15,7 @@ start() {
 
 for module in "${modules[@]}"; do
     # Get the list of changed files
-    git_diff=$(git diff --no-index --name-only "$source_to_check_changes")
+    git_diff=$(git diff --name-only "$source_to_check_changes")
 
     if echo "$git_diff" | grep -q "src/$module/"; then
         # Append changes to the all_diff array

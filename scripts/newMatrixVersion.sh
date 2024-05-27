@@ -25,13 +25,12 @@ start() {
     for file in $diff; do
       # Check if the file matches the pattern "src/$module/data"
       if [[ $file == src/$module/data* ]]; then
-      echo "file: '$file'"
         # Check if the file is in one of the acceptable folders and call the function
         for folder in "${acceptable_folders[@]}"; do
           if [[ $file == src/$module/data/$folder/* ]]; then
 
             cd "src/$module/data/$folder" || exit 1
-            echo "Start set_input_version"
+            echo "Start set_input_version for module folder: '$module/$folder'"
             set_input_version
           fi
         done

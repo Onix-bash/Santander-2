@@ -14,89 +14,48 @@ start() {
   echo "deploy-test-pr"
   git fetch origin
   # Initialize an associative array to hold the diffs by module
-  declare -A module_diffs
 
-  # Initialize a JSON object
-  json="{"
-
-  # Iterate over each module
+  original_dir=$(pwd)
   for module in "${modules[@]}"; do
     # Get the list of changed files
     diff=$(git diff-index --name-only $source_to_check_changes)
-
-    # Initialize an empty array to hold the files for the current module
-    files=()
-
+    echo "diff: '$diff'"
     # Iterate over each changed file
     for file in $diff; do
       # Check if the file matches the pattern "src/$module/data"
       if [[ $file == src/$module/data* ]]; then
-        # Add the matching file to the files array
-        files+=("\"$file\"")
+      echo "file: '$file'"
+        # Check if the file is in one of the acceptable folders and call the function
+        for folder in "${acceptable_folders[@]}"; do
+          if [[ $file == src/$module/data/$folder/* ]]; then
+            cd "$original_dir" || exit 1
+            echo "Start set_input_version"
+            set_input_version
+          fi
+        done
       fi
     done
-
-    # If there are matching files, add them to the JSON object
-    if [ ${#files[@]} -ne 0 ]; then
-      json+="\"$module\":[${files[*]}],"
-    fi
   done
-
-  # Remove the trailing comma and close the JSON object
-  json=${json%,}
-  json+="}"
-
-  echo "$json"
-
-  find_acceptable_folder_files() {
-    local module="$1"
-    local folders="$2"
-    echo "Finding acceptable folder files in module $module for folders: $folders"
-    for folder in $folders; do
-         # Check if the folder is acceptable
-         if [[ ${acceptable_folders[*]} =~ (^|[[:space:]])"$folder"($|[[:space:]]) ]]; then
-           # Go to folder with CalculationMatrixVersion.json
-           cd "src/$module/data/$folder" || exit 1
-           echo "Start function for folder: '$folder' "return
-#           set_input_version
-         fi
-    done
-  }
-   # Print the JSON object
-  echo "Json with modules changes: '$json'"
-
-  original_dir=$(pwd)
-
-  # Loop through each module to find matrix_data
-  for module in "${modules[@]}"; do
-      echo "module: '$module'"
-      if jq -e --arg module "$module" 'has($module)' <<< "$json" >/dev/null; then
-         folders=$(jq -r --arg module "$module" '.[$module][]' <<< "$json")
-         echo "folder: '$folders'"
-         cd "$original_dir" || exit 1
-         find_acceptable_folder_files "$module" "$folders"
-       fi
-   done
 }
 
 set_input_version() {
   # Prepare JSON for the new Matrix Version
   current_matrix_id=$(jq -r '.records[].CalculationMatrix.Id' CalculationMatrixVersion.json)
-
+ echo "current_matrix_id:'$current_matrix_id'"
   # Create the correct Key and Value
-  set_matrix_id=$(
-    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
-  )
-  echo $set_matrix_id > CalculationMatrixVersion.json
-
-  # Delete unnecessary property
-  delete_matrix_property=$(
-    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
-  )
-  echo $delete_matrix_property > CalculationMatrixVersion.json
-
-  # Create Inactive Matrix Version from JSON
-  create_matrix_data
+#  set_matrix_id=$(
+#    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
+#  )
+#  echo $set_matrix_id > CalculationMatrixVersion.json
+#
+#  # Delete unnecessary property
+#  delete_matrix_property=$(
+#    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
+#  )
+#  echo $delete_matrix_property > CalculationMatrixVersion.json
+#
+#  # Create Inactive Matrix Version from JSON
+#  create_matrix_data
 }
 
 # Create Matrix Version and Matrix Rows

@@ -9,6 +9,8 @@ source_to_check_changes="feature/deploy-test"
 start() {
   echo "deploy-test-pr"
   # Get git diff output
+  git_branch=$(git branch)
+  echo "$git_branch"
   git_diff=$(git diff --name-only $source_to_check_changes)
   echo "git_diff: '$git_diff'"
 

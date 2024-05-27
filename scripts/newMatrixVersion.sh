@@ -4,17 +4,18 @@ acceptable_folders=(
   "LookupTable"
 )
 
-source_to_check_changes="develop"
+source_to_check_changes="feature/deploy-test"
 
 start() {
-echo "develop"
+  echo "develop"
   # Get git diff output
   git_diff=$(git diff --name-only $source_to_check_changes)
+  echo "git_diff: '$git_diff'"
 
   # Function to extract unique folder names in "src/module_name/data" folder
   create_json() {
     local path=$1
-    echo "git_diff: '$git_diff'"
+
     local json="{}"
     while IFS= read -r line; do
       # Extract the module name and folder name
@@ -36,7 +37,7 @@ echo "develop"
          # Check if the folder is acceptable
          if [[ ${acceptable_folders[*]} =~ (^|[[:space:]])"$folder"($|[[:space:]]) ]]; then
            # Go to folder with CalculationMatrixVersion.json
-           cd "../src/$module/data/$folder" || exit 1
+           cd "src/$module/data/$folder" || exit 1
            echo "Start function for folder: '$folder' "return
 #           set_input_version
          fi
@@ -47,7 +48,7 @@ echo "develop"
   echo "Json with modules changes: '$json_output'"
 
   # Array of your module directories
-  modules=( $(cd ../src/; ls -1p | grep / | sed 's|/$||') )
+  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
   original_dir=$(pwd)
 
   # Loop through each module to find matrix_data

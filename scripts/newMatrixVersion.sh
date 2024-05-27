@@ -21,9 +21,11 @@ start() {
       # Extract the module name and folder name
       module=$(echo "$line" | sed -n 's|^src/\([^/]*\)/data/.*|\1|p')
       folder=$(echo "$line" | sed -n 's|^src/[^/]*/data/\([^/]*\)/.*|\1|p')
-
+      echo "$module"
+      echo "$folder"
       # If both module and folder are extracted successfully
       if [[ -n "$module" && -n "$folder" ]]; then
+
         json=$(echo "$json" | jq --arg module "$module" --arg folder "$folder" '.[$module] += [$folder] | .[$module] = (.[$module] | unique)')
       fi
     done <<<"$path"

@@ -14,7 +14,7 @@ start() {
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
-#  git fetch origin
+git fetch origin
   # Initialize an associative array to hold the diffs by module
 
   get_filepath_from_acceptable_folders() {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 git config --global --add safe.directory "*"
-source_to_check_changes="develop"
+source_to_check_changes="origin/develop"
 acceptable_folders=(
   "LookupTable"
 )

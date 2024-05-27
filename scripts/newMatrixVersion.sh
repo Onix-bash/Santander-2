@@ -17,6 +17,7 @@ start() {
 
   original_dir=$(pwd)
   for module in "${modules[@]}"; do
+#    cd "$original_dir" || exit 1
     # Get the list of changed files
     diff=$(git diff-index --name-only $source_to_check_changes)
     echo "diff: '$diff'"
@@ -28,7 +29,8 @@ start() {
         # Check if the file is in one of the acceptable folders and call the function
         for folder in "${acceptable_folders[@]}"; do
           if [[ $file == src/$module/data/$folder/* ]]; then
-            cd "$original_dir" || exit 1
+
+            cd "src/$module/data/$folder" || exit 1
             echo "Start set_input_version"
             set_input_version
           fi

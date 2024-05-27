@@ -50,7 +50,7 @@ start() {
   echo "Json with modules changes: '$json_output'"
 
   # Array of your module directories
-#  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
+  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
   original_dir=$(pwd)
 
   # Loop through each module to find matrix_data

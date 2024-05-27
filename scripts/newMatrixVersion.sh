@@ -9,7 +9,7 @@ source_to_check_changes="origin/feature/deploy-test"
 start() {
   echo "deploy-test-pr"
   git fetch origin
-  git_diff=$(git diff-index --name-only "origin/feature/deploy-test")
+  git_diff=$(git diff-index --name-only $source_to_check_changes)
   echo "git_diff: '$git_diff'"
 
   # Function to extract unique folder names in "src/module_name/data" folder
@@ -51,11 +51,12 @@ start() {
 
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
-  echo "modiles: '$modules'"
+
   original_dir=$(pwd)
 
   # Loop through each module to find matrix_data
   for module in "${modules[@]}"; do
+      echo "$module'"
       if jq -e --arg module "$module" 'has($module)' <<< "$json_output" >/dev/null; then
          folders=$(jq -r --arg module "$module" '.[$module][]' <<< "$json_output")
          cd "$original_dir" || exit 1

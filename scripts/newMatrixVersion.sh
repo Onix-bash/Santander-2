@@ -13,13 +13,13 @@ start() {
   git fetch origin
   # Initialize an associative array to hold the diffs by module
 
-  get_file_path() {
+  get_filepath_from_acceptable_folders() {
     module=$1
 
     for folder in "${acceptable_folders[@]}"; do
       if [[ $file == src/$module/data/$folder/* && $is_set_input_version_run == false ]]; then
         cd "$original_dir" && cd "src/$module/data/$folder" || exit 1
-        echo "Start set_input_version for module folder: '$module/$folder'"
+        echo "Start set_input_version for module/folder: '$module/$folder'"
         set_input_version
         is_set_input_version_run=true
       fi
@@ -31,16 +31,14 @@ start() {
     # Flag to track if set_input_version has been called for this module
     is_set_input_version_run=false
 
-    # Get the list of changed files
+    # Get the list of changed files use pattern "src/$module/data"
     git_diff=$(git diff-index --name-only $source_to_check_changes | grep "^src/$module/data")
     echo "git_diff: '$git_diff'"
+
     # Iterate over each changed file
     for file in $git_diff; do
-      # Check if the file matches the pattern "src/$module/data"
-      if [[ $file == src/$module/data* ]]; then
-        # Check if the file is in one of the acceptable folders and call the function
-        get_file_path $module
-      fi
+      # Check if the file is in one of the acceptable folders and call the function
+      get_filepath_from_acceptable_folders "$module"
     done
   done
 }

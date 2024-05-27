@@ -9,12 +9,12 @@ source_to_check_changes="feature/deploy-test"
 start() {
   echo "deploy-test-pr"
   # Get git diff output
-
+ all_diff=()
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
 for module in "${modules[@]}"; do
     # Get the list of changed files
-    git_diff=$(git diff --name-only "$source_to_check_changes")
+    git_diff=$(git diff --no-index --name-only "$source_to_check_changes")
 
     if echo "$git_diff" | grep -q "src/$module/"; then
         # Append changes to the all_diff array

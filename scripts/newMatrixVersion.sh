@@ -3,6 +3,10 @@
 acceptable_folders=(
   "LookupTable"
 )
+
+# Array of your module directories
+modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
+
 git config --global --add safe.directory "*"
 source_to_check_changes="origin/feature/deploy-test"
 
@@ -48,8 +52,7 @@ start() {
   find_acceptable_folder_files() {
     local module="$1"
     local folders="$2"
-    echo "$module"
-      echo "$folders"
+    echo "Finding acceptable folder files in module $module for folders: $folders"
     for folder in $folders; do
          # Check if the folder is acceptable
          if [[ ${acceptable_folders[*]} =~ (^|[[:space:]])"$folder"($|[[:space:]]) ]]; then
@@ -63,9 +66,6 @@ start() {
 
   json_output=$(create_json "$git_diff")
   echo "Json with modules changes: '$json_output'"
-
-  # Array of your module directories
-  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
   original_dir=$(pwd)
 

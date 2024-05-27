@@ -3,7 +3,7 @@
 acceptable_folders=(
   "LookupTable"
 )
-
+git config --global --add safe.directory "*"
 source_to_check_changes="feature/deploy-test"
 
 start() {

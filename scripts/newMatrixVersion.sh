@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-git config --global --add safe.directory "*"
+#git config --global --add safe.directory "*"
 source_to_check_changes="origin/feature/deploy-test"
 acceptable_folders=(
   "LookupTable"
@@ -33,7 +33,7 @@ start() {
 
     # Get the list of changed files use pattern "src/$module/data"
     git_diff=$(git diff-index --name-only $source_to_check_changes | grep "^src/$module/data")
-    echo "git_diff: '$git_diff'"
+    echo "git_diff in src/module-name/data files: '$git_diff'"
 
     # Iterate over each changed file
     for file in $git_diff; do

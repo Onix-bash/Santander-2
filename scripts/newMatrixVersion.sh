@@ -16,7 +16,9 @@ start() {
   git_diff=$(git diff-index --name-only $source_to_check_changes)
   echo "git_diff: '$git_diff'"
 
-  all_diff=()
+declare -A module_diffs
+
+# Iterate over each module
 for module in "${modules[@]}"; do
   # Get the list of changed files
   diff=$(git diff-index --name-only $source_to_check_changes)
@@ -25,14 +27,28 @@ for module in "${modules[@]}"; do
   for file in $diff; do
     # Check if the file matches the pattern "src/$module/data"
     if [[ $file == src/$module/data* ]]; then
-      # Push the matching file to the all_diff array
-      all_diff+=("$file")
+      # Append the file to the module's list of diffs
+      module_diffs["$module"]+="$file "
     fi
   done
 done
 
-# Print all_diff array for verification (optional)
-printf "%s\n" "${all_diff[@]}"
+# Convert the associative array to JSON format
+json="{"
+for module in "${!module_diffs[@]}"; do
+  files=(${module_diffs[$module]})
+  json+="\"$module\":["
+  for file in "${files[@]}"; do
+    json+="\"$file\","
+  done
+  json=${json%,}  # Remove the trailing comma
+  json+="],"
+done
+json=${json%,}  # Remove the trailing comma
+json+="}"
+
+# Print the JSON object
+echo "new_json: '$json'"
   # Function to extract unique folder names in "src/module_name/data" folder
   create_json() {
     local path=$1

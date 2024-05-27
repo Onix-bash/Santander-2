@@ -12,6 +12,19 @@ start() {
   git_diff=$(git diff-index --name-only $source_to_check_changes)
   echo "git_diff: '$git_diff'"
 
+  all_diff=()
+  for module in "${modules[@]}"; do
+  # Get the list of changed files
+    diff=$(git diff-index --name-only $source_to_check_changes)
+
+    if echo "$git_diff" | grep -q "src/$module/data"; then
+        # Append changes to the all_diff array
+        all_diff+=("$git_diff")
+        echo "Changed file: $diff"
+    else
+        echo "No changes in $module"
+    fi
+   done
   # Function to extract unique folder names in "src/module_name/data" folder
   create_json() {
     local path=$1

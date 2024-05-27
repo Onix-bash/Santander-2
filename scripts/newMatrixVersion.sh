@@ -3,11 +3,11 @@
 acceptable_folders=(
   "LookupTable"
 )
-
+git config --global --add safe.directory "*"
 source_to_check_changes="feature/deploy-test"
 
 start() {
-  echo "develop"
+  echo "deploy-test-pr"
   # Get git diff output
   git_diff=$(git diff --name-only $source_to_check_changes)
   echo "git_diff: '$git_diff'"

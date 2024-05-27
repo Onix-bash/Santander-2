@@ -28,7 +28,7 @@ start() {
         # Check if the file is in one of the acceptable folders and call the function
         for folder in "${acceptable_folders[@]}"; do
           if [[ $file == src/$module/data/$folder/* ]]; then
-
+            cd "$original_dir" || exit 1
             cd "src/$module/data/$folder" || exit 1
             echo "Start set_input_version for module folder: '$module/$folder'"
             set_input_version

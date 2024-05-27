@@ -3,7 +3,6 @@
 acceptable_folders=(
   "LookupTable"
 )
-
 # Array of your module directories
 modules=( $(cd ../src/; ls -1p | grep / | sed 's|/$||') )
 
@@ -21,7 +20,7 @@ for module in "${modules[@]}"; do
   is_set_input_version=false
 
   # Get the list of changed files
-  diff=$(git diff-index --name-only $source_to_check_changes | grep "^src/$module/")
+  diff=$(git diff-index --name-only $source_to_check_changes | grep -q "$module")
   echo "diff: '$diff'"
 
   # Iterate over each changed file

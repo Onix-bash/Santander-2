@@ -13,61 +13,40 @@ source_to_check_changes="origin/feature/deploy-test"
 start() {
   echo "deploy-test-pr"
   git fetch origin
-  git_diff=$(git diff-index --name-only $source_to_check_changes)
-  echo "git_diff: '$git_diff'"
+  # Initialize an associative array to hold the diffs by module
+  declare -A module_diffs
 
-declare -A module_diffs
+  # Initialize a JSON object
+  json="{"
 
-# Iterate over each module
-for module in "${modules[@]}"; do
-  # Get the list of changed files
-  diff=$(git diff-index --name-only $source_to_check_changes)
+  # Iterate over each module
+  for module in "${modules[@]}"; do
+    # Get the list of changed files
+    diff=$(git diff-index --name-only $source_to_check_changes)
 
-  # Iterate over each changed file
-  for file in $diff; do
-    # Check if the file matches the pattern "src/$module/data"
-    if [[ $file == src/$module/data* ]]; then
-      # Append the file to the module's list of diffs
-      module_diffs["$module"]+="$file "
+    # Initialize an empty array to hold the files for the current module
+    files=()
+
+    # Iterate over each changed file
+    for file in $diff; do
+      # Check if the file matches the pattern "src/$module/data"
+      if [[ $file == src/$module/data* ]]; then
+        # Add the matching file to the files array
+        files+=("\"$file\"")
+      fi
+    done
+
+    # If there are matching files, add them to the JSON object
+    if [ ${#files[@]} -ne 0 ]; then
+      json+="\"$module\":[${files[*]}],"
     fi
   done
-done
 
-# Convert the associative array to JSON format
-json="{"
-for module in "${!module_diffs[@]}"; do
-  files=(${module_diffs[$module]})
-  json+="\"$module\":["
-  for file in "${files[@]}"; do
-    json+="\"$file\","
-  done
-  json=${json%,}  # Remove the trailing comma
-  json+="],"
-done
-json=${json%,}  # Remove the trailing comma
-json+="}"
+  # Remove the trailing comma and close the JSON object
+  json=${json%,}
+  json+="}"
 
-# Print the JSON object
-echo "new_json: '$json'"
-  # Function to extract unique folder names in "src/module_name/data" folder
-  create_json() {
-    local path=$1
-
-    local json="{}"
-    while IFS= read -r line; do
-      # Extract the module name and folder name
-      module=$(echo "$line" | sed -n 's|^src/\([^/]*\)/data/.*|\1|p')
-      folder=$(echo "$line" | sed -n 's|^src/[^/]*/data/\([^/]*\)/.*|\1|p')
-      echo "$module"
-      echo "$folder"
-      # If both module and folder are extracted successfully
-      if [[ -n "$module" && -n "$folder" ]]; then
-
-        json=$(echo "$json" | jq --arg module "$module" --arg folder "$folder" '.[$module] += [$folder] | .[$module] = (.[$module] | unique)')
-      fi
-    done <<<"$path"
-    echo "$json"
-  }
+  echo "$json"
 
   find_acceptable_folder_files() {
     local module="$1"
@@ -83,18 +62,17 @@ echo "new_json: '$json'"
          fi
     done
   }
-
-  json_output=$(create_json "$git_diff")
-  echo "Json with modules changes: '$json_output'"
+   # Print the JSON object
+  echo "Json with modules changes: '$json'"
 
   original_dir=$(pwd)
 
   # Loop through each module to find matrix_data
   for module in "${modules[@]}"; do
-      echo "$module'"
-      if jq -e --arg module "$module" 'has($module)' <<< "$json_output" >/dev/null; then
-         folders=$(jq -r --arg module "$module" '.[$module][]' <<< "$json_output")
-         echo "$folders'"
+      echo "module: '$module'"
+      if jq -e --arg module "$module" 'has($module)' <<< "$json" >/dev/null; then
+         folders=$(jq -r --arg module "$module" '.[$module][]' <<< "$json")
+         echo "folder: '$folders'"
          cd "$original_dir" || exit 1
          find_acceptable_folder_files "$module" "$folders"
        fi

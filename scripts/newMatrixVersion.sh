@@ -5,7 +5,7 @@ acceptable_folders=(
 )
 
 # Array of your module directories
-modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
+modules=( $(cd ../src/; ls -1p | grep / | sed 's|/$||') )
 
 git config --global --add safe.directory "*"
 source_to_check_changes="origin/feature/deploy-test"
@@ -21,7 +21,7 @@ for module in "${modules[@]}"; do
   is_set_input_version=false
 
   # Get the list of changed files
-  diff=$(git diff-index --name-only $source_to_check_changes)
+  diff=$(git diff-index --name-only $source_to_check_changes | grep "^src/$module/")
   echo "diff: '$diff'"
 
   # Iterate over each changed file
@@ -31,7 +31,7 @@ for module in "${modules[@]}"; do
       # Check if the file is in one of the acceptable folders and call the function
       for folder in "${acceptable_folders[@]}"; do
         if [[ $file == src/$module/data/$folder/* && $is_set_input_version == false ]]; then
-          cd "$original_dir" && cd "src/$module/data/$folder" || exit 1
+          cd "$original_dir" && cd "../src/$module/data/$folder" || exit 1
           echo "Start set_input_version for module folder: '$module/$folder'"
           set_input_version
           is_set_input_version=true

@@ -48,6 +48,8 @@ start() {
   find_acceptable_folder_files() {
     local module="$1"
     local folders="$2"
+    echo "$module"
+      echo "$folders"
     for folder in $folders; do
          # Check if the folder is acceptable
          if [[ ${acceptable_folders[*]} =~ (^|[[:space:]])"$folder"($|[[:space:]]) ]]; then
@@ -72,6 +74,7 @@ start() {
       echo "$module'"
       if jq -e --arg module "$module" 'has($module)' <<< "$json_output" >/dev/null; then
          folders=$(jq -r --arg module "$module" '.[$module][]' <<< "$json_output")
+         echo "$folders'"
          cd "$original_dir" || exit 1
          find_acceptable_folder_files "$module" "$folders"
        fi

@@ -5,6 +5,7 @@ acceptable_folders=(
 )
 git config --global --add safe.directory "*"
 source_to_check_changes="feature/deploy-test"
+git fetch --depth=1 feature/deploy-test
 diff=$(git diff-index --name-only "feature/deploy-test")
 echo "$diff"
 

@@ -51,6 +51,7 @@ start() {
 
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
+  echo "$modules"
   original_dir=$(pwd)
 
   # Loop through each module to find matrix_data

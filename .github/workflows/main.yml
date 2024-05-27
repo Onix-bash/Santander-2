@@ -19,6 +19,7 @@ jobs:
       - name: Deploy Lookup Tables
       
         run: |
+          echo "Develop branch yml"
           chmod +x ./scripts/newMatrixVersion.sh
           ./scripts/newMatrixVersion.sh
 #          chmod +x scripts/runDeployment.sh

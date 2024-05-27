@@ -17,9 +17,9 @@ start() {
   # Get the list of changed files
     diff=$(git diff-index --name-only $source_to_check_changes)
 
-    if echo "$git_diff" | grep -q "src/$module/data"; then
+    if echo "$diff" | grep -q "src/$module/data"; then
         # Append changes to the all_diff array
-        all_diff+=("$git_diff")
+        all_diff+=("$diff")
         echo "Changed file: $diff"
     else
         echo "No changes in $module"

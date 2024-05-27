@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#git config --global --add safe.directory "*"
+git config --global --add safe.directory "*"
 source_to_check_changes="origin/feature/deploy-test"
 acceptable_folders=(
   "LookupTable"

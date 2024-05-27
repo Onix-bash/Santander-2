@@ -5,6 +5,9 @@ source_to_check_changes="develop"
 acceptable_folders=(
   "LookupTable"
 )
+if [ -n "$1" ]; then
+  source_to_check_changes=$1
+fi
 
 start() {
   echo "feature/deploy-test-pr"

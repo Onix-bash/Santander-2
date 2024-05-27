@@ -5,7 +5,7 @@ acceptable_folders=(
 )
 
 git config --global --add safe.directory "*"
-source_to_check_changes="develop"
+source_to_check_changes="origin/develop"
 if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi

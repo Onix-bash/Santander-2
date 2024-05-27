@@ -9,10 +9,27 @@ source_to_check_changes="feature/deploy-test"
 start() {
   echo "deploy-test-pr"
   # Get git diff output
-  git_branch=$(git branch)
-  echo "$git_branch"
-  git_diff=$(git diff --name-only $source_to_check_changes)
-  echo "git_diff: '$git_diff'"
+
+  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
+
+for module in "${modules[@]}"; do
+    # Get the list of changed files
+    git_diff=$(git diff --name-only "$source_to_check_changes")
+
+    if echo "$git_diff" | grep -q "src/$module/"; then
+        # Append changes to the all_diff array
+        all_diff+=("$git_diff")
+        echo "Changes detected in $module"
+    else
+        echo "No changes in $module"
+    fi
+done
+
+# Join the array elements into a single string with newline separation for readability
+all_diff_joined=$(printf "%s\n" "${all_diff[@]}")
+
+echo "All changes:"
+echo "$all_diff_joined"
 
   # Function to extract unique folder names in "src/module_name/data" folder
   create_json() {
@@ -50,7 +67,7 @@ start() {
   echo "Json with modules changes: '$json_output'"
 
   # Array of your module directories
-  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
+#  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
   original_dir=$(pwd)
 
   # Loop through each module to find matrix_data

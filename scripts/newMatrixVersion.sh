@@ -5,37 +5,12 @@ acceptable_folders=(
 )
 git config --global --add safe.directory "*"
 source_to_check_changes="origin/feature/deploy-test"
-git fetch origin
-diff=$(git diff-index --name-only "origin/feature/deploy-test")
-echo "$diff"
 
 start() {
   echo "deploy-test-pr"
-  git_branch=$(git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
-  echo "$git_branch"
-  # Get git diff output
- all_diff=()
-
-modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
-
-for module in "${modules[@]}"; do
-    # Get the list of changed files
-    git_diff=$(git diff --name-only "$source_to_check_changes")
-
-    if echo "$git_diff" | grep -q "src/$module/"; then
-        # Append changes to the all_diff array
-        all_diff+=("$git_diff")
-        echo "Changes detected in $module"
-    else
-        echo "No changes in $module"
-    fi
-done
-
-# Join the array elements into a single string with newline separation for readability
-all_diff_joined=$(printf "%s\n" "${all_diff[@]}")
-
-echo "All changes:"
-echo "$all_diff_joined"
+  git fetch origin
+  git_diff=$(git diff-index --name-only "origin/feature/deploy-test")
+  echo "git_diff: '$git_diff'"
 
   # Function to extract unique folder names in "src/module_name/data" folder
   create_json() {

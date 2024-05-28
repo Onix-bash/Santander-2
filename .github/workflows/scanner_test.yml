@@ -1,0 +1,30 @@
+name: Scanner test
+
+on:
+  push:
+    branches: [ "main" ]
+  #  schedule:
+  #  - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  scan_1:
+    runs-on: ubuntu-latest
+    name: Scan Results
+    container:
+      image: salesforce/cli:latest-full
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Scanner
+        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+
+      - name: Run Scanner
+        id: scanner
+        run: |
+          chmod +x ./scripts/test_violation.sh
+          ./scripts/test_violation.sh
+
+      - name: Test Continue
+        run: |
+          echo "go"

@@ -28,7 +28,7 @@ jobs:
 
       - name: Run ESLint
         run: |
-          echo "deploy-test-pr-branch"
+          echo "deploy-branch"
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh
           
@@ -36,9 +36,9 @@ jobs:
         run: |
           cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
 
+
 #      - name: Deploy Lookup Tables
 #        run: |
 #          chmod +x ./scripts/newMatrixVersion.sh
 #          ./scripts/newMatrixVersion.sh
-
 

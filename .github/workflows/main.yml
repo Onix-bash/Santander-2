@@ -33,6 +33,10 @@ jobs:
           echo "deploy-test-pr-branch"
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh
+          
+      - name: Show Scan Results
+        run: |
+          cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
 
 #      - name: Deploy Lookup Tables
 #        run: |

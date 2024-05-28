@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 pmd_config_path="config/scanner/pmd_config.xml"
-eslint_config_path="config/scanner/.eslintrc.json"
+
 ignored_modules=(
   "destructiveChanges"
 )

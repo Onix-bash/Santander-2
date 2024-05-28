@@ -20,9 +20,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-#
-#      - name: Install ESLint and plugins
-#        run: npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc
+
+      - name: Install Scanner
+        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+
+      - name: Install ESLint and plugins
+        run: npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc
 
       - name: Run ESLint
         run: |

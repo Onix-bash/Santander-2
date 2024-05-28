@@ -28,7 +28,7 @@ jobs:
 
       - name: Run ESLint
         run: |
-          echo "deploy-test-branch"
+          echo "deploy-test-pr-branch"
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh
 

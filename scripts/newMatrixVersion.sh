@@ -1,84 +1,70 @@
 #!/usr/bin/env bash
 
+git config --global --add safe.directory "*"
+source_to_check_changes="origin/develop"
 acceptable_folders=(
   "LookupTable"
 )
-
-source_to_check_changes="feature/deploy-test"
+if [ -n "$1" ]; then
+  source_to_check_changes=$1
+fi
 
 start() {
-  echo "develop"
-  # Get git diff output
-  git_diff=$(git diff --name-only $source_to_check_changes)
-  echo "git_diff: '$git_diff'"
+  echo "feature/deploy-test-pr"
+  # Array of your module directories
+  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
-  # Function to extract unique folder names in "src/module_name/data" folder
-  create_json() {
-    local path=$1
+git fetch origin
+  # Initialize an associative array to hold the diffs by module
 
-    local json="{}"
-    while IFS= read -r line; do
-      # Extract the module name and folder name
-      module=$(echo "$line" | sed -n 's|^src/\([^/]*\)/data/.*|\1|p')
-      folder=$(echo "$line" | sed -n 's|^src/[^/]*/data/\([^/]*\)/.*|\1|p')
+  get_filepath_from_acceptable_folders() {
+    module=$1
 
-      # If both module and folder are extracted successfully
-      if [[ -n "$module" && -n "$folder" ]]; then
-        json=$(echo "$json" | jq --arg module "$module" --arg folder "$folder" '.[$module] += [$folder] | .[$module] = (.[$module] | unique)')
+    for folder in "${acceptable_folders[@]}"; do
+      if [[ $file == src/$module/data/$folder/* && $is_set_input_version_run == false ]]; then
+        cd "$original_dir" && cd "src/$module/data/$folder" || exit 1
+        echo "Start set_input_version for module/folder: '$module/$folder'"
+        set_input_version
+        is_set_input_version_run=true
       fi
-    done <<<"$path"
-    echo "$json"
-  }
-
-  find_acceptable_folder_files() {
-    local module="$1"
-    local folders="$2"
-    for folder in $folders; do
-         # Check if the folder is acceptable
-         if [[ ${acceptable_folders[*]} =~ (^|[[:space:]])"$folder"($|[[:space:]]) ]]; then
-           # Go to folder with CalculationMatrixVersion.json
-           cd "src/$module/data/$folder" || exit 1
-           echo "Start function for folder: '$folder' "return
-#           set_input_version
-         fi
     done
   }
 
-  json_output=$(create_json "$git_diff")
-  echo "Json with modules changes: '$json_output'"
-
-  # Array of your module directories
-  modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
   original_dir=$(pwd)
-
-  # Loop through each module to find matrix_data
   for module in "${modules[@]}"; do
-      if jq -e --arg module "$module" 'has($module)' <<< "$json_output" >/dev/null; then
-         folders=$(jq -r --arg module "$module" '.[$module][]' <<< "$json_output")
-         cd "$original_dir" || exit 1
-         find_acceptable_folder_files "$module" "$folders"
-       fi
-   done
+    # Flag to track if set_input_version has been called for this module
+    is_set_input_version_run=false
+
+    # Get the list of changed files use pattern "src/$module/data"
+    git_diff=$(git diff-index --name-only $source_to_check_changes | grep "^src/$module/data")
+    echo "git_diff in src/module-name/data files: '$git_diff'"
+
+    # Iterate over each changed file
+    for file in $git_diff; do
+      # Check if the file is in one of the acceptable folders and call the function
+      get_filepath_from_acceptable_folders "$module"
+    done
+  done
 }
 
 set_input_version() {
   # Prepare JSON for the new Matrix Version
   current_matrix_id=$(jq -r '.records[].CalculationMatrix.Id' CalculationMatrixVersion.json)
-
+  echo "current_matrix_id:'$current_matrix_id'"
   # Create the correct Key and Value
-  set_matrix_id=$(
-    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
-  )
-  echo $set_matrix_id > CalculationMatrixVersion.json
-
-  # Delete unnecessary property
-  delete_matrix_property=$(
-    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
-  )
-  echo $delete_matrix_property > CalculationMatrixVersion.json
-
-  # Create Inactive Matrix Version from JSON
-  create_matrix_data
+#  set_matrix_id=$(
+#    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
+#  )
+#  echo $set_matrix_id > CalculationMatrixVersion.json
+#
+#  # Delete unnecessary property
+#  delete_matrix_property=$(
+#    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
+#  )
+#  echo $delete_matrix_property > CalculationMatrixVersion.json
+#
+#  # Create Inactive Matrix Version from JSON
+#  create_matrix_data
 }
 
 # Create Matrix Version and Matrix Rows
@@ -152,8 +138,6 @@ delete_matrix_version() {
   sf data delete record --sobject CalculationMatrixVersion --record-id $new_matrix_version_id
 }
 
-
 # Start
-
 start "$@"; exit
 

@@ -12,15 +12,28 @@ jobs:
     container:
       image: salesforce/cli:latest-full
     steps:
-      - uses: actions/checkout@v4
-        with:
-         fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Deploy Lookup Tables
-      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install ESLint and Plugins
         run: |
-          chmod +x ./scripts/newMatrixVersion.sh
-          ./scripts/newMatrixVersion.sh
-#          chmod +x scripts/runDeployment.sh
-#          scripts/runDeployment.sh "${module_array[@]}"
+          npm install eslint --save-dev
+          sf plugins install @salesforce/eslint-plugin-lwc
+          npx eslint --init
+
+      - name: Run ESLint
+        run: |
+          chmod +x ./scripts/reporting.sh
+          ./scripts/reporting.sh
+
+#      - name: Deploy Lookup Tables
+#        run: |
+#          chmod +x ./scripts/newMatrixVersion.sh
+#          ./scripts/newMatrixVersion.sh
+
 

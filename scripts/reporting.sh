@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 pmd_config_path="config/scanner/pmd_config.xml"
+eslint_config_path="config/scanner/.eslintrc.json"
 
 ignored_modules=(
   "destructiveChanges"
@@ -43,7 +44,7 @@ run_scanner() {
   report_name="all-engines-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$1"
   report_output_path="$module_directory/$report_name"
 
-  sf scanner run --target $module --format $1 --pmdconfig $pmd_config_path --engine eslint --outfile $report_output_path
+  sf scanner run --target $module --format $1 --eslintconfig $eslint_config_path --pmdconfig $pmd_config_path --outfile $report_output_path
 }
 
 # Show Scanner Results on the Job Summary page (from CSV into GIT Markdown)

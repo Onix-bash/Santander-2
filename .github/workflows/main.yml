@@ -3,6 +3,7 @@ name: PR Open
 on:
   push:
 #    types: [opened, reopened, synchronize]
+
     paths:
       - 'src/**'
 
@@ -18,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
 #      - name: Install ESLint and Plugins
 #        run: |

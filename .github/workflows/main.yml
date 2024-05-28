@@ -2,7 +2,8 @@ name: PR Open
 
 on:
   push:
-    # types: [opened, reopened, synchronize]
+#    types: [opened, reopened, synchronize]
+
     paths:
       - 'src/**'
 
@@ -20,18 +21,15 @@ jobs:
         with:
           node-version: '20'
 
-      # - name: Install ESLint and Plugins
-      #   run: |
-      #     npm install eslint --save-dev
-      #     sf plugins install @salesforce/eslint-plugin-lwc
-      #     npx eslint --init
+      - name: Install ESLint and plugins
+        run: npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc --save-dev
 
       - name: Run ESLint
         run: |
-          echo "deploy-test-branch"
+          echo "deploy-test-pr-branch"
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh
-      
+          
       - name: Show Scan Results
         run: |
           cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
@@ -40,5 +38,3 @@ jobs:
 #        run: |
 #          chmod +x ./scripts/newMatrixVersion.sh
 #          ./scripts/newMatrixVersion.sh
-
-

@@ -24,7 +24,7 @@ jobs:
       - name: Install Scanner
         run: |
          sf plugins install @salesforce/sfdx-scanner@latest-beta
-         npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc
+         npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
 
       - name: Run ESLint
         run: |

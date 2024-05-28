@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install ESLint and plugins
-        run: npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc
+#      - name: Install ESLint and plugins
+#        run: npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc
 
       - name: Run ESLint
         run: |

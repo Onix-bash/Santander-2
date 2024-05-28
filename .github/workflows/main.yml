@@ -20,11 +20,11 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install ESLint and Plugins
-        run: |
-          npm install eslint --save-dev
-          sf plugins install @salesforce/eslint-plugin-lwc
-          npx eslint --init
+#      - name: Install ESLint and Plugins
+#        run: |
+#          npm install eslint --save-dev
+#          sf plugins install @salesforce/eslint-plugin-lwc
+#          npx eslint --init
 
       - name: Run ESLint
         run: |

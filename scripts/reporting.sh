@@ -43,7 +43,7 @@ start() {
 run_scanner() {
   report_name="all-engines-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$1"
   report_output_path="$module_directory/$report_name"
-#  npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc
+  npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc
   sf scanner run --target $module --format $1 --eslintconfig $eslint_config_path --outfile $report_output_path
 }
 

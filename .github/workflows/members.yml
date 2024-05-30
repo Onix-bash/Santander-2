@@ -1,7 +1,9 @@
 name: Get Team Members
 
 on:
-   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   get_team_members:
@@ -12,12 +14,33 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get Team Members
+        id: get-members
         uses: actions/github-script@v5
         with:
           script: |
-            const { data } = await github.rest.teams.getMembershipForUserInOrg({
-              org: 'Onix-bash',
-              team_slug: 'general',
-              username: 'Kristy-user'
+            const org = 'your-org';
+            const team_slug = 'your-team-slug';
+            const teamMembers = [];
+
+            const { data: team } = await github.rest.teams.getByName({
+              org: org,
+              team_slug: team_slug
             });
-            console.log(data);
+
+            const { data: members } = await github.rest.teams.listMembersInOrg({
+              org: org,
+              team_slug: team_slug
+            });
+
+            for (const member of members) {
+              teamMembers.push({
+                login: member.login,
+                name: member.name,
+                email: member.email
+              });
+            }
+
+            console.log(teamMembers);
+            
+            return teamMembers;
+ 

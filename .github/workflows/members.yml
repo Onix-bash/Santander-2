@@ -1,45 +1,47 @@
 name: Get Team Members
 on:
   workflow_dispatch:
-    inputs:
-      username:
-        description: 'GitHub Username to check'
-        required: true
-      team_slug:
-        description: 'Team slug to check against'
-        required: true
 
 jobs:
-  check_membership:
+  check-user-in-team:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if user is in the specified team
+      - name: Check User in Team
         uses: actions/github-script@v6
         with:
           script: |
-            const username = '${{ github.event.inputs.username }}';
-            const team_slug = '${{ github.event.inputs.team_slug }}';
-            const org = context.repo.owner; // Assumes the team is in the same org as the repo
+            const teamName = 'general';
+            const username = 'kristina-klepik';
+            const org = 'Onix-bash';
 
-            // Fetch team members from the GitHub API
-            try {
-              const teamMembers = await github.rest.teams.listMembersInOrg({
+            const teams = await github.paginate(
+              github.rest.teams.list,
+              {
                 org: org,
-                team_slug: team_slug,
-                per_page: 100 // Adjust depending on the expected team size
-              });
-
-              // Check if the specified user is in the team
-              const isMember = teamMembers.data.some(member => member.login === username);
-              
-              if (isMember) {
-                console.log(`${username} is a member of the team ${team_slug}`);
-                core.setOutput("is_member", "yes");
-              } else {
-                console.log(`${username} is not a member of the team ${team_slug}`);
-                core.setOutput("is_member", "no");
+                per_page: 100
               }
-            } catch (error) {
-              core.setFailed(`Failed to fetch team members: ${error.message}`);
+            );
+
+            const team = teams.data.find(t => t.name.toLowerCase() === teamName.toLowerCase());
+
+            if (!team) {
+              console.log(`Team ${teamName} not found in the organization.`);
+              return;
             }
-          result-encoding: string
+
+            const members = await github.paginate(
+              github.rest.teams.listMembersInOrg,
+              {
+                org: org,
+                team_slug: team.slug,
+                per_page: 100
+              }
+            );
+
+            const userInTeam = members.some(member => member.login === username);
+
+            if (userInTeam) {
+              console.log(`User ${username} is part of the ${teamName} team.`);
+            } else {
+              console.log(`User ${username} is not part of the ${teamName} team.`);
+            }

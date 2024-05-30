@@ -9,15 +9,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Get Team Members
         id: get-members
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
-            const org = 'your-org';
-            const team_slug = 'your-team-slug';
+            const org = 'Onix-bash';
+            const team_slug = 'general';
             const teamMembers = [];
 
             const { data: team } = await github.rest.teams.getByName({

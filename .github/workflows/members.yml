@@ -1,9 +1,7 @@
 name: Get Team Members
 
 on:
-  push:
-    branches:
-      - main
+   workflow_dispatch:
 
 jobs:
   get_team_members:

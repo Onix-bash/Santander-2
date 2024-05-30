@@ -1,44 +1,38 @@
 name: Get Team Members
 
 on:
-   workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
-  get_team_members:
+  check-user-in-team:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Get Team Members
-        id: get-members
+      - name: Check User in Team
         uses: actions/github-script@v6
         with:
           script: |
-            const org = 'Onix-bash';
-            const team_slug = 'general';
-            const teamMembers = [];
+            const teamName = 'general';
+            const username = 'Kristy-user';
 
-            const { data: team } = await github.rest.teams.getByName({
-              org: org,
-              team_slug: team_slug
+            const team = await github.rest.teams.getByName({
+              org: context.repo.owner,
+              team_slug: teamName
             });
 
-            const { data: members } = await github.rest.teams.listMembersInOrg({
-              org: org,
-              team_slug: team_slug
-            });
+            const members = await github.paginate(
+              github.rest.teams.listMembersInOrg,
+              {
+                org: context.repo.owner,
+                team_slug: team.data.slug,
+                per_page: 100
+              }
+            );
+            console.log(members);
 
-            for (const member of members) {
-              teamMembers.push({
-                login: member.login,
-                name: member.name,
-                email: member.email
-              });
+            const userInTeam = members.some(member => member.login === username);
+
+            if (userInTeam) {
+              console.log(`User ${username} is part of the ${teamName} team.`);
+            } else {
+              console.log(`User ${username} is not part of the ${teamName} team.`);
             }
-
-            console.log(teamMembers);
-            
-            return teamMembers;
- 

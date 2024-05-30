@@ -1,38 +1,45 @@
 name: Get Team Members
-
 on:
   workflow_dispatch:
+    inputs:
+      username:
+        description: 'GitHub Username to check'
+        required: true
+      team_slug:
+        description: 'Team slug to check against'
+        required: true
 
 jobs:
-  check-user-in-team:
+  check_membership:
     runs-on: ubuntu-latest
     steps:
-      - name: Check User in Team
+      - name: Check if user is in the specified team
         uses: actions/github-script@v6
         with:
           script: |
-            const teamName = 'general';
-            const username = 'Kristy-user';
+            const username = '${{ github.event.inputs.username }}';
+            const team_slug = '${{ github.event.inputs.team_slug }}';
+            const org = context.repo.owner; // Assumes the team is in the same org as the repo
 
-            const team = await github.rest.teams.getByName({
-              org: context.repo.owner,
-              team_slug: teamName
-            });
+            // Fetch team members from the GitHub API
+            try {
+              const teamMembers = await github.rest.teams.listMembersInOrg({
+                org: org,
+                team_slug: team_slug,
+                per_page: 100 // Adjust depending on the expected team size
+              });
 
-            const members = await github.paginate(
-              github.rest.teams.listMembersInOrg,
-              {
-                org: context.repo.owner,
-                team_slug: team.data.slug,
-                per_page: 100
+              // Check if the specified user is in the team
+              const isMember = teamMembers.data.some(member => member.login === username);
+              
+              if (isMember) {
+                console.log(`${username} is a member of the team ${team_slug}`);
+                core.setOutput("is_member", "yes");
+              } else {
+                console.log(`${username} is not a member of the team ${team_slug}`);
+                core.setOutput("is_member", "no");
               }
-            );
-            console.log(members);
-
-            const userInTeam = members.some(member => member.login === username);
-
-            if (userInTeam) {
-              console.log(`User ${username} is part of the ${teamName} team.`);
-            } else {
-              console.log(`User ${username} is not part of the ${teamName} team.`);
+            } catch (error) {
+              core.setFailed(`Failed to fetch team members: ${error.message}`);
             }
+          result-encoding: string

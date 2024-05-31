@@ -6,13 +6,7 @@ echo "$github_actor"
 
 echo "$DEV_OPS"
 # Set the Internal Field Separator to a comma
-IFS=',' read -r -a DEV_OPS_ARRAY <<< "$DEV_OPS"
 
-# Iterate over the array elements
-for element in "${DEV_OPS_ARRAY[@]}"
-do
-  echo "Element: $element"
-done
 
 source_to_check_changes="origin/feature/deploy-test"
 git fetch origin
@@ -24,7 +18,23 @@ git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 
  Check if the list of changed files is empty
 if [[ -n $DEV_OPS && -n $git_diff ]]; then
-  echo "There are changes outside the 'src' folder."
+  echo "There are changes outside 'src' folder."
+  IFS=',' read -r -a DEV_OPS_ARRAY <<< "$DEV_OPS"
+  is_admin=false
+
+  for member in "${DEV_OPS_ARRAY[@]}"; do
+    if [[ "$member" == "$GITHUB_ACTOR" ]]; then
+      is_admin=true
+      break
+    fi
+  done
+  # Check if user not in DevOps team
+  if [[ "$is_admin" == "false" ]]; then
+    echo "You can't make changes"
+    exit 1
+    else
+      echo "You can make changes outside 'src' folder"
+  fi
 fi
 #echo "Starting to look for changed modules against $source_to_check_changes..."
 ## Array of your module directories

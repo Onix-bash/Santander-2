@@ -1,0 +1,24 @@
+name: Get Team Members
+
+on:
+   workflow_dispatch:
+
+jobs:
+  get_team_members:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get Team Members
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const { data } = await github.rest.teams.getMembershipForUserInOrg({
+              org: 'Onix-bash',
+              team_slug: 'general',
+              username: 'Kristy-user'
+            });
+            console.log(data);
+        

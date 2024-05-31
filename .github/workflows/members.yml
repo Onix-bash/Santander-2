@@ -12,6 +12,7 @@ jobs:
       run: |
         RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/orgs/Onix-bash/teams/dev-team/memberships/Kristy-user)
         echo "HTTP_STATUS=$RESPONSE" >> $GITHUB_ENV
+        echo "$RESPONSE"
 
     - name: Output result
       run: |

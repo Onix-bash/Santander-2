@@ -5,7 +5,14 @@ github_actor="${GITHUB_ACTOR}"
 echo "$github_actor"
 
 echo "$DEV_OPS"
+# Set the Internal Field Separator to a comma
+IFS=',' read -r -a DEV_OPS_ARRAY <<< "$DEV_OPS"
 
+# Iterate over the array elements
+for element in "${DEV_OPS_ARRAY[@]}"
+do
+  echo "Element: $element"
+done
 
 #source_to_check_changes="origin/feature/deploy-test"
 #git fetch origin

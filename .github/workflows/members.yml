@@ -1,6 +1,9 @@
 name: Get Team Members
+
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   my_job:
@@ -9,11 +12,31 @@ jobs:
       - uses: actions/github-script@v6
         with:
           script: |
-            const creator = context.payload.sender.login;
-            const result = await github.rest.teams.getMembershipForUserInOrg({
-              org: context.repo.owner,
-              team_slug: 'general',
-              username: creator
-            });
-            console.log(`User: ${creator}`);
-            console.log(`Membership Status: ${result.data.state}`);
+            try {
+              const creator = 'kristina-klepik';
+              const org = 'Onix-bash';
+              const team_slug = 'dev-team'; // Update this to your actual team slug
+              const token = process.env.GH_PAT; // Get the token from the environment
+
+              console.log(`Fetching membership for user: ${creator} in team: ${team_slug} of org: ${org}`);
+
+              const result = await github.rest.teams.getMembershipForUserInOrg({
+                org,
+                team_slug,
+                username: creator,
+                headers: {
+                  authorization: `token ${token}`
+                }
+              });
+
+              console.log(`User: ${creator}`);
+              console.log(`Membership Status: ${result.data.state}`);
+            } catch (error) {
+              if (error.status === 404) {
+                console.error(`Not Found: Ensure that the organization name, team slug, and username are correct.`);
+              } else {
+                console.error(`Error fetching membership: ${error}`);
+              }
+            }
+        env:
+          GH_PAT: ${{ secrets.GH_TOKEN }}

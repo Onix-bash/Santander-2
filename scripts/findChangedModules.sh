@@ -14,22 +14,18 @@ do
   echo "Element: $element"
 done
 
-#source_to_check_changes="origin/feature/deploy-test"
-#git fetch origin
+source_to_check_changes="origin/feature/deploy-test"
+git fetch origin
 
-#git fetch origin
-#echo "Starting to look for changed
-#git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
+git fetch origin
+echo "Starting to look for changed"
+git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 
 
-# Check if the list of changed files is empty
-#if [[ -z $git_diff ]]; then
-#  echo "No changes outside the 'src' folder."
-#else
-#  echo "There are changes outside the 'src' folder:"
-#  echo "$git_diff"
-#  exit 1
-#fi
+ Check if the list of changed files is empty
+if [[ -n $DEV_OPS && -n $git_diff ]]; then
+  echo "There are changes outside the 'src' folder."
+fi
 #echo "Starting to look for changed modules against $source_to_check_changes..."
 ## Array of your module directories
 #modules=( $( cd src/ ;ls -1p | grep / | sed 's/^\(.*\)/\1/') )

@@ -2,23 +2,19 @@
 
 git config --global --add safe.directory "*"
 github_actor="${GITHUB_ACTOR}"
-echo "$github_actor"
-
-echo "$DEV_OPS"
-# Set the Internal Field Separator to a comma
-
-
 source_to_check_changes="origin/feature/deploy-test"
 git fetch origin
 
-git fetch origin
 echo "Starting to look for changed"
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 
 
- Check if the list of changed files is empty
+# Check if the list of changed files is empty
 if [[ -n $DEV_OPS && -n $git_diff ]]; then
   echo "There are changes outside 'src' folder."
+  echo "Current username: '$github_actor'"
+  echo "DEV_OPS team list: '$DEV_OPS'"
+
   IFS=',' read -r -a DEV_OPS_ARRAY <<< "$DEV_OPS"
   is_admin=false
 

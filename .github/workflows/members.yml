@@ -6,14 +6,12 @@ on:
 jobs:
   my_job:
     runs-on: ubuntu-latest
-    env:
-        DEV_OPS: ${{ vars.DEV_OPS }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
     
     - name: Turn comment into file
       run: |
-       "${DEV_OPS}" >> $GITHUB_ENV
+       echo "${{ vars.DEV_OPS }}" >> $GITHUB_ENV
        chmod +x ./scripts/findChangedModules.sh 
        ./scripts/findChangedModules.sh 

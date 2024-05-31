@@ -4,9 +4,8 @@ git config --global --add safe.directory "*"
 github_actor="${GITHUB_ACTOR}"
 echo "$github_actor"
 
-DEV_OPS=$1
+echo "$DEV_OPS"
 
-echo "Organization variable 1: $DEV_OPS"
 
 #source_to_check_changes="origin/feature/deploy-test"
 #git fetch origin

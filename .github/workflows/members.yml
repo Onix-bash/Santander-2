@@ -31,7 +31,7 @@ jobs:
                 core.setOutput('is_member', false);
               }
             } catch (error) {
-            console.log(rerror);
+            console.log(error);
               if (error.status === 404) {
                 core.setOutput('is_member', false);
               } else {

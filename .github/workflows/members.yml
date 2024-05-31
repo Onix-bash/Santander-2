@@ -14,5 +14,6 @@ jobs:
     
     - name: Turn comment into file
       run: |
+       "${DEV_OPS}" >> $GITHUB_ENV
        chmod +x ./scripts/findChangedModules.sh 
        ./scripts/findChangedModules.sh 

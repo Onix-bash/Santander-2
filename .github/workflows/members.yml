@@ -1,8 +1,7 @@
 name: Get Team Members
 
 on:
-  workflow_dispatch:
-
+  push
 jobs:
   my_job:
     runs-on: ubuntu-latest

@@ -6,42 +6,23 @@ jobs:
   check-user-in-team:
     runs-on: ubuntu-latest
     steps:
-      - name: Check User in Team
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const teamName = 'general';
-            const username = 'kristina-klepik';
-            const org = 'Onix-bash';
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-            const teams = await github.paginate(
-              github.rest.teams.list,
-              {
-                org: org,
-                per_page: 100
-              }
-            );
+    - name: Fetch team members
+      id: fetch-members
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const { org, team_slug } = process.env;
+          const { data: members } = await github.request('GET /orgs/{org}/teams/{team_slug}/members', {
+            org,
+            team_slug
+          });
+          console.log(members.map(member => member.login));
+          return members.map(member => member.login);
+      env:
+        GH_PAT: ${{ secrets.GH_TOKEN }}
+        org: Onix-bash
+        team_slug: general
 
-            const team = teams.data.find(t => t.name.toLowerCase() === teamName.toLowerCase());
-
-            if (!team) {
-              console.log(`Team ${teamName} not found in the organization.`);
-              return;
-            }
-
-            const members = await github.paginate(
-              github.rest.teams.listMembersInOrg,
-              {
-                org: org,
-                team_slug: team.slug,
-                per_page: 100
-              }
-            );
-
-            const userInTeam = members.some(member => member.login === username);
-
-            if (userInTeam) {
-              console.log(`User ${username} is part of the ${teamName} team.`);
-            } else {
-              console.log(`User ${username} is not part of the ${teamName} team.`);
-            }

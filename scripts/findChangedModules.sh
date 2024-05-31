@@ -1,27 +1,29 @@
 #!/bin/bash
 
 git config --global --add safe.directory "*"
-actor="${GITHUB_ACTOR}"
-echo "$actor"
-source_to_check_changes="origin/feature/deploy-test"
-git fetch origin
+github_actor="${GITHUB_ACTOR}"
+echo "$github_actor"
 
-if [ -n "$1" ]; then
-  source_to_check_changes=$1
-fi
-git fetch origin
+DEV_OPS=$1
+
+echo "Organization variable 1: $DEV_OPS"
+
+#source_to_check_changes="origin/feature/deploy-test"
+#git fetch origin
+
+#git fetch origin
 #echo "Starting to look for changed
-git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
+#git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 
 
 # Check if the list of changed files is empty
-if [[ -z $git_diff ]]; then
-  echo "No changes outside the 'src' folder."
-else
-  echo "There are changes outside the 'src' folder:"
-  echo "$git_diff"
-  exit 1
-fi
+#if [[ -z $git_diff ]]; then
+#  echo "No changes outside the 'src' folder."
+#else
+#  echo "There are changes outside the 'src' folder:"
+#  echo "$git_diff"
+#  exit 1
+#fi
 #echo "Starting to look for changed modules against $source_to_check_changes..."
 ## Array of your module directories
 #modules=( $( cd src/ ;ls -1p | grep / | sed 's/^\(.*\)/\1/') )

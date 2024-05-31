@@ -12,6 +12,5 @@ jobs:
     
     - name: Turn comment into file
       run: |
-       ACTOR=${{ github.actor }}
        chmod +x ./scripts/findChangedModules.sh
-          ./scripts/findChangedModules.sh
+          ./scripts/findChangedModules.sh ${{ secrets.DEV_OPS }}

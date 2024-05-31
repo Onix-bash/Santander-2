@@ -10,7 +10,7 @@ jobs:
     - name: Check if user is a team member
       id: check_membership
       run: |
-        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/orgs/Onix-bash/teams/dev-team/memberships/kristy-)
+        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/orgs/Onix-bash/teams/dev-team/memberships/Kristy-user)
         echo "HTTP_STATUS=$RESPONSE" >> $GITHUB_ENV
 
     - name: Output result

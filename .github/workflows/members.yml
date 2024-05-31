@@ -11,8 +11,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Turn comment into file
-      env:
-        DEV_OPS: ${{ vars.DEV_OPS }}
       run: |
+       DEV_OPS="${{ vars.DEV_OPS }}"
        chmod +x ./scripts/findChangedModules.sh 
        ./scripts/findChangedModules.sh 

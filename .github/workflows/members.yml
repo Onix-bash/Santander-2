@@ -12,9 +12,10 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const username = 'kristina-klepik';
-            const team_slug = 'Onix-bash';
-            const org = 'dev-team';
+            const username = github.context.payload.inputs.username;
+            const team_slug = github.context.payload.inputs.team_slug;
+            const org = github.context.payload.inputs.org;
+            const token = process.env.GITHUB_TOKEN;
 
             try {
               // GitHub API endpoint to check team membership
@@ -22,21 +23,25 @@ jobs:
                 org,
                 team_slug,
                 username,
+                headers: {
+                  accept: 'application/vnd.github+json',
+                  authorization: `token ${token}`
+                }
               });
-
+              console.log('result:' ,result);
               if (result.status === 200 && result.data.state === 'active') {
-              console.log(result);
                 core.setOutput('is_member', true);
               } else {
                 core.setOutput('is_member', false);
               }
             } catch (error) {
-            console.log(error);
+            console.log('error:' , error);
               if (error.status === 404) {
                 core.setOutput('is_member', false);
               } else {
                 throw error;
               }
             }
-
-      
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            

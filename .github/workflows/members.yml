@@ -12,5 +12,4 @@ jobs:
     
     - name: Turn comment into file
       run: |
-       chmod +x ./scripts/findChangedModules.sh
-          ./scripts/findChangedModules.sh ${{ secrets.DEV_OPS }}
+       chmod +x ./scripts/findChangedModules.sh ${{ secrets.DEV_OPS }}

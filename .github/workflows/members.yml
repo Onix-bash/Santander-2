@@ -9,13 +9,13 @@ jobs:
     steps:
       - name: Check if user is in team
         id: check_user
-        uses: actions/github-script@v6
+        uses: actions/github-script@v6.4.1
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const username = github.context.payload.inputs.username;
-            const team_slug = github.context.payload.inputs.team_slug;
-            const org = github.context.payload.inputs.org;
-            const token = process.env.GITHUB_TOKEN;
+            const username = 'Kristy-user';
+            const team_slug = 'general';
+            const org = 'Onix-bash';
 
             try {
               // GitHub API endpoint to check team membership
@@ -23,25 +23,17 @@ jobs:
                 org,
                 team_slug,
                 username,
-                headers: {
-                  accept: 'application/vnd.github+json',
-                  authorization: `token ${token}`
-                }
               });
-              console.log('result:' ,result);
+              console.log('reasult', result);
               if (result.status === 200 && result.data.state === 'active') {
                 core.setOutput('is_member', true);
               } else {
                 core.setOutput('is_member', false);
               }
             } catch (error) {
-            console.log('error:' , error);
               if (error.status === 404) {
                 core.setOutput('is_member', false);
               } else {
                 throw error;
               }
             }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            

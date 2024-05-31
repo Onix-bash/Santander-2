@@ -7,33 +7,16 @@ jobs:
   my_job:
     runs-on: ubuntu-latest
     steps:
-      - name: Check if user is in team
-        id: check_user
-        uses: actions/github-script@v6.4.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const username = 'Kristy-user';
-            const team_slug = 'general';
-            const org = 'Onix-bash';
+    - name: Check if user is a team member
+      id: check_membership
+      run: |
+        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/orgs/Onix-bash/teams/dev-team/memberships/kristy-)
+        echo "HTTP_STATUS=$RESPONSE" >> $GITHUB_ENV
 
-            try {
-              // GitHub API endpoint to check team membership
-              const result = await github.rest.teams.getMembershipForUserInOrg({
-                org,
-                team_slug,
-                username,
-              });
-              console.log('reasult', result);
-              if (result.status === 200 && result.data.state === 'active') {
-                core.setOutput('is_member', true);
-              } else {
-                core.setOutput('is_member', false);
-              }
-            } catch (error) {
-              if (error.status === 404) {
-                core.setOutput('is_member', false);
-              } else {
-                throw error;
-              }
-            }
+    - name: Output result
+      run: |
+        if [ "${{ env.HTTP_STATUS }}" == "200" ]; then
+          echo "User is a team member."
+        else
+          echo "User is not a team member."
+        fi

@@ -8,7 +8,7 @@ git fetch origin
 echo "Starting to look for changed"
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 
-
+DEV_OPS=$1
 # Check if the list of changed files is empty
 if [[ -n $DEV_OPS && -n $git_diff ]]; then
   echo "There are changes outside 'src' folder."

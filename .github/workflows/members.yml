@@ -3,26 +3,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-user-in-team:
+  my_job:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Fetch team members
-      id: fetch-members
-      uses: actions/github-script@v5
-      with:
-        script: |
-          const { org, team_slug } = process.env;
-          const { data: members } = await github.request('GET /orgs/{org}/teams/{team_slug}/members', {
-            org,
-            team_slug
-          });
-          console.log(members.map(member => member.login));
-          return members.map(member => member.login);
-      env:
-        GH_PAT: ${{ secrets.GH_TOKEN }}
-        org: Onix-bash
-        team_slug: general
-
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const creator = context.payload.sender.login;
+            const result = await github.rest.teams.getMembershipForUserInOrg({
+              org: context.repo.owner,
+              team_slug: 'general',
+              username: creator
+            });
+            console.log(`User: ${creator}`);
+            console.log(`Membership Status: ${result.data.state}`);

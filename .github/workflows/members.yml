@@ -27,6 +27,8 @@ jobs:
                 }
               });
 
+              onsole.log(`result: ${result}`);
+
               console.log(`User: ${creator}`);
               console.log(`Membership Status: ${result.data.state}`);
             } catch (error) {

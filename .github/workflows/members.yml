@@ -6,13 +6,13 @@ on:
 jobs:
   my_job:
     runs-on: ubuntu-latest
+    env:
+        DEV_OPS: ${{ secrets.DEV_OPS }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
     
     - name: Turn comment into file
-      env:
-        DEV_OPS: ${{ secrets.DEV_OPS }}
       run: |
        chmod +x ./scripts/findChangedModules.sh 
        ./scripts/findChangedModules.sh "${DEV_OPS}"

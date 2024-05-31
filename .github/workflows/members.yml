@@ -7,7 +7,7 @@ jobs:
   my_job:
     runs-on: ubuntu-latest
     env:
-        DEV_OPS: ${{ env.DEV_OPS }}
+        DEV_OPS: ${{ secrets.DEVOPS }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4

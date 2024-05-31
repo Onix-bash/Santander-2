@@ -14,5 +14,7 @@ jobs:
     
     - name: Turn comment into file
       run: |
+       echo ${{ vars.DEVOPS }}
+       echo ${{ vars.DEV_OPS }}
        chmod +x ./scripts/findChangedModules.sh 
        ./scripts/findChangedModules.sh 

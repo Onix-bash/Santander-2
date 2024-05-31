@@ -7,36 +7,36 @@ jobs:
   my_job:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v6
+      - name: Check if user is in team
+        id: check_user
+        uses: actions/github-script@v6
         with:
           script: |
+            const username = 'kristina-klepik';
+            const team_slug = 'Onix-bash';
+            const org = 'dev-team';
+
             try {
-              const creator = 'kristina-klepik';
-              const org = 'Onix-bash';
-              const team_slug = 'dev-team'; // Update this to your actual team slug
-              const token = process.env.GH_PAT; // Get the token from the environment
-
-              console.log(`Fetching membership for user: ${creator} in team: ${team_slug} of org: ${org}`);
-
+              // GitHub API endpoint to check team membership
               const result = await github.rest.teams.getMembershipForUserInOrg({
                 org,
                 team_slug,
-                username: creator,
-                headers: {
-                  authorization: `token ${token}`
-                }
+                username,
               });
 
-              onsole.log(`result: ${result}`);
-
-              console.log(`User: ${creator}`);
-              console.log(`Membership Status: ${result.data.state}`);
-            } catch (error) {
-              if (error.status === 404) {
-                console.error(`Not Found: Ensure that the organization name, team slug, and username are correct.`);
+              if (result.status === 200 && result.data.state === 'active') {
+              console.log(result);
+                core.setOutput('is_member', true);
               } else {
-                console.error(`Error fetching membership: ${error}`);
+                core.setOutput('is_member', false);
+              }
+            } catch (error) {
+            console.log(rerror);
+              if (error.status === 404) {
+                core.setOutput('is_member', false);
+              } else {
+                throw error;
               }
             }
-        env:
-          GH_PAT: ${{ secrets.GH_TOKEN }}
+
+      

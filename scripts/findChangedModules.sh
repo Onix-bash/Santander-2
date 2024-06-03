@@ -8,7 +8,7 @@ if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi
 
-echo "source_to_check_changes: '$source_to_check_changesv'"
+echo "source_to_check_changes: '$source_to_check_changes'"
 
 github_actor="${GITHUB_ACTOR}"
 git fetch origin

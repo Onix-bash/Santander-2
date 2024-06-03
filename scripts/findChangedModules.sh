@@ -10,6 +10,7 @@ fi
 
 echo "source_to_check_changes: '$source_to_check_changes'"
 echo "$ALLOWED_DEV_MODIFICATIONS"
+
 github_actor="${GITHUB_ACTOR}"
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
@@ -76,4 +77,3 @@ else
   echo "--- Changes detected for modules ${changed_modules[*]}"
   echo "changed_modules=${changed_modules[*]}" >> "$GITHUB_OUTPUT"
 fi
-echo

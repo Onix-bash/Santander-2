@@ -4,6 +4,6 @@
 
 public with sharing class classNameTest {
  // test push commit
- String variableNew12test;
+ String variableNew12t;
  //new comment
 }

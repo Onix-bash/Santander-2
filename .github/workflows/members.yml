@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEVOPS_TEAM: ${{ vars.DEVOPS_TEAM }}
-      ALLOWED_MODIFICATIONS: ${{ vars.ALLOWED_MODIFICATIONS }}
+      ALLOWED_DEV_MODIFICATIONS: ${{ vars.ALLOWED_DEV_MODIFICATIONS }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4

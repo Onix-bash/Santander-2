@@ -1,7 +1,9 @@
 name: Get Team Members
 
 on:
-  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/**'
 
 jobs:
   my_job:

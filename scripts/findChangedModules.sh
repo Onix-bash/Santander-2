@@ -3,6 +3,7 @@
 git config --global --add safe.directory "*"
 github_actor="${GITHUB_ACTOR}"
 
+ALLOWED_MODIFICATIONS=$(echo $ALLOWED_MODIFICATIONS | sed 's/"//g')
 echo "ALLOWED_MODIFICATIONS: '$ALLOWED_MODIFICATIONS'"
 source_to_check_changes="origin/feature/deploy-test"
 
@@ -30,7 +31,7 @@ if [[ -n $DEV_OPS && -n $git_diff ]]; then
   # Check if user not in DevOps team
   if [[ "$is_admin" == false ]]; then
 
-      IFS=$'\n' read -r -d '' ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
+      IFS=',' read -r -a ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
       allow_changes=true
 
       for file in $git_diff; do

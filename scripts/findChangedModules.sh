@@ -9,12 +9,12 @@ if [ -n "$1" ]; then
 fi
 
 echo "source_to_check_changes: '$source_to_check_changes'"
-echo "$ALLOWED_DEV_MODIFICATIONS"
+echo "ALLOWED_DEV_MODIFICATIONS: '$ALLOWED_DEV_MODIFICATIONS'"
 
 github_actor="${GITHUB_ACTOR}"
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
-
+echo "$git_diff"
 # Check changes outside src folder
 if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 

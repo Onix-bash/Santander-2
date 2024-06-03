@@ -2,9 +2,11 @@
 
 git config --global --add safe.directory "*"
 github_actor="${GITHUB_ACTOR}"
-
+#github_actor="Kristy-user"
 ALLOWED_MODIFICATIONS=$(echo $ALLOWED_MODIFICATIONS | sed 's/"//g')
 echo "ALLOWED_MODIFICATIONS: '$ALLOWED_MODIFICATIONS'"
+#DEV_OPS="kristina-klepik"
+#ALLOWED_MODIFICATIONS='sfdx-project.json,testFolder/,scripts/findChangedModules.sh'
 source_to_check_changes="origin/feature/deploy-test"
 
 echo "Starting to look for changed"
@@ -39,6 +41,7 @@ if [[ -n $DEV_OPS && -n $git_diff ]]; then
         is_allowed=false
         for allowed_modification in "${ALLOWED_MODIFICATIONS_ARRAY[@]}"; do
           echo "allowed_modification '$allowed_modification'"
+           echo "file '$file'"
           if [[ "$file" == "$allowed_modification" || "$file" == "$allowed_modification"* ]]; then
             echo "Change in '$file' is allowed."
             is_allowed=true

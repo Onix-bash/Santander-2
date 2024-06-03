@@ -35,6 +35,7 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
     while IFS= read -r file; do
       is_allowed=false
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
+        echo "$allowed_modification"
         if [[ "$file" == "$allowed_modification"* ]]; then
           is_allowed=true
           break

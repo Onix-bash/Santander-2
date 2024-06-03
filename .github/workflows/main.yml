@@ -21,20 +21,18 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install ESLint and plugins
-        run: npm install eslint @babel/core @babel/eslint-parser @lwc/eslint-plugin-lwc --save-dev
+      - name: Install Scanner
+        run: |
+         sf plugins install @salesforce/sfdx-scanner@latest-beta
+         npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
 
       - name: Run ESLint
         run: |
-          echo "deploy-test-pr-branch"
+          echo "deploy-branch"
+
           chmod +x ./scripts/reporting.sh
           ./scripts/reporting.sh
           
       - name: Show Scan Results
         run: |
           cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
-
-#      - name: Deploy Lookup Tables
-#        run: |
-#          chmod +x ./scripts/newMatrixVersion.sh
-#          ./scripts/newMatrixVersion.sh

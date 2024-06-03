@@ -1,25 +1,19 @@
 name: Get Team Members
 
 on:
-  pull_request:
-    paths:
-      - 'src/**'
+  workflow_dispatch:
+
 jobs:
-  get_team_members:
+  my_job:
     runs-on: ubuntu-latest
     env:
-      DEV_OPS: ${{ vars.DEV_OPS }}
+        DEV_OPS: ${{ vars.DEV_OPS }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Get Team Members
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const { data } = await github.rest.teams.getMembershipForUserInOrg({
-              org: 'Onix-bash',
-              team_slug: 'general',
-              username: 'Kristy-user'
-            });
-            console.log(data);
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Turn comment into file
+      run: |
+       echo "test-pr"
+       chmod +x ./scripts/findChangedModules.sh 
+       ./scripts/findChangedModules.sh 

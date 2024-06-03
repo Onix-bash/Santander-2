@@ -8,5 +8,6 @@
   "name": "kristy@klepik.by_sfdx",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "58.0"
+  "sourceApiVersion": "58.0",
+  "jopa": "dsv"
 }

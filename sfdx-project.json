@@ -2,7 +2,10 @@
   "packageDirectories": [
     {
       "path": "src",
-      "default": true
+      "default": true,
+      "versionName": "1.0.0",
+      "package": "",
+      "versionNumber": ""
     }
   ],
   "name": "kristy@klepik.by_sfdx",

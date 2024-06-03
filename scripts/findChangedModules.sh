@@ -9,9 +9,7 @@ source_to_check_changes="origin/feature/deploy-test"
 echo "Starting to look for changed"
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
-echo "There are changes outside 'src' folder."
-  echo "Current username: '$github_actor'"
-  echo "DEV_OPS team list: '$DEV_OPS'"
+
 # Check if the list of changed files is empty
 if [[ -n $DEV_OPS && -n $git_diff ]]; then
   echo "There are changes outside 'src' folder."

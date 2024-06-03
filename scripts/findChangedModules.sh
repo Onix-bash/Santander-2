@@ -1,14 +1,20 @@
 #!/bin/bash
 
 git config --global --add safe.directory "*"
-github_actor="${GITHUB_ACTOR}"
-allowed_modifications="${ALLOWED_MODIFICATIONS}"
-echo "ALLOWED_MODIFICATIONS: '$allowed_modifications'"
+#github_actor="${GITHUB_ACTOR}"
+
+ALLOWED_MODIFICATIONS='"sfdx-project.json","testFolder/"'
+github_actor="Kristy-klepik"
+DEV_OPS="kristina-klepik,Kristy-user"
+
+echo "ALLOWED_MODIFICATIONS: '$ALLOWED_MODIFICATIONS'"
 source_to_check_changes="origin/feature/deploy-test"
 
 echo "Starting to look for changed"
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
+
+echo "Git_diff: '$git_diff'"
 
 # Check if the list of changed files is empty
 if [[ -n $DEV_OPS && -n $git_diff ]]; then
@@ -26,9 +32,27 @@ if [[ -n $DEV_OPS && -n $git_diff ]]; then
     fi
   done
   # Check if user not in DevOps team
-  if [[ "$is_admin" == "false" ]]; then
-    echo "You can't make changes"
-    exit 1
+  if [[ "$is_admin" == false ]]; then
+
+      IFS=',' read -r -a ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
+      allow_changes=true
+
+      for file in $git_diff; do
+        echo "git_diff file: '$file'"
+        is_allowed=false
+        for allowed_modification in "${ALLOWED_MODIFICATIONS_ARRAY[@]}"; do
+          if [[ "$file" == "$allowed_modification" || "$file" == "$allowed_modification"* ]]; then
+            echo "Change in '$file' is allowed."
+            is_allowed=true
+            break
+          fi
+        done
+
+        if ! $is_allowed; then
+          echo "Change in '$file' is not allowed."
+          exit 1
+        fi
+      done
     else
       echo "You can make changes outside 'src' folder"
   fi

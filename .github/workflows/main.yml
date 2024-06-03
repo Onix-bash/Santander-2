@@ -1,10 +1,10 @@
 name: PR Open
 
-on:
-  pull_request:
-#    types: [opened, reopened, synchronize]
-    paths:
-    - 'src/**'
+on: workflow_dispatch
+#   pull_request:
+# #    types: [opened, reopened, synchronize]
+#     paths:
+#     - 'src/**'
 
 jobs:
   validate-changes:

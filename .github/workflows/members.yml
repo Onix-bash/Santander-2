@@ -2,8 +2,6 @@ name: Get Team Members
 
 on:
   push:
-    branches:
-      - 'develop'
     paths:
       - 'src/**'
 

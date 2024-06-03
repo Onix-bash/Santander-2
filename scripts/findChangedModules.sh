@@ -30,7 +30,7 @@ if [[ -n $DEV_OPS && -n $git_diff ]]; then
   # Check if user not in DevOps team
   if [[ "$is_admin" == false ]]; then
 
-      IFS=$'\n' read -r -a ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
+      IFS=$'\n' read -r -d '' ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
       allow_changes=true
 
       for file in $git_diff; do

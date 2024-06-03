@@ -17,5 +17,5 @@ jobs:
     
     - name: Turn comment into file
       run: |
-       chmod +x ./scripts/findChangedModules.sh 
-       ./scripts/findChangedModules.sh 
+       chmod +x ./scripts/findChangedModules.sh
+       ./scripts/findChangedModules.sh

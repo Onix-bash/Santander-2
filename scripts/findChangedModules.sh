@@ -3,14 +3,9 @@
 git config --global --add safe.directory "*"
 source_to_check_changes="origin/feature/deploy-test"
 
-#github_actor="Kristy-user"
-#ALLOWED_MODIFICATIONS='"sfdx-project.json","testFolder/","scripts/findChangedModules.sh"'
-#DEV_OPS="kristina-klepik"
-
 github_actor="${GITHUB_ACTOR}"
 ALLOWED_MODIFICATIONS=$(echo "$ALLOWED_MODIFICATIONS" | sed 's/"//g')
 DEV_OPS=$(echo "$DEV_OPS" | sed 's/"//g')
-echo "$ALLOWED_MODIFICATIONS"
 
 echo "Starting to look for changes"
 git fetch origin

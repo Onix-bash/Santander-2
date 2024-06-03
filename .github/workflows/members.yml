@@ -2,6 +2,8 @@ name: Get Team Members
 
 on:
   push:
+    branches:
+      - 'develop'
     paths:
       - 'src/**'
 
@@ -18,4 +20,4 @@ jobs:
     - name: Turn comment into file
       run: |
        chmod +x ./scripts/findChangedModules.sh 
-       ./scripts/findChangedModules.sh
+       ./scripts/findChangedModules.sh HEAD^

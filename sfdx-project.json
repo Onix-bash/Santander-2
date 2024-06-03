@@ -6,7 +6,7 @@
     }
   ],
   "name": "kristy@klepik.by_sfdx",
-  "namespace": "",
+  "namespace": "sw",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "58.0"
 }

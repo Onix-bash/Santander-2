@@ -1,16 +1,21 @@
 name: Get Team Members
 
 on:
-  push
+  pull_request:
+    paths:
+      - 'src/**'
+
 jobs:
   my_job:
     runs-on: ubuntu-latest
+    env:
+      DEV_OPS: ${{ vars.DEV_OPS }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
     
     - name: Turn comment into file
       run: |
-       DEV_OPS="${{ vars.DEV_OPS }}"
+       
        chmod +x ./scripts/findChangedModules.sh 
-       ./scripts/findChangedModules.sh "${DEV_OPS}"
+       ./scripts/findChangedModules.sh 

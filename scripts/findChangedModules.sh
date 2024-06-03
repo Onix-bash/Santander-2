@@ -1,26 +1,61 @@
 #!/bin/bash
 
 git config --global --add safe.directory "*"
-actor="${GITHUB_ACTOR}"
-echo "$actor"
-source_to_check_changes="origin/feature/deploy-test"
-git fetch origin
+github_actor="${GITHUB_ACTOR}"
 
-if [ -n "$1" ]; then
-  source_to_check_changes=$1
-fi
+#ALLOWED_MODIFICATIONS='"sfdx-project.json","testFolder/"'
+#github_actor="Kristy-klepik"
+#DEV_OPS="kristina-klepik,Kristy-user"
+
+echo "ALLOWED_MODIFICATIONS: '$ALLOWED_MODIFICATIONS'"
+source_to_check_changes="origin/feature/deploy-test"
+
+echo "Starting to look for changed"
 git fetch origin
-#echo "Starting to look for changed
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 
+echo "Git_diff: '$git_diff'"
 
 # Check if the list of changed files is empty
-if [[ -z $git_diff ]]; then
-  echo "No changes outside the 'src' folder."
-else
-  echo "There are changes outside the 'src' folder:"
-  echo "$git_diff"
-  exit 1
+if [[ -n $DEV_OPS && -n $git_diff ]]; then
+  echo "There are changes outside 'src' folder."
+  echo "Current username: '$github_actor'"
+  echo "DEV_OPS team list: '$DEV_OPS'"
+
+  IFS=',' read -r -a DEV_OPS_ARRAY <<< "$DEV_OPS"
+  is_admin=false
+
+  for member in "${DEV_OPS_ARRAY[@]}"; do
+    if [[ "$member" == "$GITHUB_ACTOR" ]]; then
+      is_admin=true
+      break
+    fi
+  done
+  # Check if user not in DevOps team
+  if [[ "$is_admin" == false ]]; then
+
+      IFS=',' read -r -a ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
+      allow_changes=true
+
+      for file in $git_diff; do
+        echo "git_diff file: '$file'"
+        is_allowed=false
+        for allowed_modification in "${ALLOWED_MODIFICATIONS_ARRAY[@]}"; do
+          if [[ "$file" == "$allowed_modification" || "$file" == "$allowed_modification"* ]]; then
+            echo "Change in '$file' is allowed."
+            is_allowed=true
+            break
+          fi
+        done
+
+        if ! $is_allowed; then
+          echo "Change in '$file' is not allowed."
+          exit 1
+        fi
+      done
+    else
+      echo "You can make changes outside 'src' folder"
+  fi
 fi
 #echo "Starting to look for changed modules against $source_to_check_changes..."
 ## Array of your module directories

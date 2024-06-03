@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
         DEV_OPS: ${{ vars.DEV_OPS }}
+        ALLOWED_MODIFICATIONS: ${{ vars.ALLOWED_MODIFICATIONS }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
     
     - name: Turn comment into file
       run: |
-       echo "test-pr"
+       echo "test-pr branch"
        chmod +x ./scripts/findChangedModules.sh 
        ./scripts/findChangedModules.sh 

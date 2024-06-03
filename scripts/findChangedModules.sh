@@ -9,7 +9,7 @@ if [ -n "$1" ]; then
 fi
 
 echo "source_to_check_changes: '$source_to_check_changes'"
-
+echo "$ALLOWED_DEV_MODIFICATIONS"
 github_actor="${GITHUB_ACTOR}"
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
@@ -35,6 +35,7 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
     while IFS= read -r file; do
       is_allowed=false
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
+        echo "$allowed_modification"
         if [[ "$file" == "$allowed_modification"* ]]; then
           is_allowed=true
           break

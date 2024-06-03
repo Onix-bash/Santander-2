@@ -1,26 +1,38 @@
 #!/bin/bash
 
 git config --global --add safe.directory "*"
-actor="${GITHUB_ACTOR}"
-echo "$actor"
+github_actor="${GITHUB_ACTOR}"
+allowed_modifications="${ALLOWED_MODIFICATIONS}"
+echo "ALLOWED_MODIFICATIONS: '$allowed_modifications'"
 source_to_check_changes="origin/feature/deploy-test"
-git fetch origin
 
-if [ -n "$1" ]; then
-  source_to_check_changes=$1
-fi
+echo "Starting to look for changed"
 git fetch origin
-#echo "Starting to look for changed
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 
 
 # Check if the list of changed files is empty
-if [[ -z $git_diff ]]; then
-  echo "No changes outside the 'src' folder."
-else
-  echo "There are changes outside the 'src' folder:"
-  echo "$git_diff"
-  exit 1
+if [[ -n $DEV_OPS && -n $git_diff ]]; then
+  echo "There are changes outside 'src' folder."
+  echo "Current username: '$github_actor'"
+  echo "DEV_OPS team list: '$DEV_OPS'"
+
+  IFS=',' read -r -a DEV_OPS_ARRAY <<< "$DEV_OPS"
+  is_admin=false
+
+  for member in "${DEV_OPS_ARRAY[@]}"; do
+    if [[ "$member" == "$GITHUB_ACTOR" ]]; then
+      is_admin=true
+      break
+    fi
+  done
+  # Check if user not in DevOps team
+  if [[ "$is_admin" == "false" ]]; then
+    echo "You can't make changes"
+    exit 1
+    else
+      echo "You can make changes outside 'src' folder"
+  fi
 fi
 #echo "Starting to look for changed modules against $source_to_check_changes..."
 ## Array of your module directories

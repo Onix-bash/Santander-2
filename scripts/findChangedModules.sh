@@ -1,23 +1,19 @@
 #!/bin/bash
 
 git config --global --add safe.directory "*"
-github_actor="${GITHUB_ACTOR}"
-#github_actor="Kristy-user"
-ALLOWED_MODIFICATIONS=$(echo $ALLOWED_MODIFICATIONS | sed 's/"//g')
-echo "ALLOWED_MODIFICATIONS: '$ALLOWED_MODIFICATIONS'"
-#DEV_OPS="kristina-klepik"
-#ALLOWED_MODIFICATIONS='sfdx-project.json,testFolder/,scripts/findChangedModules.sh'
 source_to_check_changes="origin/feature/deploy-test"
 
-echo "Starting to look for changed"
-git fetch origin
-git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
+github_actor="${GITHUB_ACTOR}"
+ALLOWED_MODIFICATIONS=$(echo "$ALLOWED_MODIFICATIONS" | sed 's/"//g')
+DEV_OPS=$(echo "$DEV_OPS" | sed 's/"//g')
 
-echo "Git_diff: '$git_diff'"
+echo "Starting to look for changes"
+git fetch origin
+git_diff=$(git diff --name-only "$source_to_check_changes" | grep -v "^src/")
+echo "Git_diff files: '$git_diff'"
 
 # Check if the list of changed files is empty
-if [[ -n $DEV_OPS && -n $git_diff ]]; then
-  echo "There are changes outside 'src' folder."
+if [[ -n "$DEV_OPS" && -n "$git_diff" ]]; then
   echo "Current username: '$github_actor'"
   echo "DEV_OPS team list: '$DEV_OPS'"
 
@@ -25,37 +21,35 @@ if [[ -n $DEV_OPS && -n $git_diff ]]; then
   is_admin=false
 
   for member in "${DEV_OPS_ARRAY[@]}"; do
-    if [[ "$member" == "$GITHUB_ACTOR" ]]; then
+    if [[ "$member" == "$github_actor" ]]; then
       is_admin=true
       break
     fi
   done
-  # Check if user not in DevOps team
+
+  # Check if user NOT in DevOps team
   if [[ "$is_admin" == false ]]; then
+    IFS=',' read -r -a ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
+    allow_changes=true
 
-      IFS=',' read -r -a ALLOWED_MODIFICATIONS_ARRAY <<< "$ALLOWED_MODIFICATIONS"
-      allow_changes=true
-
-      for file in $git_diff; do
-        echo "git_diff file: '$file'"
-        is_allowed=false
-        for allowed_modification in "${ALLOWED_MODIFICATIONS_ARRAY[@]}"; do
-          echo "allowed_modification '$allowed_modification'"
-           echo "file '$file'"
-          if [[ "$file" == "$allowed_modification" || "$file" == "$allowed_modification"* ]]; then
-            echo "Change in '$file' is allowed."
-            is_allowed=true
-            break
-          fi
-        done
-
-        if ! $is_allowed; then
-          echo "Change in '$file' is not allowed."
-          exit 1
+    while IFS= read -r file; do
+      echo "git_diff file: '$file'"
+      is_allowed=false
+      for allowed_modification in "${ALLOWED_MODIFICATIONS_ARRAY[@]}"; do
+        if [[ "$file" == "$allowed_modification" || "$file" == "$allowed_modification"* ]]; then
+          echo "Change in '$file' is allowed."
+          is_allowed=true
+          break
         fi
       done
-    else
-      echo "You can make changes outside 'src' folder"
+
+      if [[ "$is_allowed" == false ]]; then
+        echo "Change in '$file' is not allowed."
+        exit 1
+      fi
+    done <<< "$git_diff"
+  else
+    echo "You can make changes outside 'src' folder"
   fi
 fi
 #echo "Starting to look for changed modules against $source_to_check_changes..."

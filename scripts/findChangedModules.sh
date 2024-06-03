@@ -8,6 +8,8 @@ if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi
 
+echo "source_to_check_changes: '$source_to_check_changesv'"
+
 github_actor="${GITHUB_ACTOR}"
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")

@@ -14,5 +14,6 @@ jobs:
     
     - name: Turn comment into file
       run: |
+       echo "test-pr"
        chmod +x ./scripts/findChangedModules.sh 
        ./scripts/findChangedModules.sh 

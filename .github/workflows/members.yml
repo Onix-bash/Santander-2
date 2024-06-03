@@ -2,8 +2,9 @@ name: Get Team Members
 
 on:
   pull_request:
-   paths:
-    - 'src/**'
+    paths:
+      - 'src/**'
+
 jobs:
   my_job:
     runs-on: ubuntu-latest

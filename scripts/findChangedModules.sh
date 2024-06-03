@@ -38,6 +38,7 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
         echo "$allowed_modification"
         if [[ "$file" == "$allowed_modification"* ]]; then
+          echo "You can change '$file'."
           is_allowed=true
           break
         fi

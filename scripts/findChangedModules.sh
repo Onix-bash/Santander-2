@@ -1,11 +1,11 @@
 #!/bin/bash
 
 git config --global --add safe.directory "*"
-#github_actor="${GITHUB_ACTOR}"
+github_actor="${GITHUB_ACTOR}"
 
-ALLOWED_MODIFICATIONS='"sfdx-project.json","testFolder/"'
-github_actor="Kristy-klepik"
-DEV_OPS="kristina-klepik,Kristy-user"
+#ALLOWED_MODIFICATIONS='"sfdx-project.json","testFolder/"'
+#github_actor="Kristy-klepik"
+#DEV_OPS="kristina-klepik,Kristy-user"
 
 echo "ALLOWED_MODIFICATIONS: '$ALLOWED_MODIFICATIONS'"
 source_to_check_changes="origin/feature/deploy-test"

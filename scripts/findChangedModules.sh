@@ -16,6 +16,7 @@ git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
 if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 
   IFS=$'\n' read -r -d '' -a DEVOPS_ARRAY <<< "$DEVOPS_TEAM"$'\n'
+  echo "${DEVOPS_ARRAY[*]}"
   is_admin=false
 
   for member in "${DEVOPS_ARRAY[@]}"; do
@@ -28,6 +29,7 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
   # Check if user is NOT in DevOps team
   if ! $is_admin; then
     IFS=$'\n' read -r -d '' -a ALLOWED_DEV_MODIFICATIONS_ARRAY <<< "$ALLOWED_DEV_MODIFICATIONS"$'\n'
+     echo "${ALLOWED_DEV_MODIFICATIONS_ARRAY[*]}"
     while IFS= read -r file; do
       is_allowed=false
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do

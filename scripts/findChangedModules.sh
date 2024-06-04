@@ -8,13 +8,9 @@ if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi
 
-echo "source_to_check_changes: '$source_to_check_changes'"
-echo "ALLOWED_DEV_MODIFICATIONS: '$ALLOWED_DEV_MODIFICATIONS'"
-
-github_actor="${GITHUB_ACTOR}"
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
-echo "git_diff: '$git_diff'"
+
 # Check changes outside src folder
 if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 
@@ -31,15 +27,11 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
   # Check if user is NOT in DevOps team
   if ! $is_admin; then
     IFS=',' read -r -a ALLOWED_DEV_MODIFICATIONS_ARRAY <<< "$ALLOWED_DEV_MODIFICATIONS"
-    allow_changes=true
 
     while IFS= read -r file; do
       is_allowed=false
-      echo "current file: '$file'"
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
-        echo "$allowed_modification"
         if [[ "$file" == "$allowed_modification"* ]]; then
-          echo "You can change '$file'."
           is_allowed=true
           break
         fi
@@ -79,3 +71,4 @@ else
   echo "--- Changes detected for modules ${changed_modules[*]}"
   echo "changed_modules=${changed_modules[*]}" >> "$GITHUB_OUTPUT"
 fi
+echo

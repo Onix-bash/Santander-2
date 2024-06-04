@@ -18,10 +18,12 @@ echo "$git_diff"
 # Check changes outside src folder
 if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 
-  IFS=',' read -r -a DEVOPS_ARRAY <<< "$DEVOPS_TEAM"
+  IFS='\n' read -r -a DEVOPS_ARRAY <<< "$DEVOPS_TEAM"
+ 
   is_admin=false
 
   for member in "${DEVOPS_ARRAY[@]}"; do
+   echo "$member"
     if [[ "$member" == "$GITHUB_ACTOR" ]]; then
       is_admin=true
       break
@@ -30,13 +32,14 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 
   # Check if user is NOT in DevOps team
   if ! $is_admin; then
-    IFS=',' read -r -a ALLOWED_DEV_MODIFICATIONS_ARRAY <<< "$ALLOWED_DEV_MODIFICATIONS"
+    IFS='\n' read -r -a ALLOWED_DEV_MODIFICATIONS_ARRAY <<< "$ALLOWED_DEV_MODIFICATIONS"
     allow_changes=true
 
     while IFS= read -r file; do
       is_allowed=false
       echo "current file: '$file'"
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
+       echo "allowed_modification: '$allowed_modification'"
         echo "$allowed_modification"
         if [[ "$file" == "$allowed_modification"* ]]; then
           echo "You can change '$file'."

@@ -79,7 +79,7 @@
     <rule ref="category/apex/security.xml/ApexInsecureEndpoint" />
     <rule ref="category/apex/security.xml/ApexOpenRedirect" />
     <rule ref="category/apex/security.xml/ApexSharingViolations">
-
+        <priority>3</priority>
     </rule>
 
     <rule ref="category/apex/security.xml/ApexSOQLInjection" />

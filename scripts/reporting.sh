@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-pmd_config_path="config/scanner/pmd_config.xml"
-eslint_config_path="config/scanner/.eslintrc.json"
+pmd_config_path="../config/scanner/pmd_config.xml"
+eslint_config_path="../config/scanner/.eslintrc.json"
 
 ignored_modules=(
   "destructiveChanges"
@@ -16,12 +16,12 @@ scanner_summary="$output_directory/scanner_summary.html"
 scanner_results="$output_directory/scanner_results.html"
 
 # Setup Environment to be used with Metadata Links
-github_repository="${GITHUB_REPOSITORY}"
-github_branch="${GITHUB_REF}"
+#github_repository="${GITHUB_REPOSITORY}"
+#github_branch="${GITHUB_REF}"
 
 start() {
   # Run Scanner
-  for module in src/*; do
+  for module in ../src/*; do
     module_name=${module##*/}
     if ! [[ ${ignored_modules[*]} =~ (^|[[:space:]])"$module_name"($|[[:space:]]) ]]; then
       # Create Module directory

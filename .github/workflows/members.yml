@@ -1,11 +1,12 @@
 name: Get Team Members
 
 on:
-  push:
-    branches:
-      - 'develop'
-    paths:
-      - 'src/**'
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - 'develop'
+  #   paths:
+  #     - 'src/**'
 
 jobs:
   my_job:

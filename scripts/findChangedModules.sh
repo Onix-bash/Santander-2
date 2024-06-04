@@ -8,8 +8,7 @@ if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi
 
-echo "source_to_check_changes: '$source_to_check_changes'"
-echo "ALLOWED_DEV_MODIFICATIONS: '$ALLOWED_DEV_MODIFICATIONS'"
+echo "$ALLOWED_DEV_MODIFICATIONS"
 
 github_actor="${GITHUB_ACTOR}"
 git fetch origin
@@ -39,7 +38,7 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
       is_allowed=false
       echo "current file: '$file'"
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
-       echo "allowed_modification: '$allowed_modification'"
+       echo "$file"
         echo "$allowed_modification"
         if [[ "$file" == "$allowed_modification"* ]]; then
           echo "You can change '$file'."

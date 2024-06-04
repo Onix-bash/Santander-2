@@ -1,7 +1,6 @@
 #!/bin/bash
 
-git config --global --add "*"
-
+git config --global --add safe.directory "*"
 source_to_check_changes="origin/develop"
 
 if [ -n "$1" ]; then

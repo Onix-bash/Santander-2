@@ -2,7 +2,7 @@
  * @created by Stanislav Grinko
  */
 
-public with sharing class classNameTest {
+public without sharing class classNameTest {
  // test push commit
  String variableNewdftgrgdbvd;
  //new comment

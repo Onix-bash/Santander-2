@@ -13,7 +13,7 @@
     "test:unit:coverage": "sfdx-lwc-jest --coverage",
     "prettier": "prettier --write",
     "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
-    "postinstall": "husky install && husky add .husky/pre-commit \"lint-staged\"",
+    "postinstall": "husky install && husky add .husky/pre-commit \"bash ././scripts/precommit.sh\"",
     "precommit": "lint-staged"
   },
   "devDependencies": {

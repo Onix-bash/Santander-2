@@ -1,1 +1,0 @@
-function testHook(){console.log(1);let g =8; return 2}

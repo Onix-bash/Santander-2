@@ -1,1 +1,1 @@
-function testHook(){console.log(1); return 2}
+function testHook(){let o = 5; console.log(1); return 2}

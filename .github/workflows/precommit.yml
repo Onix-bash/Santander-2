@@ -22,5 +22,5 @@ jobs:
 
       - name: Commit changes if any
         run: |
-          chmod +x ./scripts/precommit.yml
-           ./scripts/precommit.yml
+          chmod +x ./scripts/precommit.sh
+           ./scripts/precommit.sh

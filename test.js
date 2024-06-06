@@ -1,0 +1,1 @@
+function testHook(){return 2}

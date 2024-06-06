@@ -4,3 +4,5 @@ function someNumber() {
 }
 
 var isTrue = '2' == 2
+
+console.log('Test')

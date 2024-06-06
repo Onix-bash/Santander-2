@@ -1,4 +1,5 @@
 function someNumber() {
+    console.log('someNumber function call')
     return 5
 }
 

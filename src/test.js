@@ -1,3 +1,2 @@
-function testHook() {
-  console.log(1);let g = 6;return 2;
+function testHook() {console.log(1);let g = 6;return 2;
 }

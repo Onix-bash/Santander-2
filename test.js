@@ -1,1 +1,1 @@
-function testHook(){return 2}
+function testHook(){console.log(1); return 2}

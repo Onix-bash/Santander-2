@@ -1,0 +1,20 @@
+#!/bin/sh
+echo "Pre-commit hook started"
+
+FILES=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
+
+if [ -z "$FILES" ]; then
+  echo "No files to format"
+  exit 0
+fi
+
+echo "Files to be formatted: $FILES"
+
+# Prettify all selected files
+echo "$FILES" | xargs -I {} echo "Formatting {}" && ./node_modules/.bin/prettier --ignore-unknown --write {}
+
+# Add back the modified/prettified files to staging
+echo "$FILES" | xargs -I {} echo "Adding {} to staging" && git add {}
+
+echo "Pre-commit hook completed"
+exit 0

@@ -8,7 +8,7 @@ if [ -z "$FILES" ]; then
 fi
 
 echo "Running prettier"
-npm run prettier:pre-commit -- $FILES
+npm run prettier:pre-commit --"$FILES"
 echo "after prettier: '$FILES'"
 # Add back the modified/prettified files to staging
 echo "$FILES" | xargs git add

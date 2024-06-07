@@ -1,24 +1,25 @@
 name: Get Team Members
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches:
-  #     - 'develop'
-  #   paths:
-  #     - 'src/**'
+    workflow_dispatch:
+    # push:
+    #   branches:
+    #     - 'develop'
+    #   paths:
+    #     - 'src/**'
 
 jobs:
-  my_job:
-    runs-on: ubuntu-latest
-    env:
-      DEVOPS_TEAM: ${{ vars.DEVOPS_TEAM }}
-      ALLOWED_DEV_MODIFICATIONS: ${{ vars.ALLOWED_DEV_MODIFICATIONS }}
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Turn comment into file
-      run: |
-       chmod +x ./scripts/findChangedModules.sh 
-       ./scripts/findChangedModules.sh
+    my_job:
+        runs-on: ubuntu-latest
+        env:
+            DEVOPS_TEAM: ${{ vars.DEVOPS_TEAM }}
+            ALLOWED_DEV_MODIFICATIONS: ${{ vars.ALLOWED_DEV_MODIFICATIONS }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Turn comment into file
+              run: |
+                  echo "start findChangedModules"
+                  chmod +x ./scripts/findChangedModules.sh 
+                  ./scripts/findChangedModules.sh

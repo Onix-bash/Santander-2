@@ -11,8 +11,9 @@
     "test:unit:watch": "sfdx-lwc-jest --watch",
     "test:unit:debug": "sfdx-lwc-jest --debug",
     "test:unit:coverage": "sfdx-lwc-jest --coverage",
-    "prettier": "prettier --write",
+    "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
     "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "prettier:pre-commit": "prettier --write",
     "postinstall": "husky install && husky add .husky/pre-commit \"bash ././scripts/precommit.sh\"",
     "precommit": "lint-staged"
   },
@@ -38,5 +39,7 @@
     "/{aura,lwc}/**/*.js": [
       "eslint"
     ]
-  }
+  },
+  "author": "",
+  "license": "ISC"
 }

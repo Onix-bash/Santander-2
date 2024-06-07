@@ -7,34 +7,33 @@ on: workflow_dispatch
 #     - 'src/**'
 
 jobs:
-  validate-changes:
-    runs-on: ubuntu-latest
-    container:
-      image: salesforce/cli:latest-full
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    validate-changes:
+        runs-on: ubuntu-latest
+        container:
+            image: salesforce/cli:latest-full
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
 
-      - name: Install Scanner
-        run: |
-         sf plugins install @salesforce/sfdx-scanner@latest-beta
-         npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+            - name: Install Scanner
+              run: |
+                  sf plugins install @salesforce/sfdx-scanner@latest-beta
+                  npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
 
-      - name: Run ESLint
-        run: |
-          echo "deploy-branch"
-          chmod +x ./scripts/reporting.sh
-          ./scripts/reporting.sh
-          
-      - name: Show Scan Results
-        run: |
-          cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
+            - name: Run ESLint
+              run: |
+                  echo "deploy-branch"
+                  chmod +x ./scripts/reporting.sh
+                  ./scripts/reporting.sh
 
+            - name: Show Scan Results
+              run: |
+                  cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
 
 #      - name: Deploy Lookup Tables
 #        run: |

@@ -1,6 +1,16 @@
 {
-  "singleQuote": true,
-  "trailingComma": "all",
+  "plugins": ["prettier-plugin-apex"],
+  "trailingComma": "none",
+  "overrides": [
+    {
+      "files": "**/lwc/**/*.html",
+      "options": { "parser": "lwc" }
+    },
+    {
+      "files": "*.{cmp,page,component}",
+      "options": { "parser": "html" }
+    }
+  ],
   "tabWidth": 4,
-  "plugins": ["prettier-plugin-apex"]
+  "useTabs": false
 }

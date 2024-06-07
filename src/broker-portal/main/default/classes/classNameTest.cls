@@ -3,7 +3,6 @@
  */
 
 public with sharing class classNameTest {
-
     String variableNew;
- //new comment
+    //new comment
 }

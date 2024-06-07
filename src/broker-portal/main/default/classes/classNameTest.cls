@@ -3,7 +3,7 @@
  */
 
 public with sharing class classNameTest {
- // test push commit
- String variableNew1;
+
+    String variableNew;
  //new comment
 }

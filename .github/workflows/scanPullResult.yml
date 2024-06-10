@@ -1,29 +1,69 @@
-name: Static Code Analysis on PR
+name: Static Code Analysis on Print
+#on:
+#  pull_request:
+#    types: [opened, reopened, synchronize, edited]
+#  workflow_dispatch:
+#jobs:
+#  code_scanner:
+#    runs-on: ubuntu-latest
+#    name: Daily Code Scan
+#    container:
+#      image: salesforce/cli:latest-full
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Install Node
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '20'
+#
+#      - name: Install SFDX CLI and Scanner
+#        run: |
+#          git config --global --add safe.directory "*"
+#          sf plugins install @salesforce/sfdx-scanner@4.2.0
+#
+#      - name: Run SFDX Scanner - Report findings as comments
+#        uses: mitchspano/sfdx-scan-pull-request@v0.1.14
+#        with:
+#          report-mode: comments
+#          pmdconfig: config/scanner/pmd_config.xml
+#name: SFDX Pull Request Scan
+
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
-  workflow_dispatch:
-jobs:
-  code_scanner:
-    runs-on: ubuntu-latest
-    name: Daily Code Scan
-    container:
-      image: salesforce/cli:latest-full
-    steps:
-      - uses: actions/checkout@v4
+    branches:
+      - main
 
-      - name: Install Node
-        uses: actions/setup-node@v4
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
           node-version: '20'
 
-      - name: Install SFDX CLI and Scanner
-        run: |
-          git config --global --add safe.directory "*"
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
+      - name: Install SFDX CLI
+        run: npm install sfdx-cli
 
-      - name: Run SFDX Scanner - Report findings as comments
+      - name: Install sfdx-scanner
+        run: sfdx plugins:install @salesforce/sfdx-scanner
+
+      - name: Run SFDX Scanner
         uses: mitchspano/sfdx-scan-pull-request@v0.1.14
         with:
-          report-mode: comments
-          pmdconfig: config/scanner/pmd_config.xml
+          pmdconfig: './config/pmd.yml'
+          sfdxscannerconfig: './config/sfdx-scanner.yml'
+          rules: 'pmd'
+          level: 'Error'
+          annotations: 'true'
+
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: sfdx-scan-results
+          path: ./sfdx-scanner-output

@@ -11,7 +11,7 @@ jobs:
       image: salesforce/cli:latest-full
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: APEX delta scan

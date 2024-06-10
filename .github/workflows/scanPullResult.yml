@@ -4,28 +4,20 @@ on:
     types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 jobs:
-  code_scanner:
+  analyze:
     runs-on: ubuntu-latest
-    name: Daily Code Scan
-    container:
-      image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Node
-        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          fetch-depth: 0
 
-      - name: Install SFDX Code Analyser
+      - name: Install SFDX CLI and Scanner
         run: |
-          git config --global --add safe.directory "*"
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
-          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+          npm install sfdx-cli
+          sfdx plugins:install @salesforce/sfdx-scanner
 
-      - name: Run SFDX Scanner
-        uses: mitchspano/sfdx-scan-pull-request@main
+      - name: Run SFDX Scanner - Report findings as comments
+        uses: mitchspano/sfdx-scan-pull-request@v0.1.16
         with:
-          pmdconfig: config/scanner/pmd-config.xml
-          severity-threshold: 2
-          engine: 'pmd'
+          pmdconfig: config/scanner/pmd_config.xml
+          severity-threshold: 4

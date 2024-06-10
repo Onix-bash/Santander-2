@@ -4,12 +4,13 @@ on:
     types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 jobs:
-  analyze:
+  code_scanner:
     runs-on: ubuntu-latest
+    name: Daily Code Scan
+    container:
+      image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Install Node
         uses: actions/setup-node@v4
@@ -25,3 +26,4 @@ jobs:
         uses: mitchspano/sfdx-scan-pull-request@v0.1.16
         with:
           pmdconfig: config/scanner/pmd_config.xml
+          severity-threshold: 4

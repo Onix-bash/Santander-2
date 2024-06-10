@@ -1,7 +1,7 @@
 function testHook() {
-  console.log(1);
-  let h = p;
-  let newNameNumber = 0;
-  let name = "jack";
-  return 23;
+    console.log(1);
+    let h = p;
+    let number = 25;
+    let nameNew = "jack";
+    return 23;
 }

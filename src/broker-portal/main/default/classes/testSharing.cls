@@ -2,6 +2,6 @@
  * @created by Stanislav Grinko
  */
 
-public without sharing class classTestShaaring {
+public class classTestShaaring {
   String variableNewTest;
 }

@@ -6,9 +6,12 @@ on:
 jobs:
   apex:
     runs-on: ubuntu-latest
+    name: Daily Code Scan
+    container:
+      image: salesforce/cli:latest-full
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: APEX delta scan

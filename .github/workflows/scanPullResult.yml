@@ -4,20 +4,20 @@ on:
     types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 jobs:
-  apex:
+  analyze:
     runs-on: ubuntu-latest
-    name: Daily Code Scan
-    container:
-      image: salesforce/cli:latest-full
     steps:
-      - name: Fix git safe.directory in container
-        run: git config --global --add safe.directory "*"
-
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: APEX delta scan
-        uses: mitchspano/sfdx-scan-pull-request@v0.1.16
+
+      - name: Install SFDX CLI and Scanner
+        run: |
+          npm install sfdx-cli 
+          sfdx plugins:install @salesforce/sfdx-scanner
+
+      - name: Run SFDX Scanner - Report findings as comments
+        uses: mitchspano/sfdx-scan-pull-request@v0.1.14
         with:
+          report-mode: comments
           pmdconfig: config/scanner/pmd_config.xml

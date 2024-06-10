@@ -1,0 +1,23 @@
+name: Static Code Analysis on PR
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+  workflow_dispatch:
+jobs:
+  scan_1:
+    runs-on: ubuntu-latest
+    name: Scan Results
+    container:
+      image: salesforce/cli:latest-full
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Scanner
+        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+
+      - name: Run SFDX Scanner
+        uses: mitchspano/sfdx-scan-pull-request@main
+        with:
+          pmdconfig: config/scanner/pmd-config.xml
+          severity-threshold: 2
+          engine: 'pmd'

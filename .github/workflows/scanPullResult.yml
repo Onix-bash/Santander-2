@@ -11,11 +11,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install SFDX Code Analyser
+        run: |
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
+          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
 
       - name: Run SFDX Scanner - Report findings as comments
         uses: mitchspano/sfdx-scan-pull-request@v0.1.16
         with:
           pmdconfig: config/scanner/pmd_config.xml
-          severity-threshold: 4

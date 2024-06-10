@@ -18,7 +18,9 @@ jobs:
           node-version: '20'
 
       - name: Install Scanner
-        run: sf plugins install @salesforce/sfdx-scanner@latest-beta
+        run: |
+          git config --global --add safe.directory "*"
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
 
       - name: Run SFDX Scanner - Report findings as comments
         uses: mitchspano/sfdx-scan-pull-request@v0.1.14

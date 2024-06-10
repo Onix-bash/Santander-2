@@ -3,6 +3,5 @@
  */
 
 public class classTestShaaring {
-  //commit
   String variableNewTest;
 }

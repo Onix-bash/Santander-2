@@ -31,9 +31,8 @@ name: Static Code Analysis on Print
 
 on:
   pull_request:
-    branches:
-      - main
-
+    types: [opened, reopened, synchronize, edited]
+  workflow_dispatch:
 jobs:
   scan:
     runs-on: ubuntu-latest

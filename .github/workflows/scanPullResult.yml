@@ -4,17 +4,22 @@ on:
     types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 jobs:
-  analyze:
+  code_scanner:
     runs-on: ubuntu-latest
+    name: Daily Code Scan
+    container:
+      image: salesforce/cli:latest-full
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version: '20'
 
       - name: Install SFDX CLI and Scanner
         run: |
-          npm install sfdx-cli 
-          sfdx plugins:install @salesforce/sfdx-scanner
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
 
       - name: Run SFDX Scanner - Report findings as comments
         uses: mitchspano/sfdx-scan-pull-request@v0.1.14

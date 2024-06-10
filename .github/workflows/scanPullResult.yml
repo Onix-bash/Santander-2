@@ -10,6 +10,9 @@ jobs:
     container:
       image: salesforce/cli:latest-full
     steps:
+      - name: Fix git safe.directory in container
+        run: git config --global --add safe.directory "*"
+
       - name: Checkout code
         uses: actions/checkout@v3
         with:

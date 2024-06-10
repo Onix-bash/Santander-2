@@ -4,6 +4,5 @@
 
 public class classTestShaaring {
   //commit
-  //  уац
   String variableNewTest;
 }

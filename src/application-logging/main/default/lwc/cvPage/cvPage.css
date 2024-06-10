@@ -17,11 +17,11 @@ a {
     padding-top: 1rem;
     margin-bottom: -2rem;
     width: 100%;
-    background-color: #1B1B1B;
+    background-color: #1b1b1b;
 }
 
 .main-name {
-    color: #FFF;
+    color: #fff;
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
@@ -29,11 +29,9 @@ a {
     margin-left: 0;
     margin-top: 0.3rem;
 }
-
 .generate-cv-button-container {
     margin: 1rem 0 8rem 0;
 }
-
 .save-changes-button-container {
     margin: 2rem 0 3rem 0;
 }
@@ -91,7 +89,7 @@ a {
 }
 
 .labels-container {
-    color: #FFF;
+    color: #fff;
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
@@ -100,7 +98,7 @@ a {
 }
 
 .sub-labels-container {
-    color: #FFF;
+    color: #fff;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -121,8 +119,8 @@ a {
 }
 
 :host {
-    --slds-c-button-brand-color-background: #0348AA;
-    --slds-c-button-brand-color-border: #0348AA;
+    --slds-c-button-brand-color-background: #0348aa;
+    --slds-c-button-brand-color-border: #0348aa;
 
     --slds-c-textarea-color-background: #292929;
     --slds-c-textarea-color-background-focus: #292929;
@@ -130,16 +128,16 @@ a {
     --slds-c-textarea-text-color-error-focus: white;
     --slds-c-textarea-color-border: #292929;
     --slds-c-textarea-color-border-focus: #c9c9c9;
-    --slds-c-textarea-text-color: #FFF;
-    --slds-c-textarea-text-color-focus: #FFF;
+    --slds-c-textarea-text-color: #fff;
+    --slds-c-textarea-text-color-focus: #fff;
     --slds-c-textarea-sizing-min-height: 100px;
 
     --slds-c-input-color-background: #292929;
     --slds-c-input-color-background-focus: #292929;
     --slds-c-input-color-border: #29292;
     --slds-c-input-color-border-focus: #c9c9c9;
-    --slds-c-input-text-color: #FFF;
-    --slds-c-input-text-color-focus: #FFF;
+    --slds-c-input-text-color: #fff;
+    --slds-c-input-text-color-focus: #fff;
 }
 
 @keyframes fadeIn {

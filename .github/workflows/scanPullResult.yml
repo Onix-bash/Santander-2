@@ -26,4 +26,4 @@ jobs:
         uses: mitchspano/sfdx-scan-pull-request@v0.1.14
         with:
           report-mode: comments
-          pmdconfig: config/scanner/pmd_config.xml
+         

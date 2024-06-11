@@ -19,11 +19,10 @@ jobs:
           sf plugins install @salesforce/sfdx-scanner@4.2.0
 
       - name: Run SFDX Scanner - Report findings as comments
-        uses: mitchspano/sfdx-scan-pull-request@v0.1.16
+        uses: mitchspano/sfdx-scan-pull-request@v0.1.15
         with:
           pmdconfig: config/scanner/pmd_config.xml
           severity-threshold: 2
-          engine: 'pmd'
-          report-mode: check-runs
+          report-mode: comments
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

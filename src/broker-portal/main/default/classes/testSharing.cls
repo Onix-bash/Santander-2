@@ -1,6 +1,6 @@
 
 
 public class classTestShaaring {
-  //new commit kkhjnb
+  //new commit
   String variableNewTest;
 }

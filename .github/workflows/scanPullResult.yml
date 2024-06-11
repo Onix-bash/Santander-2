@@ -22,7 +22,8 @@ jobs:
         uses: mitchspano/sfdx-scan-pull-request@v0.1.16
         with:
           custom-pmd-rules: '[ { "path": "config/scanner/pmd_config.xml", "language": "xml" }]'
-          pmdconfig: config/scanner/pmd_config.xml
+          engine: 'pmd'
+          severity-threshold: 3
           report-mode: comments
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

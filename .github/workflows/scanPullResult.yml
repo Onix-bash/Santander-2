@@ -1,29 +1,26 @@
 name: Static Code Analysis on PR
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 jobs:
-  code_scanner:
+  analyze:
     runs-on: ubuntu-latest
-    name: Daily Code Scan
-    container:
-      image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Node
-        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          fetch-depth: 0
 
-      - name: Install Scanner
+      - name: Install SFDX CLI and Scanner
         run: |
-          git config --global --add safe.directory "*"
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
+          npm install sfdx-cli 
+          sfdx plugins:install @salesforce/sfdx-scanner
 
       - name: Run SFDX Scanner - Report findings as comments
-        uses: mitchspano/sfdx-scan-pull-request@v0.1.14
+        uses: mitchspano/sfdx-scan-pull-request@v0.1.16
         with:
-          report-mode: comments
           pmdconfig: config/scanner/pmd_config.xml
+          severity-threshold: 4
+          report-mode: comments
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

@@ -16,16 +16,21 @@ jobs:
           git config --global --add safe.directory "*"
           sf plugins install @salesforce/sfdx-scanner@4.2.0
 
-      - name: Get Changed Files
-        id: changed-files
-        run: |
-          files=$(jq -r '.pull_request.changed_files | join(",")' <<<"${{ toJSON(github.event) }}")
-          echo "files=$files" >> $GITHUB_ENV
+      - name: Get Files
+        uses: ankitjain28may/list-files-in-pr@v1.0
+        id: list-files
+        with:
+          githubToken: ${{ github.token }}
+          outputFormat: 'space-delimited'
+          run: |
+                for file in ${{ steps.list-files.outputs.pullRequestFiles }}; do
+                  echo "Changed Files - ${file}."
+                done
 
       - name: Run SFDX Scanner
         id: run-scanner
         run: |
-          changed_files=${{ steps.changed-files.outputs.files }}
+          changed_files=${{ steps.list-files.outputs.pullRequestFiles }}
           if [ -z "$changed_files" ]; then
             echo "No files changed."
             exit 0

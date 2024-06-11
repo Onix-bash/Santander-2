@@ -5,43 +5,16 @@ on:
 
 jobs:
   pmd-analyser-check:
-    name: PMD Static Code Analysis
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
     runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: pmd
+        uses: Alfresco/alfresco-build-tools/.github/actions/pmd@ref
         with:
-          # Incremental diffs require fetch depth to be at 0 to grab the target branch
-          fetch-depth: '0'
-#      - name: Run Full PMD Analysis
-#        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-#        id: pmd-full-analysis
-#        uses: synergy-au/pmd-analyser-action@v2.1
-#        with:
-#          analyse-all-code: 'true'
-#          pmd-version: 'latest'
-#          file-path: './src'
-#          rules-path: './pmd-ruleset.xml'
-#          error-rules: 'AvoidDirectAccessTriggerMap,AvoidDmlStatementsInLoops,AvoidHardcodingId'
-#          note-rules: 'ApexDoc'
-      - name: Run PMD Analysis on Files Changed
-        id: pmd-partial-analysis
-        if: github.event.pull_request != null
-        uses: synergy-au/pmd-analyser-action@v2.1
-        with:
-          pmd-version: 'latest'
-          file-path: './src'
-          rules-path: 'config/scanner/pmd_config.xml'
-      - name: Upload results to GitHub
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: pmd-output.sarif
-      - name: No PMD Errors?
-        run: |
-          if [ "${{ steps.pmd-partial-analysis.outputs.error-found }}" = "true" ]; then
-           exit 3
-          fi
+           pmd-version: "7.1.0" # The version of PMD to use (only 7.x versions are supported).
+           create-github-annotations: "true" # Whether to create annotations using the GitHub Advanced Security (nb. this is not free for private repositories)
+           pmd-ruleset-path: "config/scanner/pmd_config.xml" # The path to the PMD ruleset file from the root of the ruleset project. Optionally other paths to local rulesets can be appended to this separated by commas.

@@ -22,7 +22,7 @@ jobs:
         uses: mitchspano/sfdx-scan-pull-request@v0.1.15
         with:
           pmdconfig: config/scanner/pmd_config.xml
-          severity-threshold: 2
+          severity-threshold: all
           report-mode: comments
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

@@ -16,9 +16,6 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           sf plugins install @salesforce/sfdx-scanner@4.2.0
-          curl -L -o pmd-bin.zip https://github.com/pmd/pmd/releases/download/pmd_releases/6.38.0/pmd-bin-6.38.0.zip
-          unzip pmd-bin.zip -d /tmp/
-          export PATH=$PATH:/tmp/pmd-bin-6.38.0/bin
 
       - name: Get changed files
         env:
@@ -30,7 +27,8 @@ jobs:
           echo "Fetching changed files from $API_URL"
           CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
           echo "Changed files JSON: $CHANGED_FILES_JSON"
-          echo "$CHANGED_FILES_JSON" | jq -r '.[].filename' | grep -E '\.cls$|\.trigger$' > changed_files.txt
+          CHANGED_FILES=$(echo "$CHANGED_FILES_JSON" | jq -r '[.[] | .filename] | join(",")')
+          echo "$CHANGED_FILES"
 
           if [ ! -s changed_files.txt ]; then
             echo "No Apex files changed in this PR."

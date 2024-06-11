@@ -5,8 +5,7 @@
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
 
     <!-- Data Model: Start -->
-    <rule name="DescriptionIsRequired" language="xml" message="Description is required"
-        class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+    <rule name="DescriptionIsRequired" language="xml" message="Description is required" class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
         <properties>
             <property name="xpath">
                 <value><![CDATA[//(CustomObject | CustomField)[not(description)]]]></value>

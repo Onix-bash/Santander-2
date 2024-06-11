@@ -161,7 +161,7 @@
     </nameField>
     <pluralLabel>Projects</pluralLabel>
     <recordTypeTrackHistory>false</recordTypeTrackHistory>
-    <searchLayouts></searchLayouts>
+    <searchLayouts>News</searchLayouts>
     <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>

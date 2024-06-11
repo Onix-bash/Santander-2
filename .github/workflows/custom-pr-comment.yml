@@ -20,7 +20,7 @@ jobs:
         id: changed-files
         run: |
           files=$(jq -r '.pull_request.changed_files | join(",")' <<<"${{ toJSON(github.event) }}")
-          echo "::set-output name=files::$files"
+          echo "files=$files" >> $GITHUB_ENV
 
       - name: Run SFDX Scanner
         id: run-scanner

@@ -4,6 +4,19 @@ on:
     types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 jobs:
+  GraphEngine:
+    runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Salesforce CLI
+        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
+      - name: SF Code Analyzer - Data Flow Analysis
+        run: |
+          sf scanner:run:dfa --target force-app --projectdir force-app --format table --severity-threshold 3
+
   analyze:
     runs-on: ubuntu-latest
     container:

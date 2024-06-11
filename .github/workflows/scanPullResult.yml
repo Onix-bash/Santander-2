@@ -6,15 +6,15 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Install SFDX CLI and Scanner
-        run: |
-          npm install salesforce/cli:latest-full
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
+        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
 
       - name: Run SFDX Scanner - Report findings as comments
         uses: mitchspano/sfdx-scan-pull-request@v0.1.16

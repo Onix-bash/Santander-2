@@ -4,58 +4,45 @@ on:
   pull_request:
 
 jobs:
-  scanner:
+  pmd-analyser-check:
+    name: PMD Static Code Analysis
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
     runs-on: ubuntu-latest
-    container:
-      image: salesforce/cli:latest-full
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install SFDX Scanner Plugin
-        run: |
-          git config --global --add safe.directory "*"
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
-
-      - name: Get changed files
-        id: changes
-        # Set outputs using the command.
-        run: |
-          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
-          echo "::set-output name=ts::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .ts$ | xargs)"
-  lint:
-    runs-on: ubuntu-latest
-    # require the first job to have ran
-    needs: changedfiles
-    # only run there are changed files
-    if: ${{needs.changedfiles.outputs.ts}}
-    steps:
-      - name: echo changed files
-        run: echo ${{needs.changedfiles.outputs.ts}}
-
-#      - name: Run SFDX Scanner
-#        id: run-scanner
-#        run: |
-#          changed_files=${{ steps.list-files.outputs.pullRequestFiles }}
-#          if [ -z "$changed_files" ]; then
-#            echo "No files changed."
-#            exit 0
-#          fi
-#          sfdx scanner:run --pmdconfig config/scanner/pmd_config.xml --target "$changed_files" --json > scan-result.json
-#        continue-on-error: true
-#
-#      - name: Parse Scan Results
-#        id: parse-results
-#        run: |
-#          cat scan-result.json
-#          errors=$(jq -c '.result.files[] | select(.issues | length > 0) | {path: .fileName, issues: .issues}' scan-result.json)
-#          echo "::set-output name=errors::$errors"
-#
-#      - name: Add Comments to PR
-#        uses: peter-evans/create-or-update-comment@v1
-#        if: steps.run-scanner.outcome == 'failure'
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # Incremental diffs require fetch depth to be at 0 to grab the target branch
+          fetch-depth: '0'
+#      - name: Run Full PMD Analysis
+#        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+#        id: pmd-full-analysis
+#        uses: synergy-au/pmd-analyser-action@v2.1
 #        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          issue-number: ${{ github.event.pull_request.number }}
-#          body: |
-#            **SFDX Scanner Results**
-#            {{ steps.parse-results.outputs.errors }}
+#          analyse-all-code: 'true'
+#          pmd-version: 'latest'
+#          file-path: './src'
+#          rules-path: './pmd-ruleset.xml'
+#          error-rules: 'AvoidDirectAccessTriggerMap,AvoidDmlStatementsInLoops,AvoidHardcodingId'
+#          note-rules: 'ApexDoc'
+      - name: Run PMD Analysis on Files Changed
+        id: pmd-partial-analysis
+        if: github.event.pull_request != null
+        uses: synergy-au/pmd-analyser-action@v2.1
+        with:
+          pmd-version: 'latest'
+          file-path: './src'
+          rules-path: 'config/scanner/pmd_config.xml'
+      - name: Upload results to GitHub
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: pmd-output.sarif
+      - name: No PMD Errors?
+        run: |
+          if ${{ steps.pmd-full-analysis.outputs.error-found }} ${{ steps.pmd-partial-analysis.outputs.error-found }}
+          then
+            exit 3
+          fi

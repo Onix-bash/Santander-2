@@ -1,20 +1,44 @@
 name: SFDX Scanner and Comment
 
+# Definition when the workflow should run
 on:
   pull_request:
 
+# Jobs to be executed when the above conditions are met
 jobs:
-  pmd-analyser-check:
+  # This is the name of the job. You can give it whatever name you want
+  Run-PMD-Code-Scan:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request'
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write
+      # only required for workflows in private repositories
+      actions: read
 
-      - name: pmd
-        uses: Alfresco/alfresco-build-tools/.github/actions/pmd@ref
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+
+      # Now we install nodejs in the VM, and specify version 14
+      - uses: actions/setup-node@v4
         with:
-           pmd-version: "7.1.0" # The version of PMD to use (only 7.x versions are supported).
-           create-github-annotations: "true" # Whether to create annotations using the GitHub Advanced Security (nb. this is not free for private repositories)
-           pmd-ruleset-path: "config/scanner/pmd_config.xml" # The path to the PMD ruleset file from the root of the ruleset project. Optionally other paths to local rulesets can be appended to this separated by commas.
+          node-version: '20'
+
+      - name: 'Checkout source code'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Run PMD Scan
+      - name: 'Run PMD Scan'
+        uses: pmd/pmd-github-action@v1
+        id: pmd
+        with:
+          sourcePath: 'src'
+          rulesets: 'config/scanner/pmd_config.xml'
+          analyzeModifiedFilesOnly: true
+          createGitHubAnnotations: true
+
+      - name: Fail build if there are violations
+        if: steps.pmd.outputs.violations != 0
+        run: exit 1

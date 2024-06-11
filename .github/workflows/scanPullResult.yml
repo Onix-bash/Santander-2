@@ -23,5 +23,6 @@ jobs:
         with:
           pmdconfig: config/scanner/pmd_config.xml
           report-mode: comments
+          severity-threshold: 2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}

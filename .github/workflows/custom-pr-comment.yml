@@ -1,5 +1,4 @@
-name: SFDX Scanner and Comment
-
+name: Static Code Analysis on PR
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited]
@@ -17,29 +16,37 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           sf plugins install @salesforce/sfdx-scanner@4.2.0
-#          curl -L -o pmd-bin.zip https://github.com/pmd/pmd/releases/download/pmd_releases/6.38.0/pmd-bin-6.38.0.zip
-#          unzip pmd-bin.zip -d /tmp/
-#          export PATH=$PATH:/tmp/pmd-bin-6.38.0/bin
+          curl -L -o pmd-bin.zip https://github.com/pmd/pmd/releases/download/pmd_releases/6.38.0/pmd-bin-6.38.0.zip
+          unzip pmd-bin.zip -d /tmp/
+          export PATH=$PATH:/tmp/pmd-bin-6.38.0/bin
 
-      - name: Run PMD Analysis on Changed Files
+      - name: Get changed files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_NUMBER=$(echo $GITHUB_REF | grep -o '[0-9]*$')
           REPO_NAME=$(echo $GITHUB_REPOSITORY)
           API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
-          CHANGED_FILES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL | jq -r '.[].filename' | grep -E '\.cls$|\.trigger$')
+          echo "Fetching changed files from $API_URL"
+          CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
+          echo "Changed files JSON: $CHANGED_FILES_JSON"
+          echo "$CHANGED_FILES_JSON" | jq -r '.[].filename' | grep -E '\.cls$|\.trigger$' > changed_files.txt
 
-          if [ -z "$CHANGED_FILES" ]; then
+          if [ ! -s changed_files.txt ]; then
             echo "No Apex files changed in this PR."
             exit 0
           fi
 
+      - name: Copy changed files
+        run: |
           mkdir -p changed_files
-          for file in $CHANGED_FILES; do
-            cp --parents "$file" changed_files/
-          done
+          while IFS= read -r file; do
+            mkdir -p "$(dirname "changed_files/$file")"
+            cp "$file" "changed_files/$file"
+          done < changed_files.txt
 
+      - name: Run PMD Analysis on Changed Files
+        run: |
           sf scanner:run --target changed_files --format xml --output pmd-report.xml --pmdconfig config/scanner/pmd_config.xml
 
       - name: Post PMD Results to GitHub PR
@@ -49,7 +56,7 @@ jobs:
           if [ -f pmd-report.xml ]; then
             COMMENTS=$(mktemp)
             echo "### PMD Analysis Report" >> $COMMENTS
-            while read -r file; do
+            while IFS= read -r file; do
               VIOLATIONS=$(xmllint --xpath "//violation[contains(@file, '$file')]" pmd-report.xml | sed 's/<[^>]*>//g')
               if [ ! -z "$VIOLATIONS" ]; then
                 echo "- **${file}**:" >> $COMMENTS
@@ -57,7 +64,7 @@ jobs:
                   echo "  - $line" >> $COMMENTS
                 done
               fi
-            done < <(echo "$CHANGED_FILES")
+            done < changed_files.txt
 
             COMMENT_BODY=$(cat $COMMENTS)
             PR_NUMBER=$(echo $GITHUB_REF | grep -o '[0-9]*$')
@@ -68,4 +75,4 @@ jobs:
           fi
 
       - name: Clean up
-        run: rm -rf /tmp/pmd-bin-6.38.0 pmd-bin.zip changed_files pmd-report.xml
+        run: rm -rf /tmp/pmd-bin-6.38.0 pmd-bin.zip changed_files pmd-report.xml changed_files.txt

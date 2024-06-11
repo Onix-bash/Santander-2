@@ -16,41 +16,46 @@ jobs:
           git config --global --add safe.directory "*"
           sf plugins install @salesforce/sfdx-scanner@4.2.0
 
-      - name: Get Files
-        uses: ankitjain28may/list-files-in-pr@v1.0
-        id: list-files
-        with:
-          githubToken: ${{ github.token }}
-          outputFormat: 'space-delimited'
-          run: |
-                for file in ${{ steps.list-files.outputs.pullRequestFiles }}; do
-                  echo "Changed Files - ${file}."
-                done
-
-      - name: Run SFDX Scanner
-        id: run-scanner
+      - name: Get changed files
+        id: changes
+        # Set outputs using the command.
         run: |
-          changed_files=${{ steps.list-files.outputs.pullRequestFiles }}
-          if [ -z "$changed_files" ]; then
-            echo "No files changed."
-            exit 0
-          fi
-          sfdx scanner:run --pmdconfig config/scanner/pmd_config.xml --target "$changed_files" --json > scan-result.json
-        continue-on-error: true
+          echo "::set-output name=all::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)"
+          echo "::set-output name=ts::$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep .ts$ | xargs)"
+  lint:
+    runs-on: ubuntu-latest
+    # require the first job to have ran
+    needs: changedfiles
+    # only run there are changed files
+    if: ${{needs.changedfiles.outputs.ts}}
+    steps:
+      - name: echo changed files
+        run: echo ${{needs.changedfiles.outputs.ts}}
 
-      - name: Parse Scan Results
-        id: parse-results
-        run: |
-          cat scan-result.json
-          errors=$(jq -c '.result.files[] | select(.issues | length > 0) | {path: .fileName, issues: .issues}' scan-result.json)
-          echo "::set-output name=errors::$errors"
-
-      - name: Add Comments to PR
-        uses: peter-evans/create-or-update-comment@v1
-        if: steps.run-scanner.outcome == 'failure'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            **SFDX Scanner Results**
-            {{ steps.parse-results.outputs.errors }}
+#      - name: Run SFDX Scanner
+#        id: run-scanner
+#        run: |
+#          changed_files=${{ steps.list-files.outputs.pullRequestFiles }}
+#          if [ -z "$changed_files" ]; then
+#            echo "No files changed."
+#            exit 0
+#          fi
+#          sfdx scanner:run --pmdconfig config/scanner/pmd_config.xml --target "$changed_files" --json > scan-result.json
+#        continue-on-error: true
+#
+#      - name: Parse Scan Results
+#        id: parse-results
+#        run: |
+#          cat scan-result.json
+#          errors=$(jq -c '.result.files[] | select(.issues | length > 0) | {path: .fileName, issues: .issues}' scan-result.json)
+#          echo "::set-output name=errors::$errors"
+#
+#      - name: Add Comments to PR
+#        uses: peter-evans/create-or-update-comment@v1
+#        if: steps.run-scanner.outcome == 'failure'
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          issue-number: ${{ github.event.pull_request.number }}
+#          body: |
+#            **SFDX Scanner Results**
+#            {{ steps.parse-results.outputs.errors }}

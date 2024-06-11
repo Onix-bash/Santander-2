@@ -1,7 +1,7 @@
 name: Static Code Analysis on PR
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 jobs:
   analyze:

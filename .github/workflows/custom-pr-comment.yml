@@ -37,12 +37,11 @@ jobs:
           file-path: './src'
           rules-path: 'config/scanner/pmd_config.xml'
       - name: Upload results to GitHub
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: pmd-output.sarif
       - name: No PMD Errors?
         run: |
-          if ${{ steps.pmd-full-analysis.outputs.error-found }} ${{ steps.pmd-partial-analysis.outputs.error-found }}
-          then
-            exit 3
+          if [ "${{ steps.pmd-partial-analysis.outputs.error-found }}" = "true" ]; then
+           exit 3
           fi

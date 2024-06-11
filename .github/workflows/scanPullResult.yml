@@ -9,14 +9,15 @@ jobs:
     container:
       image: salesforce/cli:latest-full
     steps:
+      - name: Github Be Dubious
+        run: git config --global safe.directory '*'
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Install SFDX CLI and Scanner
-        run: |
-          git config --global --add safe.directory "*"
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
+        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
 
       - name: Run SFDX Scanner - Report findings as comments
         uses: mitchspano/sfdx-scan-pull-request@v0.1.16

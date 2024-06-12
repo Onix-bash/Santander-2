@@ -26,8 +26,9 @@ jobs:
           API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
           echo "Fetching changed files from $API_URL"
           CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
-         
-          CHANGED_FILES=$(echo "$CHANGED_FILES_JSON" | jq -r '[.[] | .filename] | join(",")')
+          
+          CHANGED_FILES=$(echo "$CHANGED_FILES_JSON" | tr -d '\000-\031' | jq -r '[.[] | .filename] | join(",")')
+    
           echo "CHANGED_FILES_Names: '$CHANGED_FILES'"
 
           if [ ! -s changed_files.txt ]; then

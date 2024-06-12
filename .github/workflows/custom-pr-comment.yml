@@ -8,11 +8,18 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
     permissions:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Install SFDX CLI and PMD
+        run: |
+          git config --global --add safe.directory "*"
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
 
       - name: Get diff of the pull request
         id: get_diff
@@ -23,14 +30,12 @@ jobs:
         run: |-
             git fetch origin "${{ env.PULL_REQUEST_BASE_REF }}:${{ env.PULL_REQUEST_BASE_REF }}"
             git fetch origin "${{ env.PULL_REQUEST_HEAD_REF }}:${{ env.PULL_REQUEST_HEAD_REF }}"
-            git diff --name-only origin/${{ env.PULL_REQUEST_BASE_REF }}..origin/${{ env.PULL_REQUEST_HEAD_REF }} > diff.txt
-            cat diff.txt
-            echo "DIFF=$(cat diff.txt)" >> $GITHUB_ENV
+            git_diff=git diff --name-only origin/${{ env.PULL_REQUEST_BASE_REF }}..origin/${{ env.PULL_REQUEST_HEAD_REF }}
+            
+            echo "git_diff: '$git_diff'"
+            sfdx scanner:run --target $git_diff --format json --output pmd-report.json --pmdconfig config/scanner/pmd_config.xml
+      
 
-            - name: Output changed file names
-              run: |
-                echo "Changed files:"
-                echo "${{ env.DIFF }}"
      
 
 #on:

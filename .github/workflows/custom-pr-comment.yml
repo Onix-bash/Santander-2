@@ -2,7 +2,7 @@ name: Custom Scanner PMD
 
 on:
   pull_request:
-      types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 
 jobs:
@@ -30,30 +30,31 @@ jobs:
 
               // Iterate through files and add a comment
               for (const file of files) {
-              const path = file.filename;
-              const patch = file.patch;
-              // Find first added line in the patch
-              const addLines = patch.split('\n').filter(line => line.startsWith('+')).map((line, index) => index + 1);
-              
-              const message = "My commit"; // Make sure to properly define and format message
-              
-              if (addLines.length > 0) {
-              const firstAddLine = addLines[0]; // Take the first added line number
-              
-              await github.rest.pulls.createReviewComment({
-              owner: repoOwner,
-              repo: repoName,
-              pull_number: prNumber,
-              body: message,
-              commit_id: context.payload.pull_request.head.sha,
-              path: path,
-              line: firstAddLine,
-              side: 'RIGHT',
-              });
-              } else {
-                console.log(`No added lines found in ${path}`);
+                const path = file.filename;
+                const patch = file.patch;
+
+                // Find the first added line and its position in the diff
+                const addedLineInfo = patch.split('\n').map((line, index) => ({ line, index }))
+                  .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
+            
+                if (addedLineInfo) {
+                  const lineNumber = addedLineInfo.index + 1; // 1-based index
+                  const message = "My commit";
+
+                  await github.rest.pulls.createReviewComment({
+                    owner: repoOwner,
+                    repo: repoName,
+                    pull_number: prNumber,
+                    body: message,
+                    commit_id: context.payload.pull_request.head.sha,
+                    path: path,
+                    line: lineNumber,
+                    side: 'RIGHT'
+                  });
+                } else {
+                  console.log(`No added lines found in ${path}`);
+                }
               }
-              }
-              } catch (error) {
+            } catch (error) {
               console.log(`Error: ${error.message}`);
-              }
+            }

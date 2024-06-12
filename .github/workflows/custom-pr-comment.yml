@@ -21,13 +21,11 @@ jobs:
         run: |-
           git fetch origin "${{ env.PULL_REQUEST_HEAD_REF }}:${{ env.PULL_REQUEST_HEAD_REF }}"
           git checkout "${{ env.PULL_REQUEST_HEAD_REF }}"
-          git diff --name-only "origin/${{ env.PULL_REQUEST_BASE_REF }}" "origin/${{ env.PULL_REQUEST_HEAD_REF }}" > diff.txt
+          git diff --name-only "origin/${{ env.PULL_REQUEST_HEAD_REF }}" > "diff.txt"
           cat diff.txt
           echo "DIFF=$(cat diff.txt)" >> $GITHUB_ENV
-
-      - name: Output changed file names
-        run: |
-          echo "Changed files:"
+          
+          echo "diff=$(cat "diff.txt")" >> $GITHUB_ENV
           echo "${{ env.DIFF }}"
 
 #on:

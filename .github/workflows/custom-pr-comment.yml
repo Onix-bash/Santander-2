@@ -8,19 +8,51 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    container:
-      image: salesforce/cli:latest-full
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - uses: actions/github-script@v6
+      - name: Add comment to PR files
+        uses: actions/github-script@v7
         with:
-         script: |
-            // Fetch files modified in the PR
-            const pulledFiles = await github.pulls.listFiles({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: context.issue.number,
-            });
-            return pulledFiles;
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+
+            try {
+              // Get list of files changed in the PR
+              const { data: files } = await github.rest.pulls.listFiles({
+                owner: repoOwner,
+                repo: repoName,
+                pull_number: prNumber
+              });
+            
+              console.log('files', files);
+
+              // Iterate through files and add a comment
+              for (const file of files) {
+                const path = file.filename;
+                const patch = file.patch;
+                const lineNumber = patch.split('\n').findIndex(line => line.startsWith('+')) + 1; // Find the first added line
+
+                const message = `second comment on the file: ${path}`;
+
+                if (lineNumber > 0) {
+                  await github.rest.pulls.createReviewComment({
+                    owner: repoOwner,
+                    repo: repoName,
+                    pull_number: prNumber,
+                    body: message,
+                    commit_id: context.payload.pull_request.head.sha,
+                    path: path,
+                    side: 'RIGHT',
+                    line: lineNumber
+                  });
+                } else {
+                  console.log(`No added lines found in ${path}`);
+                }
+              }
+            } catch (error) {
+              core.setFailed(`Error: ${error.message}`);
+            }

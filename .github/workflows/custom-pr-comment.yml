@@ -16,11 +16,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
-            const parser = require('diff-parser');
             const prNumber = context.payload.pull_request.number;
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
+
             try {
               // Get list of files changed in the PR
               const { data: files } = await github.rest.pulls.listFiles({
@@ -29,33 +28,39 @@ jobs:
                 pull_number: prNumber
               });
             
+              console.log('files', files);
+
               // Iterate through files and add a comment
               for (const file of files) {
                 const path = file.filename;
                 const patch = file.patch;
-                const hunks = parser.parsePatch(patch);
-                for (const hunk of hunks) {
-                  const lineNumber = hunk.newStart + hunk.newLines.findIndex(line => line.startsWith('+'));
-                  const message = 'My commit';
-                  if (lineNumber > 0 && lineNumber >= hunk.newStart && lineNumber < hunk.newStart + hunk.newLines.length) {
-                    await github.rest.pulls.createReviewComment({
-                      owner: repoOwner,
-                      repo: repoName,
-                      pull_number: prNumber,
-                      body: message,
-                      commit_id: context.payload.pull_request.head.sha,
-                      path: path,
-                      start_line: hunk.newStart,
-                      start_side: 'RIGHT',
-                      line: lineNumber,
-                      side: 'RIGHT',
-                      diff_hunk: `@@ -${hunk.oldStart},${hunk.oldLines.length} +${hunk.newStart},${hunk.newLines.length} @@`,
-                    });
-                  } else {
-                    console.log(`No added lines found in ${path}`);
-                  }
+                const lineNumber = patch.split('\n').findIndex(line => line.startsWith('+')) + 1; // Find the first added line
+
+                const message = `My commit`;
+
+                i const addLines = patch.split('\n').filter(line => line.startsWith('+')).map((line, index) => index + 1);
+            
+                const message = "My commit"; // Make sure to properly define and format message
+
+                if (addLines.length > 0) {
+                  const firstAddLine = addLines[0]; // Take the first added line number
+            
+                  await github.rest.pulls.createReviewComment({
+                    owner: repoOwner,
+                    repo: repoName,
+                    pull_number: prNumber,
+                    body: message,
+                    commit_id: context.payload.pull_request.head.sha,
+                    path: path,
+                    line: firstAddLine,
+                    side: 'RIGHT',
+                  });
+                } else {
+                  console.log(`No added lines found in ${path}`);
                 }
               }
             } catch (error) {
               console.log(`Error: ${error.message}`);
             }
+            
+            

@@ -27,20 +27,16 @@ jobs:
                 repo: repoName,
                 pull_number: prNumber
               });
-            
-              console.log('files', files);
 
               // Iterate through files and add a comment
               for (const file of files) {
                 const path = file.filename;
                 const patch = file.patch;
-                const lineNumber = patch.split('\n').findIndex(line => line.startsWith('+')) + 1; // Find the first added line
-
+                  console.log(file.filename);
                 const message = `My commit`;
 
-                i const addLines = patch.split('\n').filter(line => line.startsWith('+')).map((line, index) => index + 1);
+                const addLines = patch.split('\n').filter(line => line.startsWith('+')).map((line, index) => index + 1);
             
-                const message = "My commit"; // Make sure to properly define and format message
 
                 if (addLines.length > 0) {
                   const firstAddLine = addLines[0]; // Take the first added line number

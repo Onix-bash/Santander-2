@@ -48,7 +48,7 @@ jobs:
                     body: message,
                     commit_id: context.payload.pull_request.head.sha,
                     path: path,
-                    line: firstAddLine,
+                    subject_type: file,
                     side: 'RIGHT',
                   });
                 } else {

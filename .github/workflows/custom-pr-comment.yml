@@ -28,15 +28,32 @@ jobs:
             uses: actions/github-script@v6
             with:
               script: |
-                const newMessage = 'New message to add to the PR body.\n\n' +
-                                   ':wave: :earth_americas: :octocat: :tada: :1st_place_medal:"'  +
-                                   ':wave: :earth_americas: :octocat: :tada: :1st_place_medal:"'  ;
-                github.rest.pulls.update({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: context.issue.number,
-                  body: context.payload.pull_request.body + '\n\n' + newMessage
+                const prNumber = context.payload.pull_request.number;
+                const repoOwner = context.repo.owner;
+                const repoName = context.repo.repo;
+
+                // Get list of files changed in the PR
+                const { data: files } = await github.pulls.listFiles({
+                  owner: repoOwner,
+                  repo: repoName,
+                  pull_number: prNumber
                 });
+
+                // Iterate through files and add a comment
+                for (const file of files) {
+                  const path = file.filename;
+                  const message = `This is a comment on the file: ${path}`;
+
+                  await github.pulls.createReviewComment({
+                    owner: repoOwner,
+                    repo: repoName,
+                    pull_number: prNumber,
+                    body: message,
+                    commit_id: context.payload.pull_request.head.sha,
+                    path: path,
+                    position: 1 // Line number to comment on
+                  });
+                }
 
 #      - name: Get changed files
 #        env:

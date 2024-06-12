@@ -20,6 +20,9 @@ jobs:
           rulesets: 'config/scanner/pmd_config.xml'
           sourcePath: 'src'
           analyzeModifiedFilesOnly: true
+      - name: Fail build if there are violations
+        if: steps.pmd.outputs.violations != 0
+        run: exit 1
 #      - name: Upload SARIF file
 #        uses: github/codeql-action/upload-sarif@v3
 #        with:

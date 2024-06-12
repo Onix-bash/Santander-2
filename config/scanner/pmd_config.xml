@@ -11,6 +11,23 @@
           class="net.sourceforge.pmd.lang.rule.xpath.XPathRule"
           externalInfoUrl="https://pmd.sourceforge.io/pmd-6.38.0/pmd_rules_xml.html"
     >
+
+        <description>
+            This rule checks that all CustomObject and CustomField elements in XML files have a description. Having a description helps maintain the clarity and purpose of these elements in the data model.
+        </description>
+
+        <example><![CDATA[
+            <CustomObject>
+                <!-- Missing description -->
+            </CustomObject>
+        ]]></example>
+
+        <example><![CDATA[
+            <CustomObject>
+                <description>This is a description</description>
+            </CustomObject>
+        ]]>
+        </example>
         <properties>
             <property name="xpath">
                 <value><![CDATA[//(CustomObject | CustomField)[not(description)]]]></value>

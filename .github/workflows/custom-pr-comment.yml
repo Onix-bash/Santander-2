@@ -6,35 +6,57 @@ on:
   workflow_dispatch:
 
 jobs:
-  review:
+  analyze:
     runs-on: ubuntu-latest
     container:
       image: salesforce/cli:latest-full
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Install SFDX CLI and PMD
         run: |
           git config --global --add safe.directory "*"
           sf plugins install @salesforce/sfdx-scanner@4.2.0
 
-      - name: Get diff of the pull request
-        id: get_diff
-        shell: bash
+      - name: Get changed files
         env:
-          PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
-          PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
-        run: |-
-            git fetch origin "${{ env.PULL_REQUEST_BASE_REF }}:${{ env.PULL_REQUEST_BASE_REF }}"
-            git fetch origin "${{ env.PULL_REQUEST_HEAD_REF }}:${{ env.PULL_REQUEST_HEAD_REF }}"
-            git_diff=git diff --name-only origin/${{ env.PULL_REQUEST_BASE_REF }}..origin/${{ env.PULL_REQUEST_HEAD_REF }}
-            
-            echo "git_diff: '$git_diff'"
-            sfdx scanner:run --target $git_diff --format json --output pmd-report.json --pmdconfig config/scanner/pmd_config.xml
-      
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+               REPO_NAME=$(echo $GITHUB_REPOSITORY)
+               API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
+               echo "Fetching changed files from $API_URL"
+               CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
+               echo "changed files: '$CHANGED_FILES_JSON'"
+#    runs-on: ubuntu-latest
+#    container:
+#      image: salesforce/cli:latest-full
+#    permissions:
+#      contents: read
+#      pull-requests: write
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Install SFDX CLI and PMD
+#        run: |
+#          git config --global --add safe.directory "*"
+#          sf plugins install @salesforce/sfdx-scanner@4.2.0
+#
+#      - name: Get diff of the pull request
+#        id: get_diff
+#        shell: bash
+#        env:
+#          PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
+#          PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
+#        run: |-
+#            git fetch origin "${{ env.PULL_REQUEST_BASE_REF }}:${{ env.PULL_REQUEST_BASE_REF }}"
+#            git fetch origin "${{ env.PULL_REQUEST_HEAD_REF }}:${{ env.PULL_REQUEST_HEAD_REF }}"
+#            git_diff=git diff --name-only origin/${{ env.PULL_REQUEST_BASE_REF }}..origin/${{ env.PULL_REQUEST_HEAD_REF }}
+#
+#            echo "git_diff: '$git_diff'"
+#            sfdx scanner:run --target $git_diff --format json --output pmd-report.json --pmdconfig config/scanner/pmd_config.xml
+#
 
      
 
@@ -70,68 +92,46 @@ jobs:
 #        uses: github/codeql-action/upload-sarif@v3
 #        with:
 #          sarif_file: pmd-report.sarif
-#  analyze:
-#    runs-on: ubuntu-latest
-#    container:
-#      image: salesforce/cli:latest-full
-#    steps:
-#      - name: Check out repository
-#        uses: actions/checkout@v4
-#
-#      - name: Install SFDX CLI and PMD
-#        run: |
-#          git config --global --add safe.directory "*"
-#          sf plugins install @salesforce/sfdx-scanner@4.2.0
-#
-#      - name: Get changed files
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          PR_NUMBER: ${{ github.event.pull_request.number }}
-#        run: |
-#          REPO_NAME=$(echo $GITHUB_REPOSITORY)
-#          API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
-#          echo "Fetching changed files from $API_URL"
-#          CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
-#
-#          CHANGED_FILES=$(echo "$CHANGED_FILES_JSON" | tr -d '\000-\031' | jq -r '[.[] | .filename] | join(",")')
-#
-#          echo "CHANGED_FILES_Names: '$CHANGED_FILES'"
-#
-#          if [ ! -s changed_files.txt ]; then
-#            echo "No Apex files changed in this PR."
-#            exit 0
-#          fi
-#
-#      - name: Run PMD Analysis on Changed Files
-#        run: |
-#          sfdx scanner:run --target $CHANGED_FILES --format json --output pmd-report.json --pmdconfig config/scanner/pmd_config.xml
-#
-#      - name: Post PMD Results to GitHub PR
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          PR_NUMBER: ${{ github.event.pull_request.number }}
-#        run: |
-#          if [ -f pmd-report.json ]; then
-#           COMMENTS=$(mktemp)
-#           echo "### PMD Analysis Report" >> $COMMENTS
-#
-#           VIOLATIONS=$(jq -r '.files[] | select(.violations != null) | .file + ": " + (.violations | map(.description) | join(", "))' pmd-report.json)
-#           if [ ! -z "$VIOLATIONS" ]; then
-#             echo "$VIOLATIONS" | while IFS= read -r line; do
-#               echo "- $line" >> $COMMENTS
-#             done
-#
-#             COMMENT_BODY=$(cat $COMMENTS)
-#             REPO_NAME=$(echo $GITHUB_REPOSITORY)
-#             API_URL="https://api.github.com/repos/$REPO_NAME/issues/$PR_NUMBER/comments"
-#
-#             curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST -d "{\"body\": \"$COMMENT_BODY\"}" $API_URL
-#           else
-#             echo "No PMD violations found."
-#           fi
-#          else
-#           echo "PMD report not found."
-#          fi
-#
-#      - name: Clean up
-#        run: rm -f pmd-report.json
+
+          CHANGED_FILES=$(echo "$CHANGED_FILES_JSON" | tr -d '\000-\031' | jq -r '[.[] | .filename] | join(",")')
+
+          echo "CHANGED_FILES_Names: '$CHANGED_FILES'"
+
+          if [ ! -s changed_files.txt ]; then
+            echo "No Apex files changed in this PR."
+            exit 0
+          fi
+
+      - name: Run PMD Analysis on Changed Files
+        run: |
+          sfdx scanner:run --target $CHANGED_FILES --format json --output pmd-report.json --pmdconfig config/scanner/pmd_config.xml
+
+      - name: Post PMD Results to GitHub PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -f pmd-report.json ]; then
+           COMMENTS=$(mktemp)
+           echo "### PMD Analysis Report" >> $COMMENTS
+
+           VIOLATIONS=$(jq -r '.files[] | select(.violations != null) | .file + ": " + (.violations | map(.description) | join(", "))' pmd-report.json)
+           if [ ! -z "$VIOLATIONS" ]; then
+             echo "$VIOLATIONS" | while IFS= read -r line; do
+               echo "- $line" >> $COMMENTS
+             done
+
+             COMMENT_BODY=$(cat $COMMENTS)
+             REPO_NAME=$(echo $GITHUB_REPOSITORY)
+             API_URL="https://api.github.com/repos/$REPO_NAME/issues/$PR_NUMBER/comments"
+
+             curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST -d "{\"body\": \"$COMMENT_BODY\"}" $API_URL
+           else
+             echo "No PMD violations found."
+           fi
+          else
+           echo "PMD report not found."
+          fi
+
+      - name: Clean up
+        run: rm -f pmd-report.json

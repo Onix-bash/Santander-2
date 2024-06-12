@@ -41,7 +41,14 @@ jobs:
                   const position = addedLineInfo.index;
                   const diffHunk = patch.split('\n').slice(0, position + 1).join('\n');
 
-                  const message = "new";
+                  const message = `
+                    ### Code Review Comment
+                    - **File:** \`${path}\`
+                    - **Line:** ${position}
+
+                    **Comment:**
+                    My commit
+                  `;
 
                   await github.rest.pulls.createReviewComment({
                     owner: repoOwner,

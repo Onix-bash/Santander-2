@@ -1,7 +1,7 @@
 name: Custom Scanner PMD
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, edited]
+#  pull_request:
+#    types: [opened, reopened, synchronize, edited]
   workflow_dispatch:
 jobs:
   pmd-code-scan:

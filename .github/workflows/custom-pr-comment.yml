@@ -6,28 +6,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  get-changed-files:
+  review:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+      - name: "Get diff of the pull request"
+        id: get_diff
+        shell: bash
+        env:
+          PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
+        run: |-
+          git fetch origin "${{ env.PULL_REQUEST_HEAD_REF }}:${{ env.PULL_REQUEST_HEAD_REF }}"
+          git checkout "${{ env.PULL_REQUEST_HEAD_REF }}"
+          git diff "origin/${{ env.PULL_REQUEST_HEAD_REF }}" > "diff.txt"
+          # shellcheck disable=SC2086
+          echo "diff=$(cat "diff.txt")" >> $GITHUB_ENV
 
-      - name: Fetch PR files
-        id: fetch_pr_files
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const pr_number = context.payload.pull_request.number;
-            const { data: files } = await github.pulls.listFiles({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr_number,
-            });
-            return files.map(file => file.filename);
-
-      - name: Output changed file names
-        run: |
-          echo "Changed files: ${{ steps.fetch_pr_files.outputs.result }}"
 #on:
 ##  pull_request:
 ##    types: [opened, reopened, synchronize, edited]

@@ -45,7 +45,11 @@ jobs:
                     pull_number: prNumber,
                     body: message,
                     commit_id: context.payload.pull_request.head.sha,
-                    path: path
+                    path: path,
+                    start_line: 1,
+                    start_side: 'RIGHT',
+                    line: lineNumber,
+                    side: 'RIGHT',
                   });
                 } else {
                   console.log(`No added lines found in ${path}`);

@@ -24,8 +24,10 @@ jobs:
           git diff --name-only "origin/${{ env.PULL_REQUEST_HEAD_REF }}" > "diff.txt"
           cat diff.txt
           echo "DIFF=$(cat diff.txt)" >> $GITHUB_ENV
-          
-          echo "diff=$(cat "diff.txt")" >> $GITHUB_ENV
+
+      - name: Output changed file names
+        run: |
+          echo "Changed files:"
           echo "${{ env.DIFF }}"
 
 #on:

@@ -41,11 +41,7 @@ jobs:
                   const position = addedLineInfo.index;
                   const diffHunk = patch.split('\n').slice(0, position + 1).join('\n');
 
-                  const message = "| Month    | Savings |
-                    | -------- | ------- |
-                    | January  | $250    |
-                    | February | $80     |
-                    | March    | $420    |";
+                  const message = "new";
 
                   await github.rest.pulls.createReviewComment({
                     owner: repoOwner,

@@ -33,7 +33,7 @@ jobs:
                 const path = file.filename;
                 const patch = file.patch;
                   console.log(file.filename);
-                const message = `My commit`;
+                const message = `:)`;
 
                 const addLines = patch.split('\n').filter(line => line.startsWith('+')).map((line, index) => index + 1);
             
@@ -48,7 +48,6 @@ jobs:
                     body: message,
                     commit_id: context.payload.pull_request.head.sha,
                     path: path,
-                    subject_type: file,
                     side: 'RIGHT',
                   });
                 } else {
@@ -58,5 +57,3 @@ jobs:
             } catch (error) {
               console.log(`Error: ${error.message}`);
             }
-            
-            

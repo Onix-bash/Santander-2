@@ -43,11 +43,14 @@ jobs:
 
                   const message = `
                     ### Code Review Comment
-                    - **File:** \`${path}\`
-                    - **Line:** ${position}
+
+                    **File:** \`${path}\`
 
                     **Comment:**
-                    My commit
+
+                    | Line | Comment |
+                    |------|---------|
+                    | ${position} | My commit |
                   `;
 
                   await github.rest.pulls.createReviewComment({

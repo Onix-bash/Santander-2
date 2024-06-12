@@ -20,7 +20,7 @@ jobs:
         uses: mitchspano/sfdx-scan-pull-request@v0.1.16
         with:
           pmdconfig: config/scanner/pmd_config.xml
-          severity-threshold: 4
+          severity-threshold: 2
           report-mode: comments
           delete-resolved-comments: true
         env:

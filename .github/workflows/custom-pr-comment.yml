@@ -6,26 +6,45 @@ on:
   workflow_dispatch:
 
 jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    container:
-      image: salesforce/cli:latest-full
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+#  analyze:
+#    runs-on: ubuntu-latest
+#    container:
+#      image: salesforce/cli:latest-full
+#    steps:
+#      - name: Check out repository
+#        uses: actions/checkout@v4
+#
+#      - name: Install SFDX CLI and PMD
+#        run: |
+#          git config --global --add safe.directory "*"
+#          sf plugins install @salesforce/sfdx-scanner@4.2.z
+      update_pull_request_body:
+        permissions: write-all
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
 
-      - name: Install SFDX CLI and PMD
-        run: |
-          git config --global --add safe.directory "*"
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
+          - name: Update Pull Request body
+            uses: actions/github-script@v6
+            with:
+              script: |
+                const newMessage = 'New message to add to the PR body.\n\n' +
+                                   ':wave: :earth_americas: :octocat: :tada: :1st_place_medal:"'  +
+                                   ':wave: :earth_americas: :octocat: :tada: :1st_place_medal:"'  ;
+                github.rest.pulls.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.issue.number,
+                  body: context.payload.pull_request.body + '\n\n' + newMessage
+                });
 
-      - name: Get changed files
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          REPO_NAME=$(echo $GITHUB_REPOSITORY)
-          API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
-          echo "Fetching changed files from $API_URL"
-          CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
-          echo "changed files: '$CHANGED_FILES_JSON'"
+#      - name: Get changed files
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          PR_NUMBER: ${{ github.event.pull_request.number }}
+#        run: |
+#          REPO_NAME=$(echo $GITHUB_REPOSITORY)
+#          API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
+#          echo "Fetching changed files from $API_URL"
+#          CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
+#          echo "changed files: '$CHANGED_FILES_JSON'"

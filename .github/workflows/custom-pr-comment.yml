@@ -34,11 +34,14 @@ jobs:
               for (const file of files) {
                 const path = file.filename;
                 const patch = file.patch;
-                const lineNumber = patch.split('\n').findIndex(line => line.startsWith('+')) + 1; // Find the first added line
+                // Find first added line in the patch
+                const addLines = patch.split('\n').filter(line => line.startsWith('+')).map((line, index) => index + 1);
+            
+                const message = "My commit fixed"; // Make sure to properly define and format message
 
-                const message = `My commit`;
-
-                if (lineNumber > 0) {
+                if (addLines.length > 0) {
+                  const firstAddLine = addLines[0]; // Take the first added line number
+            
                   await github.rest.pulls.createReviewComment({
                     owner: repoOwner,
                     repo: repoName,
@@ -46,9 +49,7 @@ jobs:
                     body: message,
                     commit_id: context.payload.pull_request.head.sha,
                     path: path,
-                    start_line: 1,
-                    start_side: 'RIGHT',
-                    line: lineNumber,
+                    line: firstAddLine,
                     side: 'RIGHT',
                   });
                 } else {

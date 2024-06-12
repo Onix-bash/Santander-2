@@ -24,36 +24,41 @@ jobs:
         steps:
           - uses: actions/checkout@v4
 
-          - name: Update Pull Request body
+          - name: Add comment to PR files
             uses: actions/github-script@v6
             with:
               script: |
-                const prNumber = context.payload.pull_request.number;
-                const repoOwner = context.repo.owner;
-                const repoName = context.repo.repo;
+                  const prNumber = context.payload.pull_request.number;
+                  const repoOwner = context.repo.owner;
+                  const repoName = context.repo.repo;
+                  
+                  try {
+                    // Get list of files changed in the PR
+                    const files = await github.rest.pulls.listFiles({
+                      owner: repoOwner,
+                      repo: repoName,
+                      pull_number: prNumber
+                    });
+                  
+                    // Iterate through files and add a comment
+                    for (const file of files.data) {
+                      const path = file.filename;
+                      const message = `This is a comment on the file: ${path}`;
+                  
+                      await github.rest.pulls.createReviewComment({
+                        owner: repoOwner,
+                        repo: repoName,
+                        pull_number: prNumber,
+                        body: message,
+                        commit_id: context.payload.pull_request.head.sha,
+                        path: path,
+                        line: 1 // Line number to comment on
+                      });
+                    }
+                  } catch (error) {
+                    core.setFailed(`Error: ${error.message}`);
+                  }
 
-                // Get list of files changed in the PR
-                const { data: files } = await github.pulls.listFiles({
-                  owner: repoOwner,
-                  repo: repoName,
-                  pull_number: prNumber
-                });
-
-                // Iterate through files and add a comment
-                for (const file of files) {
-                  const path = file.filename;
-                  const message = `This is a comment on the file: ${path}`;
-
-                  await github.pulls.createReviewComment({
-                    owner: repoOwner,
-                    repo: repoName,
-                    pull_number: prNumber,
-                    body: message,
-                    commit_id: context.payload.pull_request.head.sha,
-                    path: path,
-                    position: 1 // Line number to comment on
-                  });
-                }
 
 #      - name: Get changed files
 #        env:

@@ -26,51 +26,45 @@ jobs:
           API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
           echo "Fetching changed files from $API_URL"
           CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
-          echo "Changed files JSON: $CHANGED_FILES_JSON"
+         
           CHANGED_FILES=$(echo "$CHANGED_FILES_JSON" | jq -r '[.[] | .filename] | join(",")')
-          echo "$CHANGED_FILES"
+          echo "CHANGED_FILES_Names: '$CHANGED_FILES'"
 
           if [ ! -s changed_files.txt ]; then
             echo "No Apex files changed in this PR."
             exit 0
           fi
 
-      - name: Copy changed files
-        run: |
-          mkdir -p changed_files
-          while IFS= read -r file; do
-            mkdir -p "$(dirname "changed_files/$file")"
-            cp "$file" "changed_files/$file"
-          done < changed_files.txt
-
       - name: Run PMD Analysis on Changed Files
         run: |
-          sf scanner:run --target changed_files --format xml --output pmd-report.xml --pmdconfig config/scanner/pmd_config.xml
+          sfdx scanner:run --target $CHANGED_FILES --format json --output pmd-report.json --pmdconfig config/scanner/pmd_config.xml
 
       - name: Post PMD Results to GitHub PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [ -f pmd-report.xml ]; then
-            COMMENTS=$(mktemp)
-            echo "### PMD Analysis Report" >> $COMMENTS
-            while IFS= read -r file; do
-              VIOLATIONS=$(xmllint --xpath "//violation[contains(@file, '$file')]" pmd-report.xml | sed 's/<[^>]*>//g')
-              if [ ! -z "$VIOLATIONS" ]; then
-                echo "- **${file}**:" >> $COMMENTS
-                echo "$VIOLATIONS" | while IFS= read -r line; do
-                  echo "  - $line" >> $COMMENTS
-                done
-              fi
-            done < changed_files.txt
-
-            COMMENT_BODY=$(cat $COMMENTS)
-            PR_NUMBER=$(echo $GITHUB_REF | grep -o '[0-9]*$')
-            REPO_NAME=$(echo $GITHUB_REPOSITORY)
-            API_URL="https://api.github.com/repos/$REPO_NAME/issues/$PR_NUMBER/comments"
-
-            curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST -d "{\"body\": \"$COMMENT_BODY\"}" $API_URL
+          if [ -f pmd-report.json ]; then
+           COMMENTS=$(mktemp)
+           echo "### PMD Analysis Report" >> $COMMENTS
+          
+           VIOLATIONS=$(jq -r '.files[] | select(.violations != null) | .file + ": " + (.violations | map(.description) | join(", "))' pmd-report.json)
+           if [ ! -z "$VIOLATIONS" ]; then
+             echo "$VIOLATIONS" | while IFS= read -r line; do
+               echo "- $line" >> $COMMENTS
+             done
+          
+             COMMENT_BODY=$(cat $COMMENTS)
+             REPO_NAME=$(echo $GITHUB_REPOSITORY)
+             API_URL="https://api.github.com/repos/$REPO_NAME/issues/$PR_NUMBER/comments"
+          
+             curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST -d "{\"body\": \"$COMMENT_BODY\"}" $API_URL
+           else
+             echo "No PMD violations found."
+           fi
+          else
+           echo "PMD report not found."
           fi
 
       - name: Clean up
-        run: rm -rf /tmp/pmd-bin-6.38.0 pmd-bin.zip changed_files pmd-report.xml changed_files.txt
+        run: rm -f pmd-report.json

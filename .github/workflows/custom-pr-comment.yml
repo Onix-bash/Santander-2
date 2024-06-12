@@ -21,9 +21,13 @@ jobs:
         run: |-
           git fetch origin "${{ env.PULL_REQUEST_HEAD_REF }}:${{ env.PULL_REQUEST_HEAD_REF }}"
           git checkout "${{ env.PULL_REQUEST_HEAD_REF }}"
-          git diff "origin/${{ env.PULL_REQUEST_HEAD_REF }}" > "diff.txt"
-          # shellcheck disable=SC2086
-          echo "diff=$(cat "diff.txt")" >> $GITHUB_ENV
+          git diff --name-only "origin/${{ env.PULL_REQUEST_BASE_REF }}" "origin/${{ env.PULL_REQUEST_HEAD_REF }}" > diff.txt
+          cat diff.txt
+          echo "DIFF=$(cat diff.txt)" >> $GITHUB_ENV
+
+      - name: Output changed file names
+        run: |
+          echo "Changed files:"
           echo "${{ env.DIFF }}"
 
 #on:

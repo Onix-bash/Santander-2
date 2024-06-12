@@ -33,13 +33,52 @@ jobs:
                 const path = file.filename;
                 const patch = file.patch;
 
-                // Split the patch into lines and identify the position of the first added line
+                // Find the first added line in the patch
                 const addedLineInfo = patch.split('\n').map((line, index) => ({ line, index }))
                   .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
 
                 if (addedLineInfo) {
-                  const position = addedLineInfo.index + 1; // 1-based index
-                  const message = "My commit";
+                  const position = addedLineInfo.index;
+                  const diffHunk = patch.split('\n').slice(0, position + 1).join('\n');
+
+                  const message = "<table role="table">
+                  <thead>
+                  <tr>
+                  <th>Attribute</th>
+                  <th>Value</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  <td>Engine</td>
+                  <td>pmd-custom</td>
+                  </tr>
+                  <tr>
+                  <td>Category</td>
+                  <td>Code Style</td>
+                  </tr>
+                  <tr>
+                  <td>Rule</td>
+                  <td>ClassNamingConventions</td>
+                  </tr>
+                  <tr>
+                  <td>Severity</td>
+                  <td>1</td>
+                  </tr>
+                  <tr>
+                  <td>Type</td>
+                  <td>Error</td>
+                  </tr>
+                  <tr>
+                  <td>Message</td>
+                  <td><a href="https://docs.pmd-code.org/pmd-doc-7.1.0/pmd_rules_apex_codestyle.html#classnamingconventions" rel="nofollow">The class name 'classTestShaaring' doesn't match '[A-Z][a-zA-Z0-9_]*'</a></td>
+                  </tr>
+                  <tr>
+                  <td>File</td>
+                  <td><a href="../tree/219a33d3f42901ba775b37ffe4ec780879e49cf0/src/broker-portal/main/default/classes/testSharing.cls">src/broker-portal/main/default/classes/testSharing.cls</a></td>
+                  </tr>
+                  </tbody>
+                  </table>";
 
                   await github.rest.pulls.createReviewComment({
                     owner: repoOwner,
@@ -48,7 +87,10 @@ jobs:
                     body: message,
                     commit_id: context.payload.pull_request.head.sha,
                     path: path,
-                    position: position
+                    position: position,
+                    side: 'RIGHT',
+                    start_side: 'RIGHT',
+                    diff_hunk: diffHunk
                   });
                 } else {
                   console.log(`No added lines found in ${path}`);

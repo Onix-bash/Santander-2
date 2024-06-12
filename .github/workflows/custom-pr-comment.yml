@@ -33,12 +33,12 @@ jobs:
                 const path = file.filename;
                 const patch = file.patch;
 
-                // Find the first added line and its position in the diff
+                // Split the patch into lines and identify the position of the first added line
                 const addedLineInfo = patch.split('\n').map((line, index) => ({ line, index }))
                   .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
-            
+
                 if (addedLineInfo) {
-                  const lineNumber = addedLineInfo.index + 1; // 1-based index
+                  const position = addedLineInfo.index + 1; // 1-based index
                   const message = "My commit";
 
                   await github.rest.pulls.createReviewComment({
@@ -48,8 +48,7 @@ jobs:
                     body: message,
                     commit_id: context.payload.pull_request.head.sha,
                     path: path,
-                    line: lineNumber,
-                    side: 'RIGHT'
+                    position: position
                   });
                 } else {
                   console.log(`No added lines found in ${path}`);

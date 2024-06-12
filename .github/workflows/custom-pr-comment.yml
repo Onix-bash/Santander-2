@@ -17,9 +17,9 @@ jobs:
         id: pmd
         uses: pmd/pmd-github-action@v2
         with:
-          rulesets: 'pmd/apexQuickStart.xml'
-          sourcePath: 'force-app'
-          analyzeModifiedFilesOnly: false
+          rulesets: 'config/scanner/pmd_config.xml'
+          sourcePath: 'src'
+          analyzeModifiedFilesOnly: true
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:

@@ -17,28 +17,10 @@ jobs:
       - uses: actions/github-script@v6
         with:
          script: |
-                      
-              // Fetch files modified in the PR
-              const pulledFiles = await github.pulls.listFiles({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.issue.number,
-              });
-           
-           return pulledFiles;
-
-#      - name: Install SFDX CLI and PMD
-#        run: |
-#          git config --global --add safe.directory "*"
-#          sf plugins install @salesforce/sfdx-scanner@4.2.0
-#
-#      - name: Get changed files
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          PR_NUMBER: ${{ github.event.pull_request.number }}
-#        run: |
-#          REPO_NAME=$(echo $GITHUB_REPOSITORY)
-#          API_URL="https://api.github.com/repos/$REPO_NAME/pulls/$PR_NUMBER/files"
-#          echo "Fetching changed files from $API_URL"
-#          CHANGED_FILES_JSON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
-#          echo "changed files: '$CHANGED_FILES_JSON'"
+            // Fetch files modified in the PR
+            const pulledFiles = await github.pulls.listFiles({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number,
+            });
+            return pulledFiles;

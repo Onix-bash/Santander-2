@@ -36,7 +36,7 @@ jobs:
                 const patch = file.patch;
                 const lineNumber = patch.split('\n').findIndex(line => line.startsWith('+')) + 1; // Find the first added line
 
-                const message = `second comment on the file: ${path}`;
+                const message = `My commit`;
 
                 if (lineNumber > 0) {
                   await github.rest.pulls.createReviewComment({
@@ -45,14 +45,12 @@ jobs:
                     pull_number: prNumber,
                     body: message,
                     commit_id: context.payload.pull_request.head.sha,
-                    path: path,
-                    side: 'RIGHT',
-                    line: lineNumber
+                    path: path
                   });
                 } else {
                   console.log(`No added lines found in ${path}`);
                 }
               }
             } catch (error) {
-              core.setFailed(`Error: ${error.message}`);
+              console.log(`Error: ${error.message}`);
             }

@@ -106,7 +106,8 @@ jobs:
                         break;
                       }
                     }
-
+                    console.log("patchLines: ",patchLines)
+                    console.log("position: ",position)
                     if (position !== null) {
                       console.log("message: ",message)
                       await github.rest.pulls.createReviewComment({

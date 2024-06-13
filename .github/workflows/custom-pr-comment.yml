@@ -67,18 +67,13 @@ jobs:
                   console.log("violation: ", violation);
 
                   const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;
-                  const line = violation.line;
+              
 
                   // Check if the file is part of the PR
                   if (fileChanges[fileName]) {
-            console.log('fileChanges[fileName]',fileChanges[fileName]);
-            const fileFromPR = files.forEach(file => console.log(file.fileName));
-                  
-                    const addedLineInfo = fileChanges[fileName].patch.split('\n').map((line, index) => ({ line, index }))
-                      .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
-                    if (addedLineInfo) {
-                  const position = addedLineInfo.index;
-                  const diffHunk = fileChanges[fileName].patch.split('\n').slice(0, position + 1).join('\n');
+                  console.log('fileChanges[fileName]',fileChanges[fileName]);
+                  const currentFile = fileChanges[fileName];
+                  const position = currentFile.;
                       await github.rest.pulls.createReviewComment({
                       owner: repoOwner,
                       repo: repoName,
@@ -86,15 +81,12 @@ jobs:
                       body: message,
                       commit_id: context.payload.pull_request.head.sha,
                       path: fileChanges[fileName].path,
-                      position: position,
                       side: 'RIGHT',
                       start_side: 'RIGHT',
-                      diff_hunk: diffHunk
+                      start_line: violation.line,
+                      line: violation.endLine
                       });
                     }
-                  } else {
-                    console.log(`File ${fileName} not found in the pull request.`);
-                  }
                 }
               }
             } catch (error) {

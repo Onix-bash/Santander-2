@@ -23,7 +23,8 @@ jobs:
       - name: Install SFDX Code Analyser
         run: |
           sf plugins install @salesforce/sfdx-scanner@4.2.0
-          sf scanner run --target src/ --pmdconfig config/scanner/pmd_config.xml --eslintconfig config/scanner/.eslintrc.json --format json --output pmd-report.json
+          chmod +x ./scripts/scan-pull-request.sh
+          ./scripts/scan-pull-request.sh
 
       - name: Add comment to PR files
         uses: actions/github-script@v7
@@ -32,11 +33,7 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
-            
-            // Read the scanner report
-            const reportPath = path.join(process.env.GITHUB_WORKSPACE, 'pmd-report.json');
-            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
-            console.log(report);
+
             try {
               // Get list of files changed in the PR
               const { data: files } = await github.rest.pulls.listFiles({

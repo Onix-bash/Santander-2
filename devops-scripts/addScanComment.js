@@ -1,7 +1,8 @@
 const fs = require('fs');
-const prNumber = context.payload.pull_request.number;
-const repoOwner = context.repo.owner;
-const repoName = context.repo.repo;
+const github = require('@actions/github');
+const prNumber = github.context.payload.pull_request.number;
+const repoOwner = github.context.repo.owner;
+const repoName = github.context.repo.repo;
 
 async function run() {
     try {

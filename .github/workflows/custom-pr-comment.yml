@@ -18,7 +18,7 @@ jobs:
       - name: Get changed files
         id: changed_files
         run: |
-          git diff --name-only ${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.ref }} > changed_files.txt
+          git diff --name-only origin/${{ github.event.pull_request.base.ref }}..origin/${{ github.event.pull_request.head.ref }} > changed_files.txt
           cat changed_files.txt
 
       - name: Filter src files and create comma-separated string

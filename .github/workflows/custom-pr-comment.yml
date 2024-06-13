@@ -24,7 +24,6 @@ jobs:
         env:
           PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
           PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
-          src_diff_files: ${{ env.src_files }}
         run: |
           sf plugins install @salesforce/sfdx-scanner@4.2.0
           chmod +x ./devops-scripts/scan-pull-request.sh
@@ -82,16 +81,12 @@ jobs:
                       <td>${violation.severity}</td>
                       </tr>
                       <tr>
-                      <td>Type</td>
-                      <td>Error</td>
-                      </tr>
-                      <tr>
                       <td>Message</td>
                       <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
                       </tr>
                       <tr>
                       <td>File</td>
-                      <td><a href=${currentFile.fileName}>${file.filename}</a></td>
+                      <td><a href=${currentFile.fileName}>${currentFile.filename}</a></td>
                       </tr>
                       </tbody>
                       </table>`;

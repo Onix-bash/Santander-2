@@ -41,6 +41,7 @@ jobs:
 
             // Read the JSON report
             const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
+            console.log("report: ",report);
 
             // Add comments to the PR based on the report
             for (const result of report) {
@@ -72,7 +73,7 @@ jobs:
                     <td><a href="violation.fileName">violation.fileName</a></td>
                     </tr>
                     </tbody>
-                    </table>`;`;
+                    </table>`;
                 const line = violation.line;
 
                 // Add comment to the PR

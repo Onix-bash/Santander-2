@@ -16,7 +16,6 @@ async function run() {
 
 
         // Get list of files changed in the PR
-        const octokit = github.getOctokit(core.getInput('github_token'));
         const files = await octokit.pulls.listFiles({
             owner: repoOwner,
             repo: repoName,

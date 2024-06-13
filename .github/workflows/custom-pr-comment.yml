@@ -31,6 +31,9 @@ jobs:
           chmod +x ./devops-scripts/scan-pull-request.sh
           ./devops-scripts/scan-pull-request.sh
 
+      - name: Install dependencies
+        run: npm install @actions/github @actions/core
+
       - name: Add comment to PR files
         run: node devops-scripts/addScanComment.js
 

@@ -66,11 +66,36 @@ jobs:
                 for (const violation of violations) {
                   console.log("violation: ", violation);
 
-                  const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;
+                  const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${violation.engine}</td></tr>
+                      <tr>
+                      <td>Category</td>
+                      <td>${violation.category}</td>
+                      </tr>
+                      <tr>
+                      <td>Rule</td>
+                      <td>${violation.ruleName}</td>
+                      </tr>
+                      <tr>
+                      <td>Severity</td>
+                      <td>${violation.severity}</td>
+                      </tr>
+                      <tr>
+                      <td>Type</td>
+                      <td>Error</td>
+                      </tr>
+                      <tr>
+                      <td>Message</td>
+                      <td><a href=${violation.url} rel="nofollow">${violation.message}</a></td>
+                      </tr>
+                      <tr>
+                      <td>File</td>
+                      <td><a href=${violation.fileName}>${violation.fileName}</a></td>
+                      </tr>
+                      </tbody>
+                      </table>`;
             
                   // Check if the file is part of the PR
                   if (fileChanges[fileName]) {
-                    console.log('fileChanges[fileName]',fileChanges[fileName]);
                     const currentFile = fileChanges[fileName];
             
                     // Determine the position in the diff
@@ -100,11 +125,7 @@ jobs:
                         position: position,
                         side: 'RIGHT'
                       });
-                    } else {
-                      console.log(`No matching line found in the diff for ${fileName}`);
-                    }
-                  } else {
-                    console.log(`File ${fileName} not found in the pull request.`);
+                    } 
                   }
                 }
               }

@@ -85,7 +85,7 @@ jobs:
                       pull_number: prNumber,
                       body: message,
                       commit_id: context.payload.pull_request.head.sha,
-                      path: path,
+                      path: fileChanges[fileName].path,
                       position: position,
                       side: 'RIGHT',
                       start_side: 'RIGHT',

@@ -1,6 +1,6 @@
 pmd_config_path="config/scanner/pmd_config.xml"
 source_to_check_changes="origin/develop"
-
+git config --global --add safe.directory /__w/Santander-2/Santander-2
 output_directory="output"
 mkdir -p "$output_directory"
 

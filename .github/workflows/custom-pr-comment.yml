@@ -67,6 +67,7 @@ jobs:
                   console.log("currentFile", currentFile);
                   console.log("violation", violation);
                   const rulePath = violation.url ? violation.url : '';
+            
                   const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
                       <tr>
                       <td>Category</td>
@@ -86,12 +87,10 @@ jobs:
                       </tr>
                       <tr>
                       <td>File</td>
-                      <td><a href=${currentFile.fileName}>${currentFile.filename}</a></td>
+                      <td><a href=${currentFile.filename}>${currentFile.filename}</a></td>
                       </tr>
                       </tbody>
                       </table>`;
-            
-                  
             
                     // Determine the position in the diff
                     const patchLines = currentFile.patch.split('\n');

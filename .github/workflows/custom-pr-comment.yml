@@ -94,7 +94,7 @@ jobs:
 #                    }
 #                  } else {
 #                    console.log(`File ${fileName} not found in the pull request.`);
-#                  }
+                  }
                 }
               }
             } catch (error) {

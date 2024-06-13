@@ -70,23 +70,23 @@ jobs:
 
                   // Check if the file is part of the PR
                   if (fileChanges[fileName]) {
-                    // Find the position in the diff
-                    const diffHunk = fileChanges[fileName].patch.split('\n');
-                    const position = diffHunk.findIndex(lineContent => lineContent.includes(`@@ -${line},`));
-
-                    if (position !== -1) {
+                    const addedLineInfo = patch.split('\n').map((line, index) => ({ line, index }))
+                      .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
+                    if (addedLineInfo) {
+                  const position = addedLineInfo.index;
+                  const diffHunk = patch.split('\n').slice(0, position + 1).join('\n');
                       await github.rest.pulls.createReviewComment({
-                        owner: repoOwner,
-                        repo: repoName,
-                        pull_number: prNumber,
-                        body: message,
-                        commit_id: context.payload.pull_request.head.sha,
-                        path: fileName,
-                        position: position,
-                        side: 'RIGHT',
+                      owner: repoOwner,
+                      repo: repoName,
+                      pull_number: prNumber,
+                      body: message,
+                      commit_id: context.payload.pull_request.head.sha,
+                      path: path,
+                      position: position,
+                      side: 'RIGHT',
+                      start_side: 'RIGHT',
+                      diff_hunk: diffHunk
                       });
-                    } else {
-                      console.log(`No matching line found in the diff for ${fileName}`);
                     }
                   } else {
                     console.log(`File ${fileName} not found in the pull request.`);

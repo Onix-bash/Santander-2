@@ -1,20 +1,28 @@
 const fs = require('fs');
+const core = require('@actions/core');
 const github = require('@actions/github');
-const prNumber = github.context.payload.pull_request.number;
-const repoOwner = github.context.repo.owner;
-const repoName = github.context.repo.repo;
+const octokit = github.getOctokit(process.env.GITHUB_TOKEN)
+const context = github.context;
 
 async function run() {
+    const prNumber = context.payload.pull_request.number;
+    const repoOwner = context.repo.owner;
+    const repoName = context.repo.repo;
+
     try {
         // Read the JSON report
         const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
+        console.log("report: ", report[0].violations);
+
 
         // Get list of files changed in the PR
-        const {data: files} = await github.rest.pulls.listFiles({
+        const octokit = github.getOctokit(core.getInput('github_token'));
+        const files = await octokit.pulls.listFiles({
             owner: repoOwner,
             repo: repoName,
-            pull_number: prNumber
+            pull_number: prNumber,
         });
+
 
         // Create a map of file changes
         const fileChanges = {};
@@ -33,34 +41,33 @@ async function run() {
                     console.log("violation: ", violation);
                     console.log("currentFile", currentFile);
                     const rulePath = violation.url ? violation.url : '';
-                    const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
-                      <tr>
-                      <td>Category</td>
-                      <td>${violation.category}</td>
-                      </tr>
-                      <tr>
-                      <td>Rule</td>
-                      <td>${violation.ruleName}</td>
-                      </tr>
-                      <tr>
-                      <td>Severity</td>
-                      <td>${violation.severity}</td>
-                      </tr>
-                      <tr>
-                      <td>Type</td>
-                      <td>Error</td>
-                      </tr>
-                      <tr>
-                      <td>Message</td>
-                      <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
-                      </tr>
-                      <tr>
-                      <td>File</td>
-                      <td><a href=${file.fileName}>${currentFile.filename}</a></td>
-                      </tr>
-                      </tbody>
-                      </table>`;
-
+                    const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${currentFile.engine}</td></tr>
+              <tr>
+              <td>Category</td>
+              <td>${violation.category}</td>
+              </tr>
+              <tr>
+              <td>Rule</td>
+              <td>${violation.ruleName}</td>
+              </tr>
+              <tr>
+              <td>Severity</td>
+              <td>${violation.severity}</td>
+              </tr>
+              <tr>
+              <td>Type</td>
+              <td>Error</td>
+              </tr>
+              <tr>
+              <td>Message</td>
+              <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
+              </tr>
+              <tr>
+              <td>File</td>
+              <td><a href=${currentFile.fileName}>${currentFile.fileName}</a></td>
+              </tr>
+              </tbody>
+              </table>`;
 
                     // Determine the position in the diff
                     const patchLines = currentFile.patch.split('\n');
@@ -79,7 +86,7 @@ async function run() {
                     }
 
                     if (position !== null) {
-                        await github.rest.pulls.createReviewComment({
+                        await octokit.rest.pulls.createReviewComment({
                             owner: repoOwner,
                             repo: repoName,
                             pull_number: prNumber,
@@ -95,6 +102,7 @@ async function run() {
         }
     } catch (error) {
         console.log(`Error: ${error.message}`);
+        core.setFailed(error.message);
     }
 }
 

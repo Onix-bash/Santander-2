@@ -8,7 +8,7 @@ git fetch origin "$PULL_REQUEST_HEAD_REF"
 git fetch origin "$PULL_REQUEST_BASE_REF"
 
 echo "PULL_REQUEST_HEAD_REF: '$PULL_REQUEST_HEAD_REF'"
-git_diff=git diff --name-only $PULL_REQUEST_BASE_REF..$PULL_REQUEST_HEAD_REF
+git_diff=$(git diff --name-only origin/$PULL_REQUEST_BASE_REF..origin/$PULL_REQUEST_HEAD_REF)
 
 echo "git_diff: '$git_diff'"
 

@@ -44,27 +44,26 @@ jobs:
               const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
               console.log("report: ",report[0].violations);
               for (const file of report) {
-              const path = file.filename;
+              
+            const fileName = file.filename.replace('/__w/Santander-2/Santander-2/', '');
                console.log("file: ",file);
               const violations = file.violations; // Access the violations array
               
               for (const violation of violations) {
             console.log("violation: ",violation);
-              const position = violation.line;
-              const diffHunk = violation.endLine;
+           
+            
             const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;
-              
+              const line = violation.line;
               await github.rest.pulls.createReviewComment({
             owner: repoOwner,
             repo: repoName,
             pull_number: prNumber,
             body: message,
             commit_id: context.payload.pull_request.head.sha,
-            path: path,
-            position: position,
+            path: fileName,
+            line: line,
             side: 'RIGHT',
-            start_side: 'RIGHT',
-            diff_hunk: diffHunk
             });
             }
             }

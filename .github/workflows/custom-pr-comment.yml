@@ -34,43 +34,30 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
             const prNumber = context.payload.pull_request.number;
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
 
-            try {
-              // Get list of files changed in the PR
-              const { data: files } = await github.rest.pulls.listFiles({
-                owner: repoOwner,
-                repo: repoName,
-                pull_number: prNumber
-              });
+            // Read the JSON report
+            const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
 
-              // Iterate through files and add a comment
-              for (const file of files) {
-                const path = file.filename;
-                const patch = file.patch;
-
-                // Find the first added line in the patch
-                const addedLineInfo = patch.split('\n').map((line, index) => ({ line, index }))
-                  .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
-
-                if (addedLineInfo) {
-                  const position = addedLineInfo.index;
-                  const diffHunk = patch.split('\n').slice(0, position + 1).join('\n');
-
-                  const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>pmd-custom</td></tr>
+            // Add comments to the PR based on the report
+            for (const result of report) {
+              const fileName = result.fileName.replace('/__w/Santander-2/Santander-2/', '');
+              for (const violation of result.violations) {
+                const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>violation.engine</td></tr>
                     <tr>
-                    <td>Category</td>
+                    <td>violation.category</td>
                     <td>Code Style</td>
                     </tr>
                     <tr>
                     <td>Rule</td>
-                    <td>ClassNamingConventions</td>
+                    <td>violation.ruleName</td>
                     </tr>
                     <tr>
                     <td>Severity</td>
-                    <td>1</td>
+                    <td>violation.severity</td>
                     </tr>
                     <tr>
                     <td>Type</td>
@@ -78,31 +65,27 @@ jobs:
                     </tr>
                     <tr>
                     <td>Message</td>
-                    <td><a href="https://docs.pmd-code.org/pmd-doc-7.1.0/pmd_rules_apex_codestyle.html#classnamingconventions" rel="nofollow">The class name 'classTestShaaring' doesn't match '[A-Z][a-zA-Z0-9_]*'</a></td>
+                    <td><a href="violation.url" rel="nofollow">violation.message</a></td>
                     </tr>
                     <tr>
                     <td>File</td>
-                    <td><a href="../tree/219a33d3f42901ba775b37ffe4ec780879e49cf0/src/broker-portal/main/default/classes/testSharing.cls">src/broker-portal/main/default/classes/testSharing.cls</a></td>
+                    <td><a href="violation.fileName">violation.fileName</a></td>
                     </tr>
                     </tbody>
-                    </table>`;
+                    </table>`;`;
+                const line = violation.line;
 
-                  await github.rest.pulls.createReviewComment({
-                    owner: repoOwner,
-                    repo: repoName,
-                    pull_number: prNumber,
-                    body: message,
-                    commit_id: context.payload.pull_request.head.sha,
-                    path: path,
-                    position: position,
-                    side: 'RIGHT',
-                    start_side: 'RIGHT',
-                    diff_hunk: diffHunk
-                  });
-                } else {
-                  console.log(`No added lines found in ${path}`);
-                }
+                // Add comment to the PR
+                await github.rest.pulls.createReviewComment({
+                  owner: repoOwner,
+                  repo: repoName,
+                  pull_number: prNumber,
+                  body: message,
+                  commit_id: context.payload.pull_request.head.sha,
+                  path: fileName,
+                  line: line,
+                  side: 'RIGHT',
+                });
               }
-            } catch (error) {
-              console.log(`Error: ${error.message}`);
             }
+

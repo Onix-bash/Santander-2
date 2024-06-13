@@ -71,7 +71,8 @@ jobs:
 
                   // Check if the file is part of the PR
                   if (fileChanges[fileName]) {
-                    const fileFromPR = files.find(file => file.Name.contains(fileName))
+                    const fileFromPR = files.find(file => file.Name.contains(fileName));
+                     console.log(fileFromPR);
                     const addedLineInfo = fileFromPR.patch.split('\n').map((line, index) => ({ line, index }))
                       .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
                     if (addedLineInfo) {

@@ -221,7 +221,6 @@ export default class CvPage extends NavigationMixin (LightningElement) {
         const type = event.target.dataset.type;
 
         let sessionData = createSessionData(this.labels);
-
         let details;
 
         if (type === 'skills') {

@@ -48,33 +48,7 @@ jobs:
             const violations = result.violations;
               const fileName = result.fileName.replace('/__w/Santander-2/Santander-2/', '');
               for (const violation of violations) {
-                const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>violation.engine</td></tr>
-                    <tr>
-                    <td>violation.category</td>
-                    <td>Code Style</td>
-                    </tr>
-                    <tr>
-                    <td>Rule</td>
-                    <td>violation.ruleName</td>
-                    </tr>
-                    <tr>
-                    <td>Severity</td>
-                    <td>violation.severity</td>
-                    </tr>
-                    <tr>
-                    <td>Type</td>
-                    <td>Error</td>
-                    </tr>
-                    <tr>
-                    <td>Message</td>
-                    <td><a href="violation.url" rel="nofollow">violation.message</a></td>
-                    </tr>
-                    <tr>
-                    <td>File</td>
-                    <td><a href="violation.fileName">violation.fileName</a></td>
-                    </tr>
-                    </tbody>
-                    </table>`;
+                const message = `new';
             
                 const line = violation.line;
                 const position = violation.endLine;

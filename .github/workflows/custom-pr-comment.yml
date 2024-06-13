@@ -62,11 +62,14 @@ jobs:
             
                 console.log("file: ", file);
                 const violations = file.violations; // Access the violations array
-
+            
+                // Check if the file is part of the PR
+                if (fileChanges[fileName]) {
+                const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
                   console.log("violation: ", violation);
 
-                  const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${violation.engine}</td></tr>
+                  const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${currentFile.engine}</td></tr>
                       <tr>
                       <td>Category</td>
                       <td>${violation.category}</td>
@@ -89,14 +92,12 @@ jobs:
                       </tr>
                       <tr>
                       <td>File</td>
-                      <td><a href=${violation.fileName}>${violation.fileName}</a></td>
+                      <td><a href=${currentFile.fileName}>${currentFile.fileName}</a></td>
                       </tr>
                       </tbody>
                       </table>`;
             
-                  // Check if the file is part of the PR
-                  if (fileChanges[fileName]) {
-                    const currentFile = fileChanges[fileName];
+                  
             
                     // Determine the position in the diff
                     const patchLines = currentFile.patch.split('\n');

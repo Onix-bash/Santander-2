@@ -45,8 +45,9 @@ jobs:
 
             // Add comments to the PR based on the report
             for (const result of report) {
+            const violations = result.violations;
               const fileName = result.fileName.replace('/__w/Santander-2/Santander-2/', '');
-              for (const violation of result.violations) {
+              for (const violation of violations) {
                 const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>violation.engine</td></tr>
                     <tr>
                     <td>violation.category</td>
@@ -74,7 +75,9 @@ jobs:
                     </tr>
                     </tbody>
                     </table>`;
+            
                 const line = violation.line;
+                const position = violation.endLine;
 
                 // Add comment to the PR
                 await github.rest.pulls.createReviewComment({
@@ -84,9 +87,10 @@ jobs:
                   body: message,
                   commit_id: context.payload.pull_request.head.sha,
                   path: fileName,
-                  line: line,
+                  diff_hunk: position,
+                  position: lne,
                   side: 'RIGHT',
+                  start_side: 'RIGHT',
                 });
               }
             }
-

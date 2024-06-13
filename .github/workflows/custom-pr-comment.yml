@@ -21,6 +21,9 @@ jobs:
           node-version: '20'
 
       - name: Install SFDX Code Analyser
+        env:
+          PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
+          PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
         run: |
           sf plugins install @salesforce/sfdx-scanner@4.2.0
           chmod +x ./devops-scripts/scan-pull-request.sh

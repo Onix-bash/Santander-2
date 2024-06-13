@@ -1,4 +1,5 @@
 pmd_config_path="config/scanner/pmd_config.xml"
+eslint_config_path="config/scanner/.eslintrc.json"
 source_to_check_changes="origin/develop"
 git config --global --add safe.directory /__w/Santander-2/Santander-2
 output_directory="output"

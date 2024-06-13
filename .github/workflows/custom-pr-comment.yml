@@ -50,7 +50,7 @@ jobs:
                 repo: repoName,
                 pull_number: prNumber
               });
-            
+
               // Create a map of file changes
               const fileChanges = {};
               for (const file of files) {
@@ -60,14 +60,13 @@ jobs:
               for (const file of report) {
                 const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
                 const violations = file.violations; // Access the violations array
-            
+
                 // Check if the file is part of the PR
                 if (fileChanges[fileName]) {
-                const currentFile = fileChanges[fileName];
-                for (const violation of violations) {
-                  const rulePath = violation.url ? violation.url : '';
-            
-                  const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
+                  const currentFile = fileChanges[fileName];
+                  for (const violation of violations) {
+                    const rulePath = violation.url ? violation.url : '';
+                    const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
                       <tr>
                       <td>Category</td>
                       <td>${violation.category}</td>
@@ -90,45 +89,38 @@ jobs:
                       </tr>
                       </tbody>
                       </table>`;
-            
+
                     // Determine the position in the diff
                     const patchLines = currentFile.patch.split('\n');
                     let position = null;
-                    let diffLine = 0;
-                    let originalLine = 0;
+                    let lineCounter = 0;
 
                     for (let i = 0; i < patchLines.length; i++) {
-                        const line = patchLines[i];
-                        if (line.startsWith('@@')) {
-                            const match = /@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-                            if (match) {
-                                originalLine = parseInt(match[1], 10);
-                                diffLine = parseInt(match[2], 10) - 1;
-                            }
-                        } else if (line.startsWith('+') && !line.startsWith('+++')) {
-                            diffLine++;
-                            if (originalLine === violation.line) {
-                                position = diffLine;
-                                break;
-                            }
-                        } else if (!line.startsWith('-')) {
-                            originalLine++;
-                        }
+                      const line = patchLines[i];
+                      if (line.startsWith('+') && !line.startsWith('+++')) {
+                        lineCounter++;
+                      }
+                      if (lineCounter === violation.line) {
+                        position = i + 1; // Adjust to 1-based index for GitHub API
+                        break;
+                      }
                     }
 
+                    console.log("patchLines: ", patchLines);
+                    console.log("position: ", position);
+
                     if (position !== null) {
-                        console.log("message: ", message)
-                        await octokit.rest.pulls.createReviewComment({
-                            owner: repoOwner,
-                            repo: repoName,
-                            pull_number: prNumber,
-                            body: message,
-                            commit_id: context.payload.pull_request.head.sha,
-                            path: fileName,
-                            position: position,
-                            side: 'RIGHT'
+                      await github.rest.pulls.createReviewComment({
+                        owner: repoOwner,
+                        repo: repoName,
+                        pull_number: prNumber,
+                        body: message,
+                        commit_id: context.payload.pull_request.head.sha,
+                        path: fileName,
+                        position: position,
+                        side: 'RIGHT'
                       });
-                    } 
+                    }
                   }
                 }
               }

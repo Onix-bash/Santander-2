@@ -42,32 +42,57 @@ jobs:
             try {
               // Read the JSON report
               const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
-              console.log("report: ",report[0].violations);
+              console.log("report: ", report[0].violations);
+
+              // Get list of files changed in the PR
+              const { data: files } = await github.rest.pulls.listFiles({
+                owner: repoOwner,
+                repo: repoName,
+                pull_number: prNumber
+              });
+
+              // Create a map of file changes
+              const fileChanges = {};
+              for (const file of files) {
+                fileChanges[file.filename] = file;
+              }
+
               for (const file of report) {
-              
-            const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
-               console.log("file: ",file);
-              const violations = file.violations; // Access the violations array
-              
-              for (const violation of violations) {
-            console.log("violation: ",violation);
-           
-            
-            const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;
-              const line = violation.line;
-              await github.rest.pulls.createReviewComment({
-            owner: repoOwner,
-            repo: repoName,
-            pull_number: prNumber,
-            body: message,
-            commit_id: context.payload.pull_request.head.sha,
-            path: fileName,
-            line: line,
-            side: 'RIGHT',
-            });
-            }
-            }
-            
+                const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
+                console.log("file: ", file);
+                const violations = file.violations; // Access the violations array
+
+                for (const violation of violations) {
+                  console.log("violation: ", violation);
+
+                  const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;
+                  const line = violation.line;
+
+                  // Check if the file is part of the PR
+                  if (fileChanges[fileName]) {
+                    // Find the position in the diff
+                    const diffHunk = fileChanges[fileName].patch.split('\n');
+                    const position = diffHunk.findIndex(lineContent => lineContent.includes(`@@ -${line},`));
+
+                    if (position !== -1) {
+                      await github.rest.pulls.createReviewComment({
+                        owner: repoOwner,
+                        repo: repoName,
+                        pull_number: prNumber,
+                        body: message,
+                        commit_id: context.payload.pull_request.head.sha,
+                        path: fileName,
+                        position: position,
+                        side: 'RIGHT',
+                      });
+                    } else {
+                      console.log(`No matching line found in the diff for ${fileName}`);
+                    }
+                  } else {
+                    console.log(`File ${fileName} not found in the pull request.`);
+                  }
+                }
+              }
             } catch (error) {
-            console.log(`Error: ${error.message}`);
+              console.log(`Error: ${error.message}`);
             }

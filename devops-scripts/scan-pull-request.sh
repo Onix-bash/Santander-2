@@ -12,7 +12,7 @@ echo "PULL_REQUEST_HEAD_REF: '$PULL_REQUEST_HEAD_REF'"
 git_diff=$(git diff --name-only origin/$PULL_REQUEST_BASE_REF..origin/$PULL_REQUEST_HEAD_REF)
 
 echo "git_diff: '$git_diff'"
-report_output_path="$source_to_check_changes/report.json"
+report_output_path="$output_directory/report.json"
 sf scanner run --target "$git_diff" --format json --pmdconfig "$pmd_config_path" --eslintconfig "$eslint_config_path" --outfile $report_output_path
 
-cat output_directory/report.json
+cat output/report.json

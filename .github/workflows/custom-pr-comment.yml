@@ -59,8 +59,6 @@ jobs:
 
               for (const file of report) {
                 const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
-            
-                console.log("file: ", file);
                 const violations = file.violations; // Access the violations array
             
                 // Check if the file is part of the PR
@@ -68,7 +66,8 @@ jobs:
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
                   console.log("violation: ", violation);
-
+                  console.log("currentFile", currentFile;  
+                  const rulePath = violation.url ? violation.url : '';
                   const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${currentFile.engine}</td></tr>
                       <tr>
                       <td>Category</td>
@@ -88,7 +87,7 @@ jobs:
                       </tr>
                       <tr>
                       <td>Message</td>
-                      <td><a href=${violation.url} rel="nofollow">${violation.message}</a></td>
+                      <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
                       </tr>
                       <tr>
                       <td>File</td>

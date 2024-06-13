@@ -31,7 +31,7 @@ jobs:
           ./devops-scripts/scan-pull-request.sh
 
       - name: Add comment to PR files
-        run: node add-comments.js
+        run: node devops-scripts/addScanComment.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

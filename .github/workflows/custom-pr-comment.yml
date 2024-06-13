@@ -39,34 +39,35 @@ jobs:
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
 
-            // Read the JSON report
-            const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
-            console.log("report: ",report[0].violations);
-
-            // Add comments to the PR based on the report
-            for (const result of report) {
-             console.log("result: ",result);
-            const violations = result.violations;
-             console.log("violations : ", violations);
-              const fileName = result.fileName.replace('/__w/Santander-2/Santander-2/', '');
+            try {
+              // Read the JSON report
+              const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
+              console.log("report: ",report[0].violations);
+              for (const file of report) {
+              const path = file.filename;
+              
+              const violations = result.violations; // Access the violations array
+              
               for (const violation of violations) {
-                const message = `new';
+              const position = violation.line;
+              const diffHunk = violation.endLine;
+            const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;
+              
+              await github.rest.pulls.createReviewComment({
+            owner: repoOwner,
+            repo: repoName,
+            pull_number: prNumber,
+            body: message,
+            commit_id: context.payload.pull_request.head.sha,
+            path: path,
+            position: position,
+            side: 'RIGHT',
+            start_side: 'RIGHT',
+            diff_hunk: diffHunk
+            });
+            }
+            }
             
-                const line = violation.line;
-                const position = violation.endLine;
-
-                // Add comment to the PR
-                await github.rest.pulls.createReviewComment({
-                  owner: repoOwner,
-                  repo: repoName,
-                  pull_number: prNumber,
-                  body: message,
-                  commit_id: context.payload.pull_request.head.sha,
-                  path: fileName,
-                  diff_hunk: position,
-                  position: line,
-                  side: 'RIGHT',
-                  start_side: 'RIGHT',
-                });
-              }
+            } catch (error) {
+            console.log(`Error: ${error.message}`);
             }

@@ -41,7 +41,7 @@ jobs:
 
             // Read the JSON report
             const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
-            console.log("report: ",report);
+            console.log("report: ",report[0].violations);
 
             // Add comments to the PR based on the report
             for (const result of report) {

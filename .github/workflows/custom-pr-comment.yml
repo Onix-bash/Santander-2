@@ -92,7 +92,7 @@ jobs:
 
                     // Determine the position in the diff
                     const patchLines = currentFile.patch.split('\n');
-                    let position = null;
+                    let position = 1;
                     let lineCounter = 0;
 
                     for (let i = 0; i < patchLines.length; i++) {
@@ -106,10 +106,7 @@ jobs:
                       }
                     }
 
-                    console.log("patchLines: ", patchLines);
-                    console.log("position: ", position);
-
-                    if (position !== null) {
+                    
                       await github.rest.pulls.createReviewComment({
                         owner: repoOwner,
                         repo: repoName,
@@ -120,7 +117,7 @@ jobs:
                         position: position,
                         side: 'RIGHT'
                       });
-                    }
+                    
                   }
                 }
               }

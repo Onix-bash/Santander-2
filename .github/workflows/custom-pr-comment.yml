@@ -50,7 +50,7 @@ jobs:
                 repo: repoName,
                 pull_number: prNumber
               });
-              
+            
               // Create a map of file changes
               const fileChanges = {};
               for (const file of files) {
@@ -67,24 +67,45 @@ jobs:
                   console.log("violation: ", violation);
 
                   const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;
-              
-
+            
                   // Check if the file is part of the PR
                   if (fileChanges[fileName]) {
-                  console.log('fileChanges[fileName]',fileChanges[fileName]);
-                  const currentFile = fileChanges[fileName];
-                 
-                      await github.rest.pulls.createReviewComment({
-                      owner: repoOwner,
-                      repo: repoName,
-                      pull_number: prNumber,
-                      body: message,
-                      commit_id: context.payload.pull_request.head.sha,
-                      path: fileChanges[fileName].filename,
-                      side: 'RIGHT',            
-                      position: violation.endLine
-                      });
+                    console.log('fileChanges[fileName]',fileChanges[fileName]);
+                    const currentFile = fileChanges[fileName];
+            
+                    // Determine the position in the diff
+                    const patchLines = currentFile.patch.split('\n');
+                    let position = null;
+                    let addedLinesCount = 0;
+
+                    for (let i = 0; i < patchLines.length; i++) {
+                      const line = patchLines[i];
+                      if (line.startsWith('+') && !line.startsWith('+++')) {
+                        addedLinesCount++;
+                      }
+                      if (addedLinesCount === violation.line) {
+                        position = i + 1; // GitHub's position is 1-based
+                        break;
+                      }
                     }
+
+                    if (position !== null) {
+                      await github.rest.pulls.createReviewComment({
+                        owner: repoOwner,
+                        repo: repoName,
+                        pull_number: prNumber,
+                        body: message,
+                        commit_id: context.payload.pull_request.head.sha,
+                        path: fileName,
+                        position: position,
+                        side: 'RIGHT'
+                      });
+                    } else {
+                      console.log(`No matching line found in the diff for ${fileName}`);
+                    }
+                  } else {
+                    console.log(`File ${fileName} not found in the pull request.`);
+                  }
                 }
               }
             } catch (error) {

@@ -73,27 +73,27 @@ jobs:
                   if (fileChanges[fileName]) {
             console.log('fileChanges[fileName]',fileChanges[fileName]);
             const fileFromPR = files.forEach(file => console.log(file.fileName));
-
-#                    const addedLineInfo = fileFromPR.patch.split('\n').map((line, index) => ({ line, index }))
-#                      .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
-#                    if (addedLineInfo) {
-#                  const position = addedLineInfo.index;
-#                  const diffHunk = fileFromPR.patch.split('\n').slice(0, position + 1).join('\n');
-#                      await github.rest.pulls.createReviewComment({
-#                      owner: repoOwner,
-#                      repo: repoName,
-#                      pull_number: prNumber,
-#                      body: message,
-#                      commit_id: context.payload.pull_request.head.sha,
-#                      path: path,
-#                      position: position,
-#                      side: 'RIGHT',
-#                      start_side: 'RIGHT',
-#                      diff_hunk: diffHunk
-#                      });
-#                    }
-#                  } else {
-#                    console.log(`File ${fileName} not found in the pull request.`);
+                  
+                    const addedLineInfo = fileChanges[fileName].patch.split('\n').map((line, index) => ({ line, index }))
+                      .find(lineObj => lineObj.line.startsWith('+') && !lineObj.line.startsWith('+++'));
+                    if (addedLineInfo) {
+                  const position = addedLineInfo.index;
+                  const diffHunk = fileChanges[fileName].patch.split('\n').slice(0, position + 1).join('\n');
+                      await github.rest.pulls.createReviewComment({
+                      owner: repoOwner,
+                      repo: repoName,
+                      pull_number: prNumber,
+                      body: message,
+                      commit_id: context.payload.pull_request.head.sha,
+                      path: path,
+                      position: position,
+                      side: 'RIGHT',
+                      start_side: 'RIGHT',
+                      diff_hunk: diffHunk
+                      });
+                    }
+                  } else {
+                    console.log(`File ${fileName} not found in the pull request.`);
                   }
                 }
               }

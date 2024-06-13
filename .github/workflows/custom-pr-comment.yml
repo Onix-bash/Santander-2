@@ -73,7 +73,7 @@ jobs:
                   if (fileChanges[fileName]) {
                   console.log('fileChanges[fileName]',fileChanges[fileName]);
                   const currentFile = fileChanges[fileName];
-                  const position = currentFile.;
+                 
                       await github.rest.pulls.createReviewComment({
                       owner: repoOwner,
                       repo: repoName,

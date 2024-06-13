@@ -45,10 +45,11 @@ jobs:
               console.log("report: ",report[0].violations);
               for (const file of report) {
               const path = file.filename;
-              
-              const violations = result.violations; // Access the violations array
+               console.log("file: ",file);
+              const violations = file.violations; // Access the violations array
               
               for (const violation of violations) {
+            console.log("violation: ",violation);
               const position = violation.line;
               const diffHunk = violation.endLine;
             const message = `**${violation.ruleName}**: ${violation.message.trim()}\n**Category**: ${violation.category}\n**Severity**: ${violation.severity}`;

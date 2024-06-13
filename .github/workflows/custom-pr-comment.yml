@@ -15,19 +15,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Get changed files
-        id: changed_files
-        run: |
-          git diff --name-only origin/${{ github.event.pull_request.base.ref }}..origin/${{ github.event.pull_request.head.ref }} > changed_files.txt
-          cat changed_files.txt
-
-      - name: Filter src files and create comma-separated string
-        id: filter_files
-        run: |
-          src_files=$(grep '^src/' changed_files.txt | tr '\n' ',' | sed 's/,$//')
-          echo "src_files=$src_files" >> $GITHUB_ENV
-          echo "Filtered files: $src_files"  
-
       - name: Install Node
         uses: actions/setup-node@v4
         with:

@@ -64,7 +64,7 @@ jobs:
                   commit_id: context.payload.pull_request.head.sha,
                   path: fileName,
                   diff_hunk: position,
-                  position: lne,
+                  position: line,
                   side: 'RIGHT',
                   start_side: 'RIGHT',
                 });

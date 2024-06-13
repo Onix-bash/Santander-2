@@ -66,7 +66,7 @@ jobs:
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
                   console.log("violation: ", violation);
-                  console.log("currentFile", currentFile;  
+                  console.log("currentFile", currentFile);  
                   const rulePath = violation.url ? violation.url : '';
                   const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${currentFile.engine}</td></tr>
                       <tr>

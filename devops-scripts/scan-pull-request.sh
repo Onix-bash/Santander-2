@@ -7,7 +7,7 @@ mkdir -p "$output_directory"
 
 git fetch origin "$PULL_REQUEST_HEAD_REF"
 git fetch origin "$PULL_REQUEST_BASE_REF"
-
+echo "src_diff_files: '$src_diff_files'"
 echo "PULL_REQUEST_HEAD_REF: '$PULL_REQUEST_HEAD_REF'"
 git_diff=$(git diff --name-only origin/$PULL_REQUEST_BASE_REF..origin/$PULL_REQUEST_HEAD_REF)
 

@@ -40,96 +40,68 @@ jobs:
             const repoName = context.repo.repo;
             
             try {
-            // Read the JSON report
-            const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
+              // Read the JSON report
+              const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
               console.log("report: ", report);
-          
+            
               // Get list of files changed in the PR
               const { data: files } = await github.rest.pulls.listFiles({
-                  owner: repoOwner,
-                  repo: repoName,
-                  pull_number: prNumber
+                owner: repoOwner,
+                repo: repoName,
+                pull_number: pr0Number
               });
-          
+            
               // Create a map of file changes
               const fileChanges = {};
               for (const file of files) {
-                  fileChanges[file.filename] = file;
+                fileChanges[file.filename] = file;
               }
-          
+            
               for (const file of report) {
-                  const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
-                  const violations = file.violations; // Access the violations array
-          
-                  // Check if the file is part of the PR
-                  if (fileChanges[fileName]) {
-                      const currentFile = fileChanges[fileName];
-                      for (const violation of violations) {
-                          const rulePath = violation.url ? violation.url : '';
-                          const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
-                                 <tr>
-                                 <td>Category</td>
-                                 <td>${violation.category}</td>
-                                 </tr>
-                                 <tr>
-                                 <td>Rule</td>
-                                 <td>${violation.ruleName}</td>
-                                 </tr>
-                                 <tr>
-                                 <td>Severity</td>
-                                 <td>${violation.severity}</td>
-                                 </tr>
-                                 <tr>
-                                 <td>Message</td>
-                                 <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
-                                 </tr>
-                                 <tr>
-                                 <td>File</td>
-                                 <td><a href=${currentFile.filename}>${currentFile.filename}</a></td>
-                                 </tr>
-                                 </tbody>
-                                 </table>`;
-                                 // Determine the position in the diff
-                                const patchLines = currentFile.patch.split('\n');
-                                let position = null;
-                                let diffLine = 0;
-                                let originalLine = 0;
+                const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
+                const violations = file.violations; // Access the violations array
             
-                                for (let i = 0; i < patchLines.length; i++) {
-                                    const line = patchLines[i];
-                                    if (line.startsWith('@@')) {
-                                        const match = /@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-                                        if (match) {
-                                            originalLine = parseInt(match[1], 10);
-                                            diffLine = parseInt(match[2], 10) - 1;
-                                        }
-                                    } else if (line.startsWith('+') && !line.startsWith('+++')) {
-                                        diffLine++;
-                                        if (originalLine === violation.line) {
-                                            position = diffLine;
-                                            break;
-                                        }
-                                    } else if (!line.startsWith('-')) {
-                                        originalLine++;
-                                    }
-                                }
+                // Check if the file is part of the PR
+                if (fileChanges[fileName]) {
+                  const currentFile = fileChanges[fileName];
+                  for (const violation of violations) {
+                    const rulePath = violation.url ? violation.url : '';
+                    const message = `${violation.line}`;  // Construct your message here
             
-                                if (position !== null) {
-                                    console.log("message: ", message)
-                                    await github.rest.pulls.createReviewComment({
-                                        owner: repoOwner,
-                                        repo: repoName,
-                                        pull_number: prNumber,
-                                        body: message,
-                                        commit_id: context.payload.pull_request.head.sha,
-                                        path: fileName,
-                                        position: position,
-                                        side: 'RIGHT'
-                                    });
-                                }
-                            }
-                        }
+                    // Determine the position in the diff
+                    const patchLines = currentFile.patch.split('\n');
+                    let position = null;
+                    let lineCounter = 0;
+            
+                    for (let i = 0; i < patchLines.length; i++) {
+                      const line = patchLines[i];
+                      if (line.startsWith('+') && !line.startsWith('+++')) {
+                        lineCounter++;
+                      }
+                      if (lineCounter === violation.line) {
+                        position = i + 1; // Adjust to 1-based index for GitHub API
+                        break;
+                      }
+                    }
+            
+                    console.log("patchLines: ", patchLines);
+                    console.log("position: ", position);
+            
+                    if (position !== null) {
+                      await github.rest.pulls.createReviewComment({
+                        owner: repoOwner,
+                        repo: repoName,
+                        pull_number: prNumber,
+                        body: message,
+                        commit_id: context.payload.pull_request.head.sha,
+                        path: fileName,
+                        position: position,
+                        side: 'RIGHT'
+                      });
+                    }
                   }
-                          } catch (error) {
-                          console.log(`Error: ${error.message}`);
-                          }
+                }
+              }
+            } catch (error) {
+              console.log(`Error: ${error.message}`);
+            }

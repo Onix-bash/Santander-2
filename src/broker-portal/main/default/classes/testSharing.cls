@@ -3,7 +3,6 @@
  */
 
 public without sharing class classTestShaaring {
- // test push commit
  String variableNewTest;
  //new comment
 }

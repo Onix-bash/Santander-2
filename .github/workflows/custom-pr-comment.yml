@@ -48,7 +48,7 @@ jobs:
               const { data: files } = await github.rest.pulls.listFiles({
                 owner: repoOwner,
                 repo: repoName,
-                pull_number: pr0Number
+                pull_number: prNumber
               });
             
               // Create a map of file changes

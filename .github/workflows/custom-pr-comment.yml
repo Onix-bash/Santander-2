@@ -124,7 +124,7 @@ jobs:
                                     console.log('position', position);
                                     console.log('violation.line', violation.line);
                                     try {
-                                        await octokit.rest.pulls.createReviewComment({
+                                        await github.rest.pulls.createReviewComment({
                                             owner: repoOwner,
                                             repo: repoName,
                                             pull_number: prNumber,

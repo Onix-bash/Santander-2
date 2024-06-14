@@ -118,7 +118,10 @@ jobs:
                                                 }
                                             }
                                         }
+                                      
                                         if (position !== null) {
+                                         console.log('position', position);
+                                         console.log('violation.line', violation.line)
                                             try {
                                                 await github.rest.pulls.createReviewComment({
                                                     owner: repoOwner,

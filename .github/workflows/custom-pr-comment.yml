@@ -96,6 +96,8 @@ jobs:
                                 }
                             }
             
+                            console.log('position', position);
+            
                             if (position !== null) {
                                 await github.rest.pulls.createReviewComment({
                                     owner: repoOwner,
@@ -107,7 +109,15 @@ jobs:
                                     position: position,
                                     side: 'RIGHT'
                                 });
-                            }
+                            } else {
+                                   await github.rest.pulls.createReviewComment({
+                                          owner: repoOwner,
+                                          repo: repoName,
+                                          pull_number: prNumber,
+                                          body: message,
+                                          commit_id: context.payload.pull_request.head.sha,
+                                          path: fileName
+                                      });
                         }
                     }
                 }

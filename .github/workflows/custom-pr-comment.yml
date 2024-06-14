@@ -92,36 +92,33 @@ jobs:
                                                                </tr>
                                                                </tbody>
                                                                </table>`;
+            
                                 // Determine the position in the diff
-                                console.log(currentFile);
-                                console.log(currentFile.patch);
-                                const patchLines = currentFile.patch.split('\n');
+                                const patchLines = currentFile.patch ? currentFile.patch.split('\n') : [];
                                 let position = null;
                                 let diffLine = 0;
                                 let originalLine = 0;
                                 let inHunk = false;
                                 for (let i = 0; i < patchLines.length; i++) {
-                                  const line = patchLines[i];
-                                  const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-                                if (hunkMatch) {
-                                  originalLine = parseInt(hunkMatch[1], 10);
-                                  diffLine = parseInt(hunkMatch[2], 10) - 1;
-                                  inHunk = true;
-                                } else if (inHunk) {
-                                   if (line.startsWith('+') && !line.startsWith('+++')) {
-                                    diffLine++;
-                                    if (diffLine === violation.line) {
-                                    position = i + 1; // GitHub's position is 1-based
-                                    break;
-                                 }
-                                } else if (!line.startsWith('-')) {
-                                  originalLine++;
+                                    const line = patchLines[i];
+                                    const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
+                                    if (hunkMatch) {
+                                        originalLine = parseInt(hunkMatch[1], 10);
+                                        diffLine = parseInt(hunkMatch[2], 10) - 1;
+                                        inHunk = true;
+                                    } else if (inHunk) {
+                                        if (line.startsWith('+') && !line.startsWith('+++')) {
+                                            diffLine++;
+                                            if (diffLine === violation.line) {
+                                                position = i + 1; // GitHub's position is 1-based
+                                                break;
+                                            }
+                                        } else if (!line.startsWith('-')) {
+                                            originalLine++;
+                                        }
                                     }
                                 }
-                            }
                                 if (position !== null) {
-                                    console.log('position', position);
-                                    console.log('violation.line', violation.line);
                                     try {
                                         await github.rest.pulls.createReviewComment({
                                             owner: repoOwner,
@@ -137,7 +134,6 @@ jobs:
                                         console.log(`Error: ${error.message}`);
                                     }
                                 } else {
-                                    console.log(`Commenting on whole file for violation at line ${violation.line}`);
                                     try {
                                         await github.rest.pulls.createReviewComment({
                                             owner: repoOwner,
@@ -159,4 +155,3 @@ jobs:
                 } catch (error) {
                     console.log(`Error: ${error.message}`);
                 }
-

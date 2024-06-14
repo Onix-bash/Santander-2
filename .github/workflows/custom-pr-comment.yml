@@ -134,7 +134,7 @@ jobs:
                                                                                     body: message,
                                                                                     commit_id: context.payload.pull_request.head.sha,
                                                                                     path: fileName,
-                                                                                    subject_type: file
+                                                                                    subject_type: 'FILE'
                                                                                 });
                                                                             } catch (error) {
                                                                                 console.log(`Error: ${error.message}`);

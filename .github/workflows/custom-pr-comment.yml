@@ -91,43 +91,36 @@ jobs:
                                                    </tbody>
                                                    </table>`;
 
-                            // Determine the position in the diff
-                            const patchLines = currentFile.patch.split('\n');
-                            let position = null;
-                            let diffLine = 0;
-                            let originalLine = 0;
-                            let inHunk = false;
-                            let lastValidLine = null;
+                             // Determine the position in the diff
+                                const patchLines = currentFile.patch.split('\n');
+                                let position = null;
+                                let diffLine = 0;
+                                let originalLine = 0;
+                                let inHunk = false;
 
-                            for (let i = 0; i < patchLines.length; i++) {
-                                const line = patchLines[i];
-                                const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
+                                for (let i = 0; i < patchLines.length; i++) {
+                                    const line = patchLines[i];
+                                    const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
 
-                                if (hunkMatch) {
-                                    originalLine = parseInt(hunkMatch[1], 10);
-                                    diffLine = parseInt(hunkMatch[2], 10) - 1;
-                                    inHunk = true;
-                                } else if (inHunk) {
-                                    if (line.startsWith('+') && !line.startsWith('+++')) {
-                                        diffLine++;
-                                        lastValidLine = i + 1; // Keep track of the last valid line
-                                        if (diffLine === violation.line) {
-                                            position = i + 1; // GitHub's position is 1-based
-                                            break;
+                                    if (hunkMatch) {
+                                        originalLine = parseInt(hunkMatch[1], 10);
+                                        diffLine = parseInt(hunkMatch[2], 10) - 1;
+                                        inHunk = true;
+                                    } else if (inHunk) {
+                                        if (line.startsWith('+') && !line.startsWith('+++')) {
+                                            diffLine++;
+                                            if (diffLine === violation.line) {
+                                                position = i + 1; // GitHub's position is 1-based
+                                                break;
+                                            }
+                                        } else if (!line.startsWith('-')) {
+                                            originalLine++;
                                         }
-                                    } else if (!line.startsWith('-')) {
-                                        originalLine++;
                                     }
                                 }
-                            }
-
-                            if (position === null) {
-                                // If no exact match, use the last valid line
-                                position = lastValidLine;
-                            }
-
+                           
                             if (position !== null) {
-                                console.log("message: ", message);
+                                
                                 await github.rest.pulls.createReviewComment({
                                     owner: repoOwner,
                                     repo: repoName,

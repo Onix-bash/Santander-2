@@ -42,7 +42,6 @@ jobs:
             try {
                 // Read the JSON report
                 const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
-                console.log("report: ", report);
 
                 // Get list of files changed in the PR
                 const { data: files } = await github.rest.pulls.listFiles({
@@ -65,7 +64,7 @@ jobs:
                     if (fileChanges[fileName]) {
                         const currentFile = fileChanges[fileName];
                         for (const violation of violations) {
-                            console.log("currentFile", currentFile);
+                            
                             const rulePath = violation.url ? violation.url : '';
                             const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
                                                    <tr>
@@ -117,6 +116,9 @@ jobs:
                                 position: position,
                                 side: 'RIGHT'
                               });
+                            } else {
+                            console.log(fileName);
+                            console.log(violation);
                             }
                           }
                       }

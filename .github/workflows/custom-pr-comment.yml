@@ -109,18 +109,19 @@ jobs:
                                     position: position,
                                     side: 'RIGHT'
                                 });
-                            } else {
-                                   await github.rest.pulls.createReviewComment({
-                                          owner: repoOwner,
-                                          repo: repoName,
-                                          pull_number: prNumber,
-                                          body: message,
-                                          commit_id: context.payload.pull_request.head.sha,
-                                          path: fileName
-                                      });
-                        }
-                    }
-                }
-            } catch (error) {
-                console.log(`Error: ${error.message}`);
-            }
+                              } else {
+                                    await github.rest.pulls.createReviewComment({
+                                        owner: repoOwner,
+                                        repo: repoName,
+                                        pull_number: prNumber,
+                                        body: message,
+                                        commit_id: context.payload.pull_request.head.sha,
+                                        path: fileName
+                                    });
+                                }
+                            }
+                      }
+                      }
+                  } catch (error) {
+                    console.log(`Error: ${error.message}`);
+                  }

@@ -111,17 +111,12 @@ jobs:
                                 });
                               } else {
                                     await github.rest.pulls.createReviewComment({
-                                       owner: repoOwner,
-                                      repo: repoName,
-                                      pull_number: prNumber,
-                                      body: message,
-                                      commit_id: context.payload.pull_request.head.sha,
-                                      path: fileName,
-                                      start_line: 1,
-                                      start_side: 'RIGHT',
-                                      side: 'RIGHT',
-                                      line: 1
-                                    });
+                                    owner: repoOwner,
+                                    repo: repoName,
+                                    pull_number: prNumber,
+                                    body: `File: ${fileName}\n${message}`,
+                                    commit_id: context.payload.pull_request.head.sha,
+                                });
                                 }
                             }
                       }

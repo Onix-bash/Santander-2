@@ -123,7 +123,7 @@ jobs:
                                                                             }
                                                                         }
 
-                                                                        if (position !== null) {
+                                                                        if (true) {
                                                                             console.log('position', position);
                                                                             console.log('violation.line', violation.line);
                                                                             try {
@@ -134,8 +134,7 @@ jobs:
                                                                                     body: message,
                                                                                     commit_id: context.payload.pull_request.head.sha,
                                                                                     path: fileName,
-                                                                                    position: position,
-                                                                                    side: 'RIGHT'
+                                                                                    subject_type: file
                                                                                 });
                                                                             } catch (error) {
                                                                                 console.log(`Error: ${error.message}`);

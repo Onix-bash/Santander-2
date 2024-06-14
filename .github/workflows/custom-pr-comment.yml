@@ -115,8 +115,8 @@ jobs:
                                       }
                                       }
                                         
-                                        if (position !== null) {
-                                        console.log('position:', position);
+                                        if (true) {
+                                        const position = violation.line + 1;
                                         console.log('violation.line:', violation.line);
                                         try {
                                         await github.rest.pulls.createReviewComment({

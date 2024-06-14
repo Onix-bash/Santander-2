@@ -93,47 +93,78 @@ jobs:
                                                                </tbody>
                                                                </table>`;
                                         // Determine the position in the diff
-                                        const patchLines = currentFile.patch.split('\n');
-                                        let position = null;
-                                        let diffLine = 0;  // Tracks the line number within the GitHub diff view
-                                        let addedLinesCount = 0;  // Tracks only lines that have been added
-                                        let hunkStart = 0;
-                                        
-                                        for (let i = 0; i < patchLines.length; i++) {
-                                        const line = patchLines[i];
-                                        const hunkMatch = /^@@ -\d+,\d+ \+(\d+),\d+ @@/.exec(line);
-                                        if (hunkMatch) {
-                                        diffLine = parseInt(hunkMatch[1], 10) - 1;  // Set the starting line number for this hunk
-                                        hunkStart = i + 1;  // Start counting positions from the first line after the hunk header
-                                        addedLinesCount = 0;  // Reset for each hunk
-                                      } else if (line.startsWith('+') && !line.startsWith('+++')) {
-                                        addedLinesCount++;
-                                        if (addedLinesCount === (violation.line - diffLine)) {
-                                        position = i - hunkStart + 1;  // Adjust position to be 1-based index relative to hunk start
-                                        break;
-                                      }
-                                      }
-                                      }
-                                        
-                                        if (true) {
-                                        const position = violation.line + 1;
-                                        console.log('violation.line:', violation.line);
+                                const patchLines = currentFile.patch.split('\n');
+                                let position = null;
+                                let diffLine = 0;
+                                let originalLine = 0;
+                                let inHunk = false;
+
+                                for (let i = 0; i < patchLines.length; i++) {
+                                    const line = patchLines[i];
+                                    const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
+
+                                    if (hunkMatch) {
+                                        originalLine = parseInt(hunkMatch[1], 10);
+                                        diffLine = parseInt(hunkMatch[2], 10) - 1;
+                                        inHunk = true;
+                                    } else if (inHunk) {
+                                        if (line.startsWith('+') && !line.startsWith('+++')) {
+                                            diffLine++;
+                                            if (diffLine === violation.line) {
+                                                position = i + 1; // GitHub's position is 1-based
+                                                break;
+                                            }
+                                        } else if (!line.startsWith('-')) {
+                                            originalLine++;
+                                        }
+                                    }
+                                }
+
+                                if (position !== null) {
+                                    console.log('position', position);
+                                    console.log('violation.line', violation.line);
+                                    try {
+                                        await octokit.rest.pulls.createReviewComment({
+                                            owner: repoOwner,
+                                            repo: repoName,
+                                            pull_number: prNumber,
+                                            body: message,
+                                            commit_id: context.payload.pull_request.head.sha,
+                                            path: fileName,
+                                            position: position,
+                                            side: 'RIGHT'
+                                        });
+                                    } catch (error) {
+                                        console.log(`Error: ${error.message}`);
+                                    }
+                                } else {
+                                    // If position is null, comment on the last line of the diff
+                                    const lastLine = patchLines[patchLines.length - 1];
+                                    let lastValidPosition = null;
+
+                                    for (let i = patchLines.length - 1; i >= 0; i--) {
+                                        if (patchLines[i].startsWith('+') && !patchLines[i].startsWith('+++')) {
+                                            lastValidPosition = i + 1; // GitHub's position is 1-based
+                                            break;
+                                        }
+                                    }
+
+                                    if (lastValidPosition !== null) {
                                         try {
-                                        await github.rest.pulls.createReviewComment({
-                                      owner: repoOwner,
-                                      repo: repoName,
-                                      pull_number: prNumber,
-                                      body: message,
-                                      commit_id: context.payload.pull_request.head.sha,
-                                      path: fileName,
-                                      position: position,
-                                      side: 'RIGHT'
-                                      });
-                                      } catch (error) {
-                                      console.log(`Error posting comment: ${error.message}`);
-                                      }
-                                      }
-                                        
+                                            await octokit.rest.pulls.createReviewComment({
+                                                owner: repoOwner,
+                                                repo: repoName,
+                                                pull_number: prNumber,
+                                                body: message,
+                                                commit_id: context.payload.pull_request.head.sha,
+                                                path: fileName,
+                                                position: lastValidPosition,
+                                                side: 'RIGHT'
+                                            });
+                                            } catch (error) {
+                                                console.log(`Error: ${error.message}`);
+                                            }
+                                        }
                                     }
                                 }
                             }

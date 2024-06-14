@@ -1,0 +1,32 @@
+name: JS Custom Scanner PMD
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    name: Scan Results
+    container:
+      image: salesforce/cli:latest-full
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: |
+          npm install @salesforce/sfdx-scanner@4.2.0 @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+
+      - name: Run Scanner and Comment on PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PULL_REQUEST_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: node scan-and-comment.js

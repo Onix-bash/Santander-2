@@ -93,7 +93,7 @@ jobs:
                                                                </tbody>
                                                                </table>`;
                                 // Determine the position in the diff
-                                console.log(patchLines);
+                                console.log(currentFile.patch);
                                 const patchLines = currentFile.patch.split('\n');
                                 let position = null;
                                 let diffLine = 0;

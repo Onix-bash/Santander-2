@@ -106,7 +106,7 @@ jobs:
                                     body: message,
                                     commit_id: context.payload.pull_request.head.sha,
                                     path: fileName,
-                                    position: position,
+                                    line: position,
                                     side: 'RIGHT'
                                 });
                               } else {
@@ -116,7 +116,8 @@ jobs:
                                         pull_number: prNumber,
                                         body: message,
                                         commit_id: context.payload.pull_request.head.sha,
-                                        path: fileName
+                                        path: fileName,
+                                        line: 0
                                     });
                                 }
                             }

@@ -149,22 +149,6 @@ jobs:
                                         }
                                     }
 
-                                    if (lastValidPosition !== null) {
-                                        try {
-                                            await github.rest.pulls.createReviewComment({
-                                                owner: repoOwner,
-                                                repo: repoName,
-                                                pull_number: prNumber,
-                                                body: message,
-                                                commit_id: context.payload.pull_request.head.sha,
-                                                path: fileName,
-                                                position: lastValidPosition,
-                                                side: 'RIGHT'
-                                            });
-                                            } catch (error) {
-                                                console.log(`Error: ${error.message}`);
-                                             }
-                                            }
                                         }
                                     }
                               }

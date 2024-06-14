@@ -135,10 +135,10 @@ export default class CvPage extends NavigationMixin (LightningElement) {
      */
     mapRoles(roles) {
         return roles.map((role, index, array) => {
-            role.roleId;
-            role.roleName;
-            role.startDate;
-            role.endDate;
+            role.roleId; //test
+            role.roleName;//test
+            role.startDate;//test
+            role.endDate;//test
             role.description;
             role.index = index + 1;
         });

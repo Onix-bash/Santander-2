@@ -130,7 +130,7 @@ jobs:
                                                     body: message,
                                                     commit_id: context.payload.pull_request.head.sha,
                                                     path: fileName,
-                                                    position: 1,
+                                                    line: 1,
                                                     start_line: violation.line
                                                     side: 'RIGHT'
                                                 });

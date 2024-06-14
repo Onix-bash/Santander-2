@@ -78,7 +78,7 @@ jobs:
                             for (let i = 0; i < patchLines.length; i++) {
                                 const line = patchLines[i];
                                 const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-            
+                                console.log('hunkMatch',hunkMatch);
                                 if (hunkMatch) {
                                     originalLine = parseInt(hunkMatch[1], 10);
                                     diffLine = parseInt(hunkMatch[2], 10) - 1;
@@ -109,17 +109,7 @@ jobs:
                                     line: position,
                                     side: 'RIGHT'
                                 });
-                              } else {
-                                    await github.rest.pulls.createReviewComment({
-                                        owner: repoOwner,
-                                        repo: repoName,
-                                        pull_number: prNumber,
-                                        body: message,
-                                        commit_id: context.payload.pull_request.head.sha,
-                                        path: fileName,
-                                        line: 1
-                                    });
-                                }
+                              } 
                             }
                       }
                       }

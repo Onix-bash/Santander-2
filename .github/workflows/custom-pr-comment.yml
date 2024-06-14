@@ -38,50 +38,47 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
-
+            
             try {
                 // Read the JSON report
                 const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
                 console.log("report: ", report);
-
+            
                 // Get list of files changed in the PR
                 const { data: files } = await github.rest.pulls.listFiles({
                     owner: repoOwner,
                     repo: repoName,
                     pull_number: prNumber
                 });
-
+            
                 // Create a map of file changes
                 const fileChanges = {};
                 for (const file of files) {
                     fileChanges[file.filename] = file;
                 }
-
-                // Collect all comments
-                const comments = [];
-
+            
                 for (const file of report) {
                     const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
                     const violations = file.violations; // Access the violations array
-
+            
                     // Check if the file is part of the PR
                     if (fileChanges[fileName]) {
                         const currentFile = fileChanges[fileName];
                         for (const violation of violations) {
                             const rulePath = violation.url ? violation.url : '';
                             const message = `${violation.line}`;  // Construct your message here
-
+            
                             // Determine the position in the diff
                             const patchLines = currentFile.patch.split('\n');
                             let position = null;
                             let diffLine = 0;
                             let originalLine = 0;
                             let inHunk = false;
-
+            
                             for (let i = 0; i < patchLines.length; i++) {
                                 const line = patchLines[i];
                                 const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-
+            
                                 if (hunkMatch) {
                                     originalLine = parseInt(hunkMatch[1], 10);
                                     diffLine = parseInt(hunkMatch[2], 10) - 1;
@@ -98,34 +95,33 @@ jobs:
                                     }
                                 }
                             }
-
+            
                             console.log('position', position);
-
+            
                             if (position !== null) {
-                                comments.push({
+                                await github.rest.pulls.createReviewComment({
+                                    owner: repoOwner,
+                                    repo: repoName,
+                                    pull_number: prNumber,
+                                    body: message,
+                                    commit_id: context.payload.pull_request.head.sha,
                                     path: fileName,
-                                    position: position,
-                                    body: message
+                                    line: position,
+                                    side: 'RIGHT'
                                 });
-                            } else {
-                                comments.push({
+                              } else {
+                                    await github.rest.pulls.createReviewComment({
+                                    owner: repoOwner,
+                                    repo: repoName,
+                                    pull_number: prNumber,
+                                    body: `File: ${fileName}\n${message}`,
+                                    commit_id: context.payload.pull_request.head.sha,
                                     path: fileName,
-                                    body: `File: ${fileName}\n${message}`
                                 });
+                                }
                             }
-                        }
-                    }
-                }
-
-                // Create a pull request review with collected comments
-                await github.rest.pulls.createReview({
-                    owner: repoOwner,
-                    repo: repoName,
-                    pull_number: prNumber,
-                    body: 'Review comments',
-                    event: 'COMMENT',
-                    comments: comments
-                });
-            } catch (error) {
-                console.error(error);
-            }
+                      }
+                      }
+                  } catch (error) {
+                    console.log(`Error: ${error.message}`);
+                  }

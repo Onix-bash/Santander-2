@@ -92,21 +92,19 @@ jobs:
                                                                </tr>
                                                                </tbody>
                                                                </table>`;
-                            // Determine the position in the diff
-                        const patchLines = currentFile.patch.split('\n');
+                                        // Determine the position in the diff
+                                        const patchLines = currentFile.patch.split('\n');
                                         let position = null;
                                         let diffLine = 0;
                                         let originalLine = 0;
                                         let inHunk = false;
                                         for (let i = 0; i < patchLines.length; i++) {
                                             const line = patchLines[i];
-                                            console.log('patchLines[i]', patchLines[i])
                                             const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
 
                                             if (hunkMatch) {
                                                 originalLine = parseInt(hunkMatch[1], 10);
                                                 diffLine = parseInt(hunkMatch[2], 10) - 1;
-                                                console.log('diffLine', diffLine);
                                                 inHunk = true;
                                             } else if (inHunk) {
                                                 if (line.startsWith('+') && !line.startsWith('+++')) {
@@ -121,7 +119,7 @@ jobs:
                                             }
                                         }
                                       
-                                        if (position !== null) {
+                                        if (true) {
                                          console.log('position', position);
                                          console.log('violation.line', violation.line)
                                             try {
@@ -132,7 +130,8 @@ jobs:
                                                     body: message,
                                                     commit_id: context.payload.pull_request.head.sha,
                                                     path: fileName,
-                                                    position: position,
+                                                    position: 1,
+                                                    start_line: violation.line
                                                     side: 'RIGHT'
                                                 });
                                             } catch (error) {

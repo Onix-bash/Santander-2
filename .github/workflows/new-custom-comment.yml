@@ -29,4 +29,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
           PULL_REQUEST_BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: node scan-and-comment.js
+        run: node devops-scripts/commit-pr.js

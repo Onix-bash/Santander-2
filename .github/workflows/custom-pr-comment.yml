@@ -100,11 +100,13 @@ jobs:
                                         let inHunk = false;
                                         for (let i = 0; i < patchLines.length; i++) {
                                             const line = patchLines[i];
+                                            console.log('patchLines[i]', patchLines[i])
                                             const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
 
                                             if (hunkMatch) {
                                                 originalLine = parseInt(hunkMatch[1], 10);
                                                 diffLine = parseInt(hunkMatch[2], 10) - 1;
+                                                console.log('diffLine', diffLine);
                                                 inHunk = true;
                                             } else if (inHunk) {
                                                 if (line.startsWith('+') && !line.startsWith('+++')) {

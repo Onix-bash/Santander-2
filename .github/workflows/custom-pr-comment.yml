@@ -163,11 +163,12 @@ jobs:
                                             });
                                             } catch (error) {
                                                 console.log(`Error: ${error.message}`);
+                                             }
                                             }
                                         }
                                     }
-                                }
-                            }
+                              }
+                          }
 
                         } catch (error) {
                             console.log(`Error: ${error.message}`);

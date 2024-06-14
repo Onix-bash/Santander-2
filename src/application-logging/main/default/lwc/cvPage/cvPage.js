@@ -416,3 +416,119 @@ export default class CvPage extends NavigationMixin (LightningElement) {
         this.getEmployeeDetails();
     }
 }
+
+
+const fs = require('fs');
+const prNumber = context.payload.pull_request.number;
+const repoOwner = context.repo.owner;
+const repoName = context.repo.repo;
+
+try {
+    // Read the JSON report
+    const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
+
+    // Get list of files changed in the PR
+    const { data: files } = await github.rest.pulls.listFiles({
+        owner: repoOwner,
+        repo: repoName,
+        pull_number: prNumber
+    });
+
+    // Create a map of file changes
+    const fileChanges = {};
+    for (const file of files) {
+        fileChanges[file.filename] = file;
+    }
+    for (const file of report) {
+        const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
+        const violations = file.violations; // Access the violations array
+
+        // Check if the file is part of the PR
+        if (fileChanges[fileName]) {
+            const currentFile = fileChanges[fileName];
+            for (const violation of violations) {
+
+                const rulePath = violation.url ? violation.url : '';
+                const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
+                                                               <tr>
+                                                               <td>Category</td>
+                                                               <td>${violation.category}</td>
+                                                               </tr>
+                                                               <tr>
+                                                               <td>Rule</td>
+                                                               <td>${violation.ruleName}</td>
+                                                               </tr>
+                                                               <tr>
+                                                               <td>Line</td>
+                                                               <td>${violation.line}</td>
+                                                               </tr>
+                                                               <tr>
+                                                               <td>Severity</td>
+                                                               <td>${violation.severity}</td>
+                                                               </tr>
+                                                               <tr>
+                                                               <td>Message</td>
+                                                               <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
+                                                               </tr>
+                                                               <tr>
+                                                               <td>File</td>
+                                                               <td><a href=${currentFile.filename}>${currentFile.filename}</a></td>
+                                                               </tr>
+                                                               </tbody>
+                                                               </table>`;
+                // Determine the position in the diff
+                const patchLines = currentFile.patch.split('\n');
+                let position = null;
+                let diffLine = 0;
+                let originalLine = 0;
+                let inHunk = false;
+
+                for (let i = 0; i < patchLines.length; i++) {
+                    const line = patchLines[i];
+                    const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
+
+                    if (hunkMatch) {
+                        originalLine = parseInt(hunkMatch[1], 10);
+                        diffLine = parseInt(hunkMatch[2], 10) - 1;
+                        inHunk = true;
+                    }
+                    if (inHunk) {
+                        if (line.startsWith('+') && !line.startsWith('+++')) {
+                            diffLine++;
+                            if (diffLine === violation.line) {
+                                position = i + 1; // GitHub's position is 1-based
+                                break;
+                            }
+                        } else if (!line.startsWith('-')) {
+                            originalLine++;
+                        }
+                    }
+                }
+
+                if (position !== null) {
+                    console.log('position', position);
+                    console.log('violation.line', violation.line);
+                    try {
+                        await github.rest.pulls.createReviewComment({
+                            owner: repoOwner,
+                            repo: repoName,
+                            pull_number: prNumber,
+                            body: message,
+                            commit_id: context.payload.pull_request.head.sha,
+                            path: fileName,
+                            position: position,
+                            side: 'RIGHT'
+                        });
+                    } catch (error) {
+                        console.log(`Error: ${error.message}`);
+                    }
+                } else {
+                    console.log(`Skipping comment for violation at line ${violation.line} as it's not found in the diff.`);
+                }
+            }
+        }
+    }
+} catch (error) {
+    console.log(`Error: ${error.message}`);
+
+}

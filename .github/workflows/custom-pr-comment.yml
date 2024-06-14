@@ -107,7 +107,8 @@ jobs:
                                                                                 originalLine = parseInt(hunkMatch[1], 10);
                                                                                 diffLine = parseInt(hunkMatch[2], 10) - 1;
                                                                                 inHunk = true;
-                                                                            } else if (inHunk) {
+                                                                            }  
+            if (inHunk) {
                                                                                 if (line.startsWith('+') && !line.startsWith('+++')) {
                                                                                     diffLine++;
                                                                                     if (diffLine === violation.line) {

@@ -93,7 +93,7 @@ jobs:
                                                                </tbody>
                                                                </table>`;
                                         // Determine the position in the diff
-                                        const patchLines = currentQFile.patch.split('\n');
+                                        const patchLines = currentFile.patch.split('\n');
                                         let position = null;
                                         let diffLine = 0;  // Tracks the line number within the GitHub diff view
                                         let addedLinesCount = 0;  // Tracks only lines that have been added

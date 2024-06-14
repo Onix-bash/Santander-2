@@ -111,7 +111,7 @@ jobs:
                                         if (line.startsWith('+') && !line.startsWith('+++')) {
                                             diffLine++;
                                             if (diffLine === violation.line) {
-                                                position = i + 1; // GitHub's position is 1-based
+                                                position = i  ; // GitHub's position is 1-based
                                                 break;
                                             }
                                         } else if (!line.startsWith('-')) {

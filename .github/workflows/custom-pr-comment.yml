@@ -98,6 +98,8 @@ jobs:
                                                                         let diffLine = 0;
                                                                         let originalLine = 0;
                                                                         let inHunk = false;
+                                                                          console.log(currentFile.patch)
+                                                                          console.log(violation.line)
 
                                                                         for (let i = 0; i < patchLines.length; i++) {
                                                                             const line = patchLines[i];

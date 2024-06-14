@@ -117,7 +117,7 @@ jobs:
                                     body: `File: ${fileName}\n${message}`,
                                     commit_id: context.payload.pull_request.head.sha,
                                     path: fileName,
-                                    subject_type: "FILE"
+                                    subject_type: 'file'
                                 });
                                 }
                             }

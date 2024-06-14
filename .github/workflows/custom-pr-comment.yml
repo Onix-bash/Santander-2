@@ -117,7 +117,7 @@ jobs:
                                         body: message,
                                         commit_id: context.payload.pull_request.head.sha,
                                         path: fileName,
-                                        line: 0
+                                        line: 1
                                     });
                                 }
                             }

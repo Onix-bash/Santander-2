@@ -95,26 +95,26 @@ jobs:
                     let position = null;
                     let diffLine = 0;
                     let originalLine = 0;
+#
+#                    for (let i = 0; i < patchLines.length; i++) {
+#                        const line = patchLines[i];
+#                        if (line.startsWith('@@')) {
+#                            const match = /@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
+#                            if (match) {
+#                                originalLine = parseInt(match[1], 10);
+#                                diffLine = parseInt(match[2], 10) - 1;
+#                            }
+#                        } else if (line.startsWith('+') && !line.startsWith('+++')) {
+#                            diffLine++;
+#                            if (originalLine === violation.line) {
+#                                position = diffLine;
+#                                break;
+#                            }
+#                        } else if (!line.startsWith('-')) {
+#                            originalLine++;
+#                        }
+#                    }
 
-                    for (let i = 0; i < patchLines.length; i++) {
-                        const line = patchLines[i];
-                        if (line.startsWith('@@')) {
-                            const match = /@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-                            if (match) {
-                                originalLine = parseInt(match[1], 10);
-                                diffLine = parseInt(match[2], 10) - 1;
-                            }
-                        } else if (line.startsWith('+') && !line.startsWith('+++')) {
-                            diffLine++;
-                            if (originalLine === violation.line) {
-                                position = diffLine;
-                                break;
-                            }
-                        } else if (!line.startsWith('-')) {
-                            originalLine++;
-                        }
-                    }
-            
                       await github.rest.pulls.createReviewComment({
                         owner: repoOwner,
                         repo: repoName,
@@ -122,10 +122,9 @@ jobs:
                         body: message,
                         commit_id: context.payload.pull_request.head.sha,
                         path: fileName,
-                        position: position,
-                        side: 'RIGHT'
+                        line: violation.line
                       });
-                    
+
                   }
                 }
               }

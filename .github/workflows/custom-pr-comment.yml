@@ -95,26 +95,17 @@ jobs:
                                                         // Determine the position in the diff
                                 const patchLines = currentFile.patch.split('\n');
                                 let position = null;
-                                let diffLine = 0;
-                                let originalLine = 0;
+                                let addedLinesCount = 0;
             
                                 for (let i = 0; i < patchLines.length; i++) {
-                                    const line = patchLines[i];
-                                    if (line.startsWith('@@')) {
-                                        const match = /@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-                                        if (match) {
-                                            originalLine = parseInt(match[1], 10);
-                                            diffLine = parseInt(match[2], 10) - 1;
-                                        }
-                                    } else if (line.startsWith('+') && !line.startsWith('+++')) {
-                                        diffLine++;
-                                        if (originalLine === violation.line) {
-                                            position = diffLine;
-                                            break;
-                                        }
-                                    } else if (!line.startsWith('-')) {
-                                        originalLine++;
-                                    }
+                                  const line = patchLines[i];
+                                  if (line.startsWith('+') && !line.startsWith('+++')) {
+                                    addedLinesCount++;
+                                  }
+                                  if (addedLinesCount === violation.line) {
+                                    position = i + 1; // GitHub's position is 1-based
+                                    break;
+                                  }
                                 }
 
                                 if (position !== null) {

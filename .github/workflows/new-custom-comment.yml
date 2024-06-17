@@ -31,8 +31,8 @@ jobs:
                   pull_number: context.payload.pull_request.number
               });
               
-              const fileNames = files.filter(file => file.startsWith('src/')).join(',');
-              core.setOutput('fileNames', fileNames)
+              const fileNames = files.map(file => file.filename).filter(filename => filename.startsWith('src')).join(',');
+              core.setOutput('fileNames', fileNames);
 
       - name: Install SFDX Code Analyser
         run: |

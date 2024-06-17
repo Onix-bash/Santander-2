@@ -26,39 +26,14 @@ module.exports = async ({github, context}) => {
             const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
             const violations = file.violations; // Access the violations array
 
+            let reviewComment = '';
+
             // Check if the file is part of the PR
             if (fileChanges[fileName]) {
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
 
-                    const rulePath = violation.url ? violation.url : '';
-                    const message = `<table role="table"><thead><tr><th>Attribute</th><th>Value</th></tr></thead><tbody><tr><td>Engine</td><td>${file.engine}</td></tr>
-                                                               <tr>
-                                                               <td>Category</td>
-                                                               <td>${violation.category}</td>
-                                                               </tr>
-                                                               <tr>
-                                                               <td>Rule</td>
-                                                               <td>${violation.ruleName}</td>
-                                                               </tr>
-                                                               <tr>
-                                                               <td>Line</td>
-                                                               <td>${violation.line}</td>
-                                                               </tr>
-                                                               <tr>
-                                                               <td>Severity</td>
-                                                               <td>${violation.severity}</td>
-                                                               </tr>
-                                                               <tr>
-                                                               <td>Message</td>
-                                                               <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
-                                                               </tr>
-                                                               <tr>
-                                                               <td>File</td>
-                                                               <td><a href=${currentFile.filename}>${currentFile.filename}</a></td>
-                                                               </tr>
-                                                               </tbody>
-                                                               </table>`;
+                    const message = createTable(violation);
 
                     // Determine the position in the diff
                     const position = getLineNumberFromDiff(currentFile.patch);
@@ -95,8 +70,21 @@ module.exports = async ({github, context}) => {
                     }
                 }
             } else {
-                console.log('module.error', fileName )
+                for (const violation of violations) {
+                    reviewComment += createTable(violation)
+                }
+
             }
+
+            console.log(reviewComment);
+
+            // Add comment
+            await github.rest.issues.createComment({
+                owner: repoOwner,
+                repo: repoName,
+                issue_number: prNumber,
+                body: reviewComment
+            });
         }
     } catch (error) {
         console.log(`Error: ${error.message}`);
@@ -111,5 +99,47 @@ module.exports = async ({github, context}) => {
             }
         }
         return 1; // Default to the first line if no added lines are found
+    }
+
+    function createTable(violation) {
+        const rulePath = violation.url ? violation.url : '';
+        return `<table role="table">
+            <thead>
+            <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Engine</td>
+                <td>${file.engine}</td>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>${violation.category}</td>
+            </tr>
+            <tr>
+                <td>Rule</td>
+                <td>${violation.ruleName}</td>
+            </tr>
+            <tr>
+                <td>Line</td>
+                <td>${violation.line}</td>
+            </tr>
+            <tr>
+                <td>Severity</td>
+                <td>${violation.severity}</td>
+            </tr>
+            <tr>
+                <td>Message</td>
+                <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
+            </tr>
+            <tr>
+                <td>File</td>
+                <td><a href=${currentFile.filename}>${currentFile.filename}</a></td>
+            </tr>
+            </tbody>
+        </table>`
     }
 }

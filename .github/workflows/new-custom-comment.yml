@@ -20,13 +20,17 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Dependencies
+      - name: Install SFDX Code Analyser
+        env:
+          PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
+          PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
         run: |
-          npm install @salesforce/sfdx-scanner@4.2.0 @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
+          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+          chmod +x ./devops-scripts/scan-pull-request.sh
+          ./devops-scripts/scan-pull-request.sh
 
       - name: Run Scanner and Comment on PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_REQUEST_HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          PULL_REQUEST_BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: node devops-scripts/commit-pr.js

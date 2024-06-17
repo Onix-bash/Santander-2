@@ -1,26 +1,12 @@
-const { execSync } = require('child_process');
 const fs = require('fs');
-import { getOctokit, context } from '@actions/github';
-const github = require('@actions/github');
+import { getOctokit } from '@actions/github';
+const github = require("@actions/github");
 
 const githubToken = process.env.GITHUB_TOKEN;
 const octokit = getOctokit(githubToken);
 
-const PULL_REQUEST_HEAD_REF = process.env.PULL_REQUEST_HEAD_REF;
-const PULL_REQUEST_BASE_REF = process.env.PULL_REQUEST_BASE_REF;
-
-const pmdConfigPath = "config/scanner/pmd_config.xml";
-const eslintConfigPath = "config/scanner/.eslintrc.json";
 const outputDirectory = "output";
 const reportOutputPath = `${outputDirectory}/report.json`;
-
-execSync(`git config --global --add safe.directory /__w/Santander-2/Santander-2`);
-execSync(`mkdir -p ${outputDirectory}`);
-execSync(`git fetch origin ${PULL_REQUEST_HEAD_REF}`);
-execSync(`git fetch origin ${PULL_REQUEST_BASE_REF}`);
-const gitDiff = execSync(`git diff --name-only origin/${PULL_REQUEST_BASE_REF}..origin/${PULL_REQUEST_HEAD_REF}`).toString();
-const srcFiles = gitDiff.split('\n').filter(file => file.startsWith('src/')).join(',');
-execSync(`sf scanner run --target "${srcFiles}" --format json --pmdconfig "${pmdConfigPath}" --eslintconfig "${eslintConfigPath}" --outfile "${reportOutputPath}"`);
 
 const report = JSON.parse(fs.readFileSync(reportOutputPath, 'utf-8'));
 const prNumber = github.context.payload.pull_request.number;
@@ -28,8 +14,8 @@ const repoOwner = github.context.repo.owner;
 const repoName = github.context.repo.repo;
 
 octokit.pulls.listFiles({
-    owner: getContext().repo.owner,
-    repo: getContext().repo.repo,
+    owner: repoOwner,
+    repo: repoName,
     pull_number: prNumber
 }).then(filesResponse => {
     const files = filesResponse.data;
@@ -96,9 +82,7 @@ octokit.pulls.listFiles({
 
 // Helper function to extract the correct line number from the diff hunk
 function getLineNumberFromDiff(diffHunk) {
-    const patchLines = diffHunk ? diffHunk.split('\n') : [];
-
-    const lines = diffHunk.split('\n');
+    const lines = diffHunk ? diffHunk.split('\n') : [];
     for (let i = 0; i < lines.length; i++) {
         if (lines[i].startsWith('+') && !lines[i].startsWith('+++')) {
             return i + 1;

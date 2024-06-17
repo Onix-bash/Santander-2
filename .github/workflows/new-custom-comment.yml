@@ -43,6 +43,7 @@ jobs:
       - name: Run SFDX Scanner
         run: |
           mkdir -p "output"
+          echo "${{ steps.get-pr-files.outputs.file_names }}"
           sf scanner run --target ${{ steps.get-pr-files.outputs.file_names }} --format json --pmdconfig ./config/scanner/pmd_config.xml --eslintconfig ./config/scanner/.eslintrc.json --outfile output/report.json
 
       - name: Add comment to PR files

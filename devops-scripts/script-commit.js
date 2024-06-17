@@ -60,30 +60,7 @@ module.exports = async ({github, context}) => {
                                                                </table>`;
 
                     // Determine the position in the diff
-                    const patchLines = currentFile.patch ? currentFile.patch.split('\n') : [];
-                    let position = null;
-                    let diffLine = 0;
-                    let originalLine = 0;
-                    let inHunk = false;
-                    for (let i = 0; i < patchLines.length; i++) {
-                        const line = patchLines[i];
-                        const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-                        if (hunkMatch) {
-                            originalLine = parseInt(hunkMatch[1], 10);
-                            diffLine = parseInt(hunkMatch[2], 10) - 1;
-                            inHunk = true;
-                        } else if (inHunk) {
-                            if (line.startsWith('+') && !line.startsWith('+++')) {
-                                diffLine++;
-                                if (diffLine === violation.line) {
-                                    position = i + 1; // GitHub's position is 1-based
-                                    break;
-                                }
-                            } else if (!line.startsWith('-')) {
-                                originalLine++;
-                            }
-                        }
-                    }
+                    const position = getLineNumberFromDiff(currentFile.patch);
                     if (position !== null) {
                         try {
                             await github.rest.pulls.createReviewComment({
@@ -120,5 +97,16 @@ module.exports = async ({github, context}) => {
         }
     } catch (error) {
         console.log(`Error: ${error.message}`);
+    }
+
+    // Helper function to extract the correct line number from the diff hunk
+    function getLineNumberFromDiff(diffHunk) {
+        const lines = diffHunk ? diffHunk.split('\n') : [];
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith('+') && !lines[i].startsWith('+++')) {
+                return i + 1;
+            }
+        }
+        return 1; // Default to the first line if no added lines are found
     }
 }

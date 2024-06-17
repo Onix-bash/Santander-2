@@ -24,8 +24,6 @@ module.exports = async ({github, context}) => {
             const fileName = file.fileName.replace('/__w/Santander-2/Santander-2/', '');
             const violations = file.violations; // Access the violations array
 
-            let reviewComment = '';
-
             // Check if the file is part of the PR
             if (fileChanges[fileName]) {
                 const currentFile = fileChanges[fileName];
@@ -68,20 +66,22 @@ module.exports = async ({github, context}) => {
                     }
                 }
             } else {
+                let reviewComment = '';
                 for (const violation of violations) {
-                    
-                    let reviewComment = createTable(violation, file) + '\n';
-                    try {
-                        // Add comment
-                        await github.rest.issues.createComment({
-                            owner: repoOwner,
-                            repo: repoName,
-                            issue_number: prNumber,
-                            body: reviewComment
-                        });
-                    } catch (error) {
-                        console.log('error', error)
-                    }
+
+                   reviewComment += '\n'+ createTable(violation, file);
+                   console.log('reviewComment = ', reviewComment)
+                }
+                try {
+                    // Add comment
+                    await github.rest.issues.createComment({
+                        owner: repoOwner,
+                        repo: repoName,
+                        issue_number: prNumber,
+                        body: reviewComment
+                    });
+                } catch (error) {
+                    console.log('error', error)
                 }
             }
 

@@ -34,7 +34,7 @@ jobs:
               // Join file names by comma
               const fileNames = files.map(file => file.filename).join(',');
               console.log('fileNames', fileNames);
-              return fileNames;
+              return { fileNames };
 
       - name: Install SFDX Code Analyser
         run: |
@@ -44,8 +44,8 @@ jobs:
       - name: Run SFDX Scanner
         run: |
           mkdir -p "output"
-          echo "filenames: '${{ steps.get-pr-files.outputs.file_names }}'"
-          sf scanner run --target ${{ steps.get-pr-files.outputs.file_names }} --format json --pmdconfig ./config/scanner/pmd_config.xml --eslintconfig ./config/scanner/.eslintrc.json --outfile output/report.json
+          echo "Files changed: ${{ steps.get-pr-files.outputs.fileNames }}"
+          sf scanner run --target ${{ steps.get-pr-files.outputs.fileNames }} --format json --pmdconfig ./config/scanner/pmd_config.xml --eslintconfig ./config/scanner/.eslintrc.json --outfile output/report.json
 
       - name: Add comment to PR files
         uses: actions/github-script@v7

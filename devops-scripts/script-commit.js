@@ -75,13 +75,17 @@ module.exports = async ({github, context}) => {
 
             console.log(reviewComment);
 
-            // Add comment
-            await github.rest.issues.createComment({
-                owner: repoOwner,
-                repo: repoName,
-                issue_number: prNumber,
-                body: reviewComment
-            });
+            try {
+                // Add comment
+                await github.rest.issues.createComment({
+                    owner: repoOwner,
+                    repo: repoName,
+                    issue_number: prNumber,
+                    body: reviewComment
+                });
+            } catch (error) {
+                console.log('error', error)
+            }
         }
     } catch (error) {
         console.log(`Error: ${error.message}`);

@@ -69,11 +69,12 @@ module.exports = async ({github, context}) => {
                 }
             } else {
                 for (const violation of violations) {
+                    console.log('violat', violation)
                     reviewComment += '\n' + createTable(violation, file);
                 }
             }
 
-            console.log(reviewComment);
+            console.log('reviewComment', reviewComment);
 
             try {
                 // Add comment

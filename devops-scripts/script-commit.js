@@ -8,7 +8,6 @@ module.exports = async ({github, context}) => {
     try {
         // Read the JSON report
         const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
-        console.log('report', report)
         // Get list of files changed in the PR
         const { data: files } = await github.rest.pulls.listFiles({
             owner: repoOwner,
@@ -19,7 +18,6 @@ module.exports = async ({github, context}) => {
         // Create a map of file changes
         const fileChanges = {};
         for (const file of files) {
-            console.log('file', file)
             fileChanges[file.filename] = file;
         }
         for (const file of report) {
@@ -33,7 +31,7 @@ module.exports = async ({github, context}) => {
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
 
-                    const message = createTable(violation, file);
+                    const message = createTable(violation, file, fileName);
 
                     // Determine the position in the diff
                     const position = getLineNumberFromDiff(currentFile.patch);
@@ -100,7 +98,7 @@ module.exports = async ({github, context}) => {
         return 1; // Default to the first line if no added lines are found
     }
 
-    function createTable(violation, file) {
+    function createTable(violation, file, fileName) {
         const rulePath = violation.url ? violation.url : '';
         return `<table role="table">
             <thead>
@@ -136,7 +134,7 @@ module.exports = async ({github, context}) => {
             </tr>
             <tr>
                 <td>File</td>
-                <td><a href=${currentFile.filename}>${currentFile.filename}</a></td>
+                <td>${fileName}></td>
             </tr>
             </tbody>
         </table>`

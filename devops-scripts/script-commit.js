@@ -33,7 +33,7 @@ module.exports = async ({github, context}) => {
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
 
-                    const message = createTable(violation);
+                    const message = createTable(violation, file);
 
                     // Determine the position in the diff
                     const position = getLineNumberFromDiff(currentFile.patch);
@@ -71,9 +71,8 @@ module.exports = async ({github, context}) => {
                 }
             } else {
                 for (const violation of violations) {
-                    reviewComment += createTable(violation)
+                    reviewComment += createTable(violation, file);
                 }
-
             }
 
             console.log(reviewComment);
@@ -101,7 +100,7 @@ module.exports = async ({github, context}) => {
         return 1; // Default to the first line if no added lines are found
     }
 
-    function createTable(violation) {
+    function createTable(violation, file) {
         const rulePath = violation.url ? violation.url : '';
         return `<table role="table">
             <thead>

@@ -19,7 +19,7 @@ module.exports = async ({github, context, filesFromPR}) => {
 
         // Create a map of file changes
         const fileChanges = {};
-        for (const file of files) {
+        for (const file of filesFromPR) {
             console.log(file);
             fileChanges[file.filename] = file;
         }

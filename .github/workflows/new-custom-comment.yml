@@ -26,7 +26,7 @@ jobs:
           PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
         run: |
           sf plugins install @salesforce/sfdx-scanner@4.2.0
-          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest @octokit/action
           chmod +x ./devops-scripts/scan-pull-request.sh
           ./devops-scripts/scan-pull-request.sh
 

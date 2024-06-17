@@ -6,7 +6,8 @@ module.exports = async ({github, context, filesFromPR}) => {
     const repoName = context.repo.repo;
 
     try {
-        console.log(filesFromPR);
+        const files = JSON.parse(filesFromPR);
+        console.log('felesfilesFromPR', files);
         // Read the JSON report
         const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
 
@@ -19,7 +20,8 @@ module.exports = async ({github, context, filesFromPR}) => {
 
         // Create a map of file changes
         const fileChanges = {};
-        for (const file of filesFromPR) {
+        for (const file of files) {
+            console.log(file);
             fileChanges[file.filename] = file;
         }
         for (const file of report) {

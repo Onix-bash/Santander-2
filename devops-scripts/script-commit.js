@@ -71,7 +71,7 @@ module.exports = async ({github, context}) => {
                 }
             } else {
                 for (const violation of violations) {
-                    reviewComment += createTable(violation, file);
+                    reviewComment += '\n' + createTable(violation, file);
                 }
             }
 

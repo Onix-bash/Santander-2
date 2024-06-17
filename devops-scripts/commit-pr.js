@@ -1,9 +1,8 @@
 const fs = require('fs');
-import { getOctokit } from '@actions/github';
+const { Octokit } = require("@octokit/action");
 const github = require("@actions/github");
 
 const githubToken = process.env.GITHUB_TOKEN;
-const octokit = getOctokit(githubToken);
 
 const outputDirectory = "output";
 const reportOutputPath = `${outputDirectory}/report.json`;
@@ -12,7 +11,7 @@ const report = JSON.parse(fs.readFileSync(reportOutputPath, 'utf-8'));
 const prNumber = github.context.payload.pull_request.number;
 const repoOwner = github.context.repo.owner;
 const repoName = github.context.repo.repo;
-
+const octokit = new Octokit( {auth: githubToken});
 octokit.pulls.listFiles({
     owner: repoOwner,
     repo: repoName,

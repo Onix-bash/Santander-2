@@ -1,10 +1,10 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
-const { Octokit } = require("@octokit/rest");
+import { getOctokit, context } from '@actions/github';
 const github = require('@actions/github');
 
-const token = process.env.GITHUB_TOKEN;
-const octokit = new Octokit({ auth: token });
+const githubToken = process.env.GITHUB_TOKEN;
+const octokit = getOctokit(githubToken);
 
 const PULL_REQUEST_HEAD_REF = process.env.PULL_REQUEST_HEAD_REF;
 const PULL_REQUEST_BASE_REF = process.env.PULL_REQUEST_BASE_REF;
@@ -28,8 +28,8 @@ const repoOwner = github.context.repo.owner;
 const repoName = github.context.repo.repo;
 
 octokit.pulls.listFiles({
-    owner: repoOwner,
-    repo: repoName,
+    owner: getContext().repo.owner,
+    repo: getContext().repo.repo,
     pull_number: prNumber
 }).then(filesResponse => {
     const files = filesResponse.data;
@@ -54,34 +54,11 @@ octokit.pulls.listFiles({
                          <tr><td>Message</td><td><a href=${rulePath} rel="nofollow">${violation.message}</a></td></tr>
                          <tr><td>File</td><td><a href=${currentFile.filename}>${currentFile.filename}</a></td></tr></tbody></table>`;
 
-                const patchLines = currentFile.patch ? currentFile.patch.split('\n') : [];
-                let position = null;
-                let diffLine = 0;
-                let originalLine = 0;
-                let inHunk = false;
-                for (let i = 0; i < patchLines.length; i++) {
-                    const line = patchLines[i];
-                    const hunkMatch = /^@@ -(\d+),\d+ \+(\d+),\d+ @@/.exec(line);
-                    if (hunkMatch) {
-                        originalLine = parseInt(hunkMatch[1], 10);
-                        diffLine = parseInt(hunkMatch[2], 10) - 1;
-                        inHunk = true;
-                    } else if (inHunk) {
-                        if (line.startsWith('+') && !line.startsWith('+++')) {
-                            diffLine++;
-                            if (diffLine === violation.line) {
-                                position = i + 1;
-                                break;
-                            }
-                        } else if (!line.startsWith('-')) {
-                            originalLine++;
-                        }
-                    }
-                }
+                const position = getLineNumberFromDiff(currentFile.patch)
 
                 if (position !== null) {
                     try {
-                        await octokit.pulls.createReviewComment({
+                        await octokit.rest.pulls.createReviewComment({
                             owner: repoOwner,
                             repo: repoName,
                             pull_number: prNumber,
@@ -96,7 +73,7 @@ octokit.pulls.listFiles({
                     }
                 } else {
                     try {
-                        await octokit.pulls.createReviewComment({
+                        await octokit.rest.pulls.createReviewComment({
                             owner: repoOwner,
                             repo: repoName,
                             pull_number: prNumber,
@@ -116,3 +93,16 @@ octokit.pulls.listFiles({
 }).catch(error => {
     console.log(`Error: ${error.message}`);
 });
+
+// Helper function to extract the correct line number from the diff hunk
+function getLineNumberFromDiff(diffHunk) {
+    const patchLines = diffHunk ? diffHunk.split('\n') : [];
+
+    const lines = diffHunk.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('+') && !lines[i].startsWith('+++')) {
+            return i + 1;
+        }
+    }
+    return 1; // Default to the first line if no added lines are found
+}

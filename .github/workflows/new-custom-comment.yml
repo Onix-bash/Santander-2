@@ -34,7 +34,7 @@ jobs:
               // Join file names by comma
               const fileNames = files.map(file => file.filename).join(',');
               console.log('fileNames', fileNames);
-              return { fileNames };
+              core.setOutput('fileNames', fileNames)
 
       - name: Install SFDX Code Analyser
         run: |

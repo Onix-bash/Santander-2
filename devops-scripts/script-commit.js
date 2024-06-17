@@ -69,7 +69,7 @@ module.exports = async ({github, context}) => {
                 let reviewComment = '';
                 for (const violation of violations) {
 
-                   reviewComment += '\n'+ createTable(violation, file);
+                   reviewComment += '\n'+ createTable(violation, file, fileName);
                    console.log('reviewComment = ', reviewComment)
                 }
                 try {
@@ -84,10 +84,6 @@ module.exports = async ({github, context}) => {
                     console.log('error', error)
                 }
             }
-
-            console.log('reviewComment', reviewComment);
-
-
         }
     } catch (error) {
         console.log(`Error: ${error.message}`);
@@ -106,7 +102,7 @@ module.exports = async ({github, context}) => {
 
     function createTable(violation, file, fileName) {
         const rulePath = violation.url ? violation.url : '';
-        return `<table role="table">
+        return `<table role="table" style="min-width: 560px">
             <thead>
             <tr>
                 <th>Attribute</th>
@@ -140,7 +136,7 @@ module.exports = async ({github, context}) => {
             </tr>
             <tr>
                 <td>File</td>
-                <td>${fileName}></td>
+                <td>${fileName}</td>
             </tr>
             </tbody>
         </table>`

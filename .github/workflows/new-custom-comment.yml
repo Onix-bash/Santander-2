@@ -31,9 +31,7 @@ jobs:
                   pull_number: context.payload.pull_request.number
               });
               
-              // Join file names by comma
-              const fileNames = files.map(file => file.filename).join(',');
-              console.log('fileNames', fileNames);
+              const fileNames = files.filter(file => file.startsWith('src/')).join(',');
               core.setOutput('fileNames', fileNames)
 
       - name: Install SFDX Code Analyser
@@ -43,8 +41,6 @@ jobs:
 
       - name: Run SFDX Scanner
         run: |
-          mkdir -p "output"
-          echo "Files changed: ${{ steps.get-pr-files.outputs.fileNames }}"
           sf scanner run --target ${{ steps.get-pr-files.outputs.fileNames }} --format json --pmdconfig ./config/scanner/pmd_config.xml --eslintconfig ./config/scanner/.eslintrc.json --outfile output/report.json
 
       - name: Add comment to PR files
@@ -52,4 +48,4 @@ jobs:
         with:
             script: |
               const script = require('./devops-scripts/script-commit.js')
-              await script({github, context})
+              await script({github, context, ${{ steps.get-pr-files.outputs.fileNames }}})

@@ -1,24 +1,24 @@
 const fs = require('fs');
 
-module.exports = async ({github, context}) => {
+module.exports = async ({github, context, filesFromPR}) => {
     const prNumber = context.payload.pull_request.number;
     const repoOwner = context.repo.owner;
     const repoName = context.repo.repo;
-    console.log(repoOwner, repoName)
+
     try {
         // Read the JSON report
         const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
 
         // Get list of files changed in the PR
-        const { data: files } = await github.rest.pulls.listFiles({
-            owner: repoOwner,
-            repo: repoName,
-            pull_number: prNumber
-        });
+        // const { data: files } = await github.rest.pulls.listFiles({
+        //     owner: repoOwner,
+        //     repo: repoName,
+        //     pull_number: prNumber
+        // });
 
         // Create a map of file changes
         const fileChanges = {};
-        for (const file of files) {
+        for (const file of filesFromPR) {
             fileChanges[file.filename] = file;
         }
         for (const file of report) {

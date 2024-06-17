@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Octokit } = require("@octokit/action");
+const { Octokit } = require('@octokit/rest');
 const github = require("@actions/github");
 
 const githubToken = process.env.GITHUB_TOKEN;

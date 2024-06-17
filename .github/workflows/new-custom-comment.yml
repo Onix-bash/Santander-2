@@ -33,6 +33,7 @@ jobs:
               
               const fileNames = files.map(file => file.filename).filter(filename => filename.startsWith('src')).join(',');
               core.setOutput('fileNames', fileNames);
+              core.setOutput('files', files);
 
       - name: Install SFDX Code Analyser
         run: |
@@ -49,4 +50,4 @@ jobs:
         with:
             script: |
               const script = require('./devops-scripts/script-commit.js')
-              await script({github, context, ${{ steps.get-pr-files.outputs.fileNames }}})
+              await script({github, context, ${{ steps.get-pr-files.outputs.files }}})

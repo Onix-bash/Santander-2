@@ -6,8 +6,7 @@ module.exports = async ({github, context, filesFromPR}) => {
     const repoName = context.repo.repo;
 
     try {
-        const files = JSON.parse(filesFromPR);
-        console.log('felesfilesFromPR', files);
+        console.log('filesFromPR', files);
         // Read the JSON report
         const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
 

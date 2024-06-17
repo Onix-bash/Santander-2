@@ -24,20 +24,19 @@ jobs:
         run: |
             ls 
 
-#      - name: Install SFDX Code Analyser
-#        env:
-#          PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
-#          PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
-#        run: |
-#          sf plugins install @salesforce/sfdx-scanner@4.2.0
-#          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
-#          chmod +x ./devops-scripts/scan-pull-request.sh
-#          ./devops-scripts/scan-pull-request.sh
+      - name: Install SFDX Code Analyser
+        env:
+          PULL_REQUEST_HEAD_REF: "${{ github.event.pull_request.head.ref }}"
+          PULL_REQUEST_BASE_REF: "${{ github.event.pull_request.base.ref }}"
+        run: |
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
+          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+          chmod +x ./devops-scripts/scan-pull-request.sh
+          ./devops-scripts/scan-pull-request.sh
 
       - name: Add comment to PR files
         uses: actions/github-script@v7
         with:
             script: |
               const script = require('./devops-scripts/script-commit.js')
-              console.log(script({github, context}))
               await script({github, context})

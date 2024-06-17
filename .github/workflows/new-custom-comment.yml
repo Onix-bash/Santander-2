@@ -15,10 +15,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+#      - name: Install Node
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '20'
 
 #      - name: Get file list from PR
 #        id: get-pr-files

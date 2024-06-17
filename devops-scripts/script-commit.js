@@ -69,24 +69,25 @@ module.exports = async ({github, context}) => {
                 }
             } else {
                 for (const violation of violations) {
-                    console.log('violat', violation)
-                    reviewComment += '\n' + createTable(violation, file);
+                    
+                    let reviewComment = createTable(violation, file) + '\n';
+                    try {
+                        // Add comment
+                        await github.rest.issues.createComment({
+                            owner: repoOwner,
+                            repo: repoName,
+                            issue_number: prNumber,
+                            body: reviewComment
+                        });
+                    } catch (error) {
+                        console.log('error', error)
+                    }
                 }
             }
 
             console.log('reviewComment', reviewComment);
 
-            try {
-                // Add comment
-                await github.rest.issues.createComment({
-                    owner: repoOwner,
-                    repo: repoName,
-                    issue_number: prNumber,
-                    body: reviewComment
-                });
-            } catch (error) {
-                console.log('error', error)
-            }
+
         }
     } catch (error) {
         console.log(`Error: ${error.message}`);

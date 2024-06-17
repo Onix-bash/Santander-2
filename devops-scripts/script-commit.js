@@ -9,12 +9,17 @@ module.exports = async ({github, context, files}) => {
         // Read the JSON report
         const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
 
-
+        // Get list of files changed in the PR
+        // const { data: files } = await github.rest.pulls.listFiles({
+        //     owner: repoOwner,
+        //     repo: repoName,
+        //     pull_number: prNumber
+        // });
 
         // Create a map of file changes
         const fileChanges = {};
         for (const file of files) {
-            console.log(file);
+            console.log('file', file)
             fileChanges[file.filename] = file;
         }
         for (const file of report) {

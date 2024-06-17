@@ -54,3 +54,4 @@ jobs:
               await script({ github, context, files });
         env:
           files: ${{ steps.get-pr-files.outputs.files }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

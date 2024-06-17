@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-module.exports = async ({github, context, files}) => {
+module.exports = async ({github, context}) => {
     const prNumber = context.payload.pull_request.number;
     const repoOwner = context.repo.owner;
     const repoName = context.repo.repo;
@@ -8,13 +8,13 @@ module.exports = async ({github, context, files}) => {
     try {
         // Read the JSON report
         const report = JSON.parse(fs.readFileSync('output/report.json', 'utf-8'));
-
+        console.log('report', report)
         // Get list of files changed in the PR
-        // const { data: files } = await github.rest.pulls.listFiles({
-        //     owner: repoOwner,
-        //     repo: repoName,
-        //     pull_number: prNumber
-        // });
+        const { data: files } = await github.rest.pulls.listFiles({
+            owner: repoOwner,
+            repo: repoName,
+            pull_number: prNumber
+        });
 
         // Create a map of file changes
         const fileChanges = {};
@@ -94,6 +94,8 @@ module.exports = async ({github, context, files}) => {
                         }
                     }
                 }
+            } else {
+                console.log('module.error', fileName )
             }
         }
     } catch (error) {

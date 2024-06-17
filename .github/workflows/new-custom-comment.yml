@@ -34,6 +34,6 @@ jobs:
         uses: actions/github-script@v7
         with:
             script: |
-              const script = require('devops-scripts/commit-pr.js')
+              const script = require('devops-scripts/script-commit.js')
               console.log(script({github, context}))
               await script({github, context})

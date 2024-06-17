@@ -50,5 +50,7 @@ jobs:
         with:
             script: |
               const script = require('./devops-scripts/script-commit.js')
-              const files = ${{ steps.get-pr-files.outputs.files }}
-              await script({github, context, files })
+              const files = JSON.parse(process.env.files);  # Parse JSON string back to array
+              await script({ github, context, files });
+        env:
+          files: ${{ steps.get-pr-files.outputs.files }}

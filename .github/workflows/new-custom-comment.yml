@@ -7,7 +7,7 @@ on:
         description: List of modules to validate (space separated). If left blank then all modules will get validated
         type: string
   pull_request:
-    types: [ opened, reopened, synchronize ]
+    types: [ opened, reopened, synchronize, edited ]
     paths:
       - 'src/**'
 

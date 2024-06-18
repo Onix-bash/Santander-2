@@ -7,6 +7,7 @@ module.exports = async ({ github, context }) => {
     const branch = context.payload.pull_request.head.ref;
     const severity = process.env.SEVERITY;
     const fullRepoName = context.payload.pull_request.base.svn_url;
+    console.log('base', context.payload.pull_request.base)
 
     try {
         // Read the JSON report
@@ -104,16 +105,14 @@ module.exports = async ({ github, context }) => {
                 return i + 1;
             }
         }
+        console.log(file)
         return null; // Default to the first line if no added lines are found
     }
 
     function createTable(violation, file, fileName, repo, branch, commentType) {
         const rulePath = violation.url ? violation.url : '';
-        const filePath = `https://github.com/${repo}/blob/${branch}/${fileName}`;
-        const fileHtml = commentType === 'pr' ? `<tr>
-                <td>File</td>
-                <td><a href=${filePath} rel="nofollow">${fileName}</a></td>
-            </tr>` : '';
+        const filePath = `${repo}/blob/${branch}/${fileName}`;
+        const fileHtml = commentType === 'pr' ? `<tr><td>File</td><td><a href=${filePath} rel="nofollow">${fileName}</a></td></tr>` : '';
         return `<table role="table">
             <thead>
             <tr>
@@ -147,7 +146,6 @@ module.exports = async ({ github, context }) => {
                 <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
             </tr>
             ${fileHtml}
-            </tr>
             </tbody>
         </table>`
     }

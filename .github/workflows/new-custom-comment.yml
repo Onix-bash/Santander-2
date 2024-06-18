@@ -3,7 +3,8 @@ name: JS Custom Scanner PMD
 on:
   pull_request:
     types: [opened, reopened, synchronize, edited]
-  workflow_dispatch:
+    paths:
+      - 'src/**'
 
 jobs:
   analyze:

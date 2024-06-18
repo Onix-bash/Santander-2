@@ -1,52 +1,52 @@
 name: JS Custom Scanner PMD
 
 on:
+  workflow_dispatch:
+    inputs:
+      modules_to_validate:
+        description: List of modules to validate (space separated). If left blank then all modules will get validated
+        type: string
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [ opened, reopened, synchronize ]
     paths:
       - 'src/**'
 
 jobs:
-  analyze:
+  validate-changes:
+    name: CI Org Validation
     runs-on: ubuntu-latest
-    name: Scan Results
     container:
       image: salesforce/cli:latest-full
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: Get file list from PR
-#        id: get-pr-files
-#        uses: actions/github-script@v7
-#        with:
-#            script: |
-#              const { data: files } = await github.rest.pulls.listFiles({
-#                  owner: context.repo.owner,
-#                  repo: context.repo.repo,
-#                  pull_number: context.payload.pull_request.number
-#              });
-#
-#              const fileNames = files.map(file => file.filename).filter(filename => filename.startsWith('src')).join(',');
-#              core.setOutput('fileNames', fileNames);
-#              core.setOutput('files', files);
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Validate SFDX health
+        run: sf -v
+
+      - name: Get Changed Packages
+        id: detect_changes
+        run: |
+          chmod +x ./devops-scripts/findChangedModules.sh
+          ./devops-scripts/findChangedModules.sh
 
       - name: Install SFDX Code Analyser
-        run: |
-          sf plugins install @salesforce/sfdx-scanner@4.2.0
-          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
 
-      - name: Run SFDX Scanner
+      - name: Run SFDX Code Analyser
         run: |
-          mkdir -p "output"
-          sf scanner run --target src --format json --pmdconfig ./config/scanner/pmd_config.xml --eslintconfig ./config/scanner/.eslintrc.json --outfile output/report.json
+          chmod +x ./devops-scripts/test_violation.sh
+          ./devops-scripts/test_violation.sh ${{steps.detect_changes.outputs.changed_modules}}
 
-      - name: Add comment to PR files
+      - name: Show Scan Results on PR
         uses: actions/github-script@v7
+        if: always()
         with:
-            script: |
-              const script = require('./devops-scripts/script-commit.js')
-              await script({ github, context });
-        env:
-          files: ${{ steps.get-pr-files.outputs.files }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const script = require('./devops-scripts/script-commit.js')
+            await script({ github, context });

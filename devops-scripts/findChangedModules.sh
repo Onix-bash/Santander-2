@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git config --global --add safe.directory "*"
+git config --global --add safe.directory /__w/Santander-2/Santander-2
 source_to_check_changes="origin/develop"
 
 if [ -n "$1" ]; then
@@ -32,13 +32,12 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
         if [[ "$file" == "$allowed_modification"* ]]; then
           is_allowed=true
-          echo "Allow '$file'" 
           break
         fi
       done
 
       if ! $is_allowed; then
-        echo "Only DevOps team members can change this '$file'."
+        echo "Only DevOps team members can change '$file'."
         exit 1
       fi
     done <<< "$git_diff"

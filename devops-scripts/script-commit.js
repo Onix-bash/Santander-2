@@ -6,8 +6,7 @@ module.exports = async ({ github, context }) => {
     const repoName = context.repo.repo;
     const branch = context.payload.pull_request.head.ref;
     const severity = process.env.SEVERITY;
-    const fullRepoName = context.payload.pull_request.base.repo.svn_url;
-    console.log('repo', context.repo)
+    const fullRepoName = repoOwner + '/' + repoName;
 
     try {
         // Read the JSON report
@@ -111,7 +110,7 @@ module.exports = async ({ github, context }) => {
 
     function createTable(violation, file, fileName, repo, branch, commentType) {
         const rulePath = violation.url ? violation.url : '';
-        const filePath = `${repo}/blob/${branch}/${fileName}`;
+        const filePath = `https://github.com/${repo}/blob/${branch}/${fileName}`;
         const fileHtml = commentType === 'pr' ? `<tr><td>File</td><td><a href=${filePath} rel="nofollow">${fileName}</a></td></tr>` : '';
         return `<table role="table">
             <thead>

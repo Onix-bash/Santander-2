@@ -49,5 +49,6 @@ jobs:
         if: always()
         with:
           script: |
+            console.log('sev', severity)
             const script = require('./devops-scripts/script-commit.js')
             await script({ github, context, severity });

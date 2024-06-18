@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-module.exports = async ({github, context, severity}) => {
+module.exports = async ({ github, context, severity }) => {
     const prNumber = context.payload.pull_request.number;
     const repoOwner = context.repo.owner;
     const repoName = context.repo.repo;

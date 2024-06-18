@@ -1,9 +1,10 @@
 const fs = require('fs');
 
-module.exports = async ({github, context}) => {
+module.exports = async ({github, context, severity}) => {
     const prNumber = context.payload.pull_request.number;
     const repoOwner = context.repo.owner;
     const repoName = context.repo.repo;
+    const branch = context.payload.pull_request.head.ref;
 
     try {
         // Read the JSON report
@@ -28,8 +29,8 @@ module.exports = async ({github, context}) => {
             if (fileChanges[fileName]) {
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
-                    if (Number(violation.severity) === 1 || Number(violation.severity) === 2) {
-                        const message = createTable(violation, file, fileName);
+                    if (violation.severity <= severity) {
+                        const message = createTable(violation, file, fileName, repoName, branch, 'file');
 
                         // Determine the position in the diff
                         const position = getLineNumberFromDiff(currentFile.patch);
@@ -70,8 +71,8 @@ module.exports = async ({github, context}) => {
             } else {
                 let reviewComment = '';
                 for (const violation of violations) {
-                    if (Number(violation.severity) === 1 || Number(violation.severity) === 2) {
-                        reviewComment += '\n' + createTable(violation, file, fileName);
+                    if (violation.severity <= severity) {
+                        reviewComment += '\n' + createTable(violation, file, fileName, repoName, branch, 'pr');
                     }
                 }
                 if (reviewComment) {
@@ -104,9 +105,11 @@ module.exports = async ({github, context}) => {
         return 1; // Default to the first line if no added lines are found
     }
 
-    function createTable(violation, file, fileName) {
+    function createTable(violation, file, fileName, repo, branch, commentType) {
         const rulePath = violation.url ? violation.url : '';
-       return `<table role="table">
+        const filePath = `https://github.com/${repo}/blob/${branch}/${fileName}`;
+        const fileHtml = commentType === 'pr' ? `<a href=${filePath} rel="nofollow">${fileName}</a>` : fileName;
+        return `<table role="table">
             <thead>
             <tr>
                 <th>Attribute</th>
@@ -140,7 +143,7 @@ module.exports = async ({github, context}) => {
             </tr>
             <tr>
                 <td>File</td>
-                <td>${fileName}</td>
+                <td>${fileHtml}</td>
             </tr>
             </tbody>
         </table>`

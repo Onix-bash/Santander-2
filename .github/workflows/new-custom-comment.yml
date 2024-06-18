@@ -19,6 +19,7 @@ jobs:
       image: salesforce/cli:latest-full
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      severity: 2
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -49,4 +50,4 @@ jobs:
         with:
           script: |
             const script = require('./devops-scripts/script-commit.js')
-            await script({ github, context });
+            await script({ github, context, severity });

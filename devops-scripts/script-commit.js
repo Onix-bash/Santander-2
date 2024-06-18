@@ -102,10 +102,7 @@ module.exports = async ({github, context}) => {
 
     function createTable(violation, file, fileName) {
         const rulePath = violation.url ? violation.url : '';
-        const messageSize = violation.message.length;
-        const spaces = ('&nbsp;').repeat(65 - messageSize);
-        const message = violation.message.length < 65 ? violation.message + spaces : violation.message;
-        return `<table role="table">
+       return `<table role="table">
             <thead>
             <tr>
                 <th>Attribute</th>
@@ -135,7 +132,7 @@ module.exports = async ({github, context}) => {
             </tr>
             <tr>
                 <td>Message</td>
-                <td><a href=${rulePath} rel="nofollow">${message}</a></td>
+                <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
             </tr>
             <tr>
                 <td>File</td>

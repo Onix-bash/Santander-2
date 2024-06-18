@@ -6,7 +6,7 @@ module.exports = async ({ github, context }) => {
     const repoName = context.repo.repo;
     const branch = context.payload.pull_request.head.ref;
     const severity = process.env.SEVERITY;
-    console.log('context', context.payload.pull_request);
+    const fullRepoName = context.payload.pull_request.base.svn_url;
 
     try {
         // Read the JSON report
@@ -32,7 +32,7 @@ module.exports = async ({ github, context }) => {
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
                     if (violation.severity <= severity) {
-                        const message = createTable(violation, file, fileName, repoName, branch, 'file');
+                        const message = createTable(violation, file, fileName, fullRepoName, branch, 'file');
 
                         // Determine the position in the diff
                         const position = getLineNumberFromDiff(currentFile.patch);
@@ -74,7 +74,7 @@ module.exports = async ({ github, context }) => {
                 let reviewComment = '';
                 for (const violation of violations) {
                     if (violation.severity <= severity) {
-                        reviewComment += '\n' + createTable(violation, file, fileName, repoName, branch, 'pr');
+                        reviewComment += '\n' + createTable(violation, file, fileName, fullRepoName, branch, 'pr');
                     }
                 }
                 if (reviewComment) {
@@ -110,7 +110,10 @@ module.exports = async ({ github, context }) => {
     function createTable(violation, file, fileName, repo, branch, commentType) {
         const rulePath = violation.url ? violation.url : '';
         const filePath = `https://github.com/${repo}/blob/${branch}/${fileName}`;
-        const fileHtml = commentType === 'pr' ? `<a href=${filePath} rel="nofollow">${fileName}</a>` : fileName;
+        const fileHtml = commentType === 'pr' ? `<tr>
+                <td>File</td>
+                <td><a href=${filePath} rel="nofollow">${fileName}</a></td>
+            </tr>` : '';
         return `<table role="table">
             <thead>
             <tr>
@@ -143,9 +146,7 @@ module.exports = async ({ github, context }) => {
                 <td>Message</td>
                 <td><a href=${rulePath} rel="nofollow">${violation.message}</a></td>
             </tr>
-            <tr>
-                <td>File</td>
-                <td>${fileHtml}</td>
+            ${fileHtml}
             </tr>
             </tbody>
         </table>`

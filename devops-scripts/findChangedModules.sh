@@ -1,7 +1,7 @@
 #!/bin/bash
 
 git config --global --add safe.directory /__w/Santander-2/Santander-2
-source_to_check_changes="origin/develop"
+source_to_check_changes="feature/pr-scan-v2"
 
 if [ -n "$1" ]; then
   source_to_check_changes=$1

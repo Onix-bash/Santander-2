@@ -11,7 +11,7 @@ if [ -n "$1" ]; then
   done
 fi
 
-echo "--- Starting scanner for modules: ${source_paths_to_scan[*]}"
+echo "${source_paths_to_scan[@]}"
 # Run scanner using All engines with custom PMD config
 mkdir -p "output"
 sf scanner:run --target "${source_paths_to_scan[@]}" --severity-threshold=2 --verbose-violations --format json --pmdconfig "config/scanner/pmd_config.xml" --outfile output/report.json

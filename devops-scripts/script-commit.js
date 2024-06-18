@@ -6,6 +6,7 @@ module.exports = async ({ github, context }) => {
     const repoName = context.repo.repo;
     const branch = context.payload.pull_request.head.ref;
     const severity = process.env.SEVERITY;
+    console.log('context', context.payload.pull_request);
 
     try {
         // Read the JSON report

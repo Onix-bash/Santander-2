@@ -19,7 +19,7 @@ jobs:
       image: salesforce/cli:latest-full
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      SEVERITY: 2
+      SEVERITY: ${{ vars.SEVERITY }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it

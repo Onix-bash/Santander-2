@@ -6,8 +6,8 @@ module.exports = async ({ github, context }) => {
     const repoName = context.repo.repo;
     const branch = context.payload.pull_request.head.ref;
     const severity = process.env.SEVERITY;
-    const fullRepoName = context.payload.pull_request.base.svn_url;
-    console.log('base', context.payload.pull_request.base)
+    const fullRepoName = context.payload.pull_request.base.repo.svn_url;
+    console.log('repo', context.repo)
 
     try {
         // Read the JSON report

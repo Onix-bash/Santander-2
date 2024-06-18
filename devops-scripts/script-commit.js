@@ -1,10 +1,11 @@
 const fs = require('fs');
 
-module.exports = async ({ github, context, severity }) => {
+module.exports = async ({ github, context }) => {
     const prNumber = context.payload.pull_request.number;
     const repoOwner = context.repo.owner;
     const repoName = context.repo.repo;
     const branch = context.payload.pull_request.head.ref;
+    const severity = process.env.SEVERITY;
 
     try {
         // Read the JSON report

@@ -28,58 +28,64 @@ module.exports = async ({github, context}) => {
             if (fileChanges[fileName]) {
                 const currentFile = fileChanges[fileName];
                 for (const violation of violations) {
+                    if (Number(violation.severity) === 1 || Number(violation.severity) === 2) {
+                        const message = createTable(violation, file, fileName);
 
-                    const message = createTable(violation, file, fileName);
-
-                    // Determine the position in the diff
-                    const position = getLineNumberFromDiff(currentFile.patch);
-                    if (position !== null) {
-                        try {
-                            await github.rest.pulls.createReviewComment({
-                                owner: repoOwner,
-                                repo: repoName,
-                                pull_number: prNumber,
-                                body: message,
-                                commit_id: context.payload.pull_request.head.sha,
-                                path: fileName,
-                                position: position,
-                                side: 'RIGHT'
-                            });
-                        } catch (error) {
-                            console.log(`Error: ${error.message}`);
-                        }
-                    } else {
-                        try {
-                            await github.rest.pulls.createReviewComment({
-                                owner: repoOwner,
-                                repo: repoName,
-                                pull_number: prNumber,
-                                body: message,
-                                commit_id: context.payload.pull_request.head.sha,
-                                path: fileName,
-                                side: 'RIGHT',
-                                subject_type: 'file'
-                            });
-                        } catch (error) {
-                            console.log(`Error: ${error.message}`);
+                        // Determine the position in the diff
+                        const position = getLineNumberFromDiff(currentFile.patch);
+                        if (position !== null) {
+                            try {
+                                await github.rest.pulls.createReviewComment({
+                                    owner: repoOwner,
+                                    repo: repoName,
+                                    pull_number: prNumber,
+                                    body: message,
+                                    commit_id: context.payload.pull_request.head.sha,
+                                    path: fileName,
+                                    position: position,
+                                    side: 'RIGHT'
+                                });
+                            } catch (error) {
+                                console.log(`Error: ${error.message}`);
+                            }
+                        } else {
+                            try {
+                                await github.rest.pulls.createReviewComment({
+                                    owner: repoOwner,
+                                    repo: repoName,
+                                    pull_number: prNumber,
+                                    body: message,
+                                    commit_id: context.payload.pull_request.head.sha,
+                                    path: fileName,
+                                    side: 'RIGHT',
+                                    subject_type: 'file'
+                                });
+                            } catch (error) {
+                                console.log(`Error: ${error.message}`);
+                            }
                         }
                     }
                 }
+
             } else {
                 let reviewComment = '';
                 for (const violation of violations) {
-                   reviewComment += '\n'+ createTable(violation, file, fileName);
+                    if (Number(violation.severity) === 1 || Number(violation.severity) === 2) {
+                        reviewComment += '\n' + createTable(violation, file, fileName);
+                    }
                 }
-                try {
-                    // Add comment
-                    await github.rest.issues.createComment({
-                        owner: repoOwner,
-                        repo: repoName,
-                        issue_number: prNumber,
-                        body: reviewComment
-                    });
-                } catch (error) {
-                    console.log('error', error)
+                if (reviewComment) {
+                    try {
+                        // Add comment
+                        await github.rest.issues.createComment({
+                            owner: repoOwner,
+                            repo: repoName,
+                            issue_number: prNumber,
+                            body: reviewComment
+                        });
+                    } catch (error) {
+                        console.log('error', error)
+                    }
                 }
             }
         }

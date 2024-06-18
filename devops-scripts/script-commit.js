@@ -103,7 +103,7 @@ module.exports = async ({ github, context }) => {
                 return i + 1;
             }
         }
-        return 1; // Default to the first line if no added lines are found
+        return null; // Default to the first line if no added lines are found
     }
 
     function createTable(violation, file, fileName, repo, branch, commentType) {

@@ -111,7 +111,7 @@ module.exports = async ({ github, context }) => {
     function createTable(violation, file, fileName, repo, branch, commentType) {
         const rulePath = violation.url ? violation.url : '';
         const filePath = `https://github.com/${repo}/blob/${branch}/${fileName}`;
-        const fileHtml = commentType === 'pr' ? `<td>File</td><td><a href=${filePath} rel="nofollow">${fileName}</a></td>` : '<td></td>';
+        const fileHtml = commentType === 'pr' ? `<td>File</td><td><a href=${filePath} rel="nofollow">${fileName}</a></td>` : '<p></p>';
         return `<table role="table">
             <thead>
             <tr>

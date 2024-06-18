@@ -3,5 +3,5 @@
  */
 
 public with sharing class CO_Module_Feature {
-String testString; // add test variable
+String testString; // add test var
 }

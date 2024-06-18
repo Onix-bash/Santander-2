@@ -52,6 +52,7 @@ module.exports = async ({ github, context }) => {
                                 console.log(`Error: ${error.message}`);
                             }
                         } else {
+                            console.log(file)
                             try {
                                 await github.rest.pulls.createReviewComment({
                                     owner: repoOwner,
@@ -104,7 +105,6 @@ module.exports = async ({ github, context }) => {
                 return i + 1;
             }
         }
-        console.log(file)
         return null; // Default to the first line if no added lines are found
     }
 

@@ -6,6 +6,7 @@
  * @date        17.01.2024
  * @revision 1    17.01.2024 - [Vladislav V.] - Initial version
  */
+
 import {LightningElement, track, api} from 'lwc';
 import PROFILE from '@salesforce/resourceUrl/Profile_Photo';
 import getEmployeeDetails from '@salesforce/apex/EmployeeHandler.getEmployeeDetails';

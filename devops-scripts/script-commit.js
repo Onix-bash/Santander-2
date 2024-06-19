@@ -36,7 +36,10 @@ module.exports = async ({ github, context }) => {
 
                         // Determine the position in the diff
                         const position = getLineNumberFromDiff(currentFile.patch);
-                        if (position !== null) {
+                        const subjectType = position !== 0 ? 'line' : 'file'
+
+                            console.log('subjectType', subjectType)
+                            console.log('position',position)
                             try {
                                 await github.rest.pulls.createReviewComment({
                                     owner: repoOwner,
@@ -45,29 +48,29 @@ module.exports = async ({ github, context }) => {
                                     body: message,
                                     commit_id: context.payload.pull_request.head.sha,
                                     path: fileName,
-                                    position: position,
-                                    side: 'RIGHT'
-                                });
-                            } catch (error) {
-                                console.log(`Error: ${error.message}`);
-                            }
-                        } else {
-                            console.log(file)
-                            try {
-                                await github.rest.pulls.createReviewComment({
-                                    owner: repoOwner,
-                                    repo: repoName,
-                                    pull_number: prNumber,
-                                    body: message,
-                                    commit_id: context.payload.pull_request.head.sha,
-                                    path: fileName,
+                                    line: position,
                                     side: 'RIGHT',
-                                    subject_type: 'file'
+                                    subject_type: subjectType
                                 });
                             } catch (error) {
-                                console.log(`Error: ${error.message}`);
+                                console.log(`Error during commit creation: ${error.message}`);
                             }
-                        }
+                        // } else {
+                        //     try {
+                        //         await github.rest.pulls.createReviewComment({
+                        //             owner: repoOwner,
+                        //             repo: repoName,
+                        //             pull_number: prNumber,
+                        //             body: message,
+                        //             commit_id: context.payload.pull_request.head.sha,
+                        //             path: fileName,
+                        //             side: 'RIGHT',
+                        //             subject_type: 'file'
+                        //         });
+                        //     } catch (error) {
+                        //         console.log(`Error: ${error.message}`);
+                        //     }
+                        // }
                     }
                 }
 
@@ -105,7 +108,7 @@ module.exports = async ({ github, context }) => {
                 return i + 1;
             }
         }
-        return null; // Default to the first line if no added lines are found
+        return 0; // Default to the first line if no added lines are found
     }
 
     function createTable(violation, file, fileName, repo, branch, commentType) {

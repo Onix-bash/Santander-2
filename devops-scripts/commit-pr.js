@@ -87,5 +87,5 @@ function getLineNumberFromDiff(diffHunk) {
             return i + 1;
         }
     }
-    return 1; // Default to the first line if no added lines are found
+    return 0; // Default to the first line if no added lines are found
 }

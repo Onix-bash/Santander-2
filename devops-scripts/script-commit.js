@@ -100,11 +100,26 @@ module.exports = async ({ github, context }) => {
         console.log(`Error: ${error.message}`);
     }
 
+    function getModifiedLines(diffHunk) {
+        const lines = diffHunk ? diffHunk.split('\n') : [];
+        const modifiedLines = [];
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith('+') && !lines[i].startsWith('+++')) {
+                modifiedLines.push(i + 1); // Collect the line numbers of the modified lines
+            }
+        }
+        return modifiedLines;
+    }
+
     // Helper function to extract the correct line number from the diff hunk
     function getLineNumberFromDiff(diffHunk) {
         const lines = diffHunk ? diffHunk.split('\n') : [];
+
         for (let i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith('+') && !lines[i].startsWith('+++')) {
+            if(lines[i].startsWith('+++')) {console.log(lines[i])}
+            if(lines[i].startsWith('---')) {console.log(lines[i])}
+            if(lines[i].startsWith('-')) {console.log(lines[i])}
+            if (lines[i].startsWith('+') && !lines[i].startsWith('+++') || lines[i].startsWith('-') ) {
                 return i + 1;
             }
         }

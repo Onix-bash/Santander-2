@@ -64,7 +64,6 @@ module.exports = async ({ github, context }) => {
                 }
                 if (reviewComment) {
                     try {
-                        // Add comment
                         await github.rest.issues.createComment({
                             owner: repoOwner,
                             repo: repoName,

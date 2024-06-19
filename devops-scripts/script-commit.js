@@ -36,7 +36,7 @@ module.exports = async ({ github, context }) => {
 
                         // Determine the position in the diff
                         const position = getLineNumberFromDiff(currentFile.patch);
-                        const subjectType = position !== 0 ? 'line' : 'file'
+                        const subjectType = position == 0 ? 'line' : 'file'
 
                             console.log('subjectType', subjectType)
                             console.log('position',position)

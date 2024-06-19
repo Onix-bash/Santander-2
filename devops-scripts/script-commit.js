@@ -35,11 +35,11 @@ module.exports = async ({ github, context }) => {
                         const message = createTable(violation, file, fileName, fullRepoName, branch, 'file');
 
                         // Determine the position in the diff
-                        const position = getLineNumberFromDiff(currentFile.patch);
-                        const subjectType = position == 0 ? 'line' : 'file'
+                        const diffLines = getModifiedLines(currentFile.patch);
+                        const subjectType = diffLines.includes(violation.line) ? 'line' : 'file'
 
-                            console.log('subjectType', subjectType)
-                            console.log('position',position)
+                            console.log('diffLines', diffLines)
+                            console.log('position',violation.line)
                             try {
                                 await github.rest.pulls.createReviewComment({
                                     owner: repoOwner,
@@ -48,7 +48,7 @@ module.exports = async ({ github, context }) => {
                                     body: message,
                                     commit_id: context.payload.pull_request.head.sha,
                                     path: fileName,
-                                    position: position,
+                                    position: violation.line,
                                     side: 'RIGHT',
                                     subject_type: subjectType
                                 });
@@ -104,10 +104,11 @@ module.exports = async ({ github, context }) => {
         const lines = diffHunk ? diffHunk.split('\n') : [];
         const modifiedLines = [];
         for (let i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith('+') && !lines[i].startsWith('+++')) {
+            if (lines[i].startsWith('+') && !lines[i].startsWith('+++') || lines[i].startsWith('-') && !lines[i].startsWith('---')) {
                 modifiedLines.push(i + 1); // Collect the line numbers of the modified lines
             }
         }
+        console.log(modifiedLines)
         return modifiedLines;
     }
 

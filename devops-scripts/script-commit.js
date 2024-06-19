@@ -48,7 +48,7 @@ module.exports = async ({ github, context }) => {
                                     body: message,
                                     commit_id: context.payload.pull_request.head.sha,
                                     path: fileName,
-                                    line: position,
+                                    position: position,
                                     side: 'RIGHT',
                                     subject_type: subjectType
                                 });

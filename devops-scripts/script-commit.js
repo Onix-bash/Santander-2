@@ -16,7 +16,7 @@ module.exports = async ({ github, context }) => {
             owner: repoOwner,
             repo: repoName,
             pull_number: prNumber
-        });
+        })
 
         // Create a map of file changes
         const fileChanges = {};
@@ -38,42 +38,23 @@ module.exports = async ({ github, context }) => {
                         const diffLines = getModifiedLines(currentFile.patch);
                         const subjectType = diffLines.includes(violation.line) ? 'line' : 'file'
 
-                            console.log('diffLines', diffLines)
-                            console.log('position',violation.line)
-                            try {
-                                await github.rest.pulls.createReviewComment({
-                                    owner: repoOwner,
-                                    repo: repoName,
-                                    pull_number: prNumber,
-                                    body: message,
-                                    commit_id: context.payload.pull_request.head.sha,
-                                    path: fileName,
-                                    position: violation.line,
-                                    side: 'RIGHT',
-                                    subject_type: subjectType
-                                });
-                            } catch (error) {
-                                console.log(`Error during commit creation: ${error.message}`);
-                            }
-                        // } else {
-                        //     try {
-                        //         await github.rest.pulls.createReviewComment({
-                        //             owner: repoOwner,
-                        //             repo: repoName,
-                        //             pull_number: prNumber,
-                        //             body: message,
-                        //             commit_id: context.payload.pull_request.head.sha,
-                        //             path: fileName,
-                        //             side: 'RIGHT',
-                        //             subject_type: 'file'
-                        //         });
-                        //     } catch (error) {
-                        //         console.log(`Error: ${error.message}`);
-                        //     }
-                        // }
+                        try {
+                            await github.rest.pulls.createReviewComment({
+                                owner: repoOwner,
+                                repo: repoName,
+                                pull_number: prNumber,
+                                body: message,
+                                commit_id: context.payload.pull_request.head.sha,
+                                path: fileName,
+                                position: violation.line,
+                                side: 'RIGHT',
+                                subject_type: subjectType
+                            });
+                        } catch (error) {
+                            console.error(`Error creating review comment for a file from PR: ${error.message}`);
+                        }
                     }
                 }
-
             } else {
                 let reviewComment = '';
                 for (const violation of violations) {
@@ -91,13 +72,13 @@ module.exports = async ({ github, context }) => {
                             body: reviewComment
                         });
                     } catch (error) {
-                        console.log('error', error)
+                        console.error('Error creating review comment for a file from module:', error)
                     }
                 }
             }
         }
     } catch (error) {
-        console.log(`Error: ${error.message}`);
+        console.error(`Error getting files from PR: ${error.message}`);
     }
 
     function getModifiedLines(diffHunk) {
@@ -108,23 +89,7 @@ module.exports = async ({ github, context }) => {
                 modifiedLines.push(i + 1); // Collect the line numbers of the modified lines
             }
         }
-        console.log(modifiedLines)
         return modifiedLines;
-    }
-
-    // Helper function to extract the correct line number from the diff hunk
-    function getLineNumberFromDiff(diffHunk) {
-        const lines = diffHunk ? diffHunk.split('\n') : [];
-
-        for (let i = 0; i < lines.length; i++) {
-            if(lines[i].startsWith('+++')) {console.log(lines[i])}
-            if(lines[i].startsWith('---')) {console.log(lines[i])}
-            if(lines[i].startsWith('-')) {console.log(lines[i])}
-            if (lines[i].startsWith('+') && !lines[i].startsWith('+++') || lines[i].startsWith('-') ) {
-                return i + 1;
-            }
-        }
-        return 0; // Default to the first line if no added lines are found
     }
 
     function createTable(violation, file, fileName, repo, branch, commentType) {

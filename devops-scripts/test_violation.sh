@@ -20,7 +20,10 @@ sf scanner:run --target "${source_paths_to_scan[@]}" --severity-threshold=2 --ve
 JSON_OUTPUT=$(cat output/report.json)
 FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq '.')
 
-# Write the formatted JSON to the GITHUB_OUTPUT environment file
+# Write the formatted JSON to the GITHUB_OUTPUT environment file using a heredoc
 echo "report<<EOF" >> "$GITHUB_OUTPUT"
 echo "$FORMATTED_JSON" >> "$GITHUB_OUTPUT"
 echo "EOF" >> "$GITHUB_OUTPUT"
+
+# Output the scan report to the console
+echo "$FORMATTED_JSON"

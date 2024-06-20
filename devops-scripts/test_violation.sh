@@ -18,7 +18,18 @@ sf scanner:run --target "${source_paths_to_scan[@]}" --severity-threshold=2 --ve
 
 # Read the JSON output and format it
 JSON_OUTPUT=$(cat output/report.json)
-FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq 'walk(if type == "object" and .message? then .message |= gsub("\\n"; "") else . end)')
+
+# Remove newline characters from message field and filter by severity <= 2
+FILTERED_JSON=$(echo "$JSON_OUTPUT" | jq '[.[] | {engine, fileName, violations: [.violations[] | select(.severity <= 2) | .message |= gsub("\\n"; "") ]} | select(.violations | length > 0)]')
 
 # Output the scan report to the console
-echo "$FORMATTED_JSON"
+echo "$FILTERED_JSON"
+
+# Exit with an error if there are any violations with severity <= 2
+SEVERITY_COUNT=$(echo "$FILTERED_JSON" | jq 'map(.violations) | flatten | length')
+if [ "$SEVERITY_COUNT" -gt 0 ]; then
+  echo "There are $SEVERITY_COUNT violations with severity 2 or lower."
+  exit 1
+else
+  echo "No violations with severity 2 or lower found."
+fi

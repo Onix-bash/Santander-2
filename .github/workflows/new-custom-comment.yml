@@ -45,6 +45,7 @@ jobs:
           ./devops-scripts/test_violation.sh ${{steps.detect_changes.outputs.changed_modules}}
           JSON_OUTPUT=$(cat output.json)
           FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq '.')
+          echo "$FORMATTED_JSON"
           echo '```json' >> $GITHUB_STEP_SUMMARY
           echo "$FORMATTED_JSON" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY

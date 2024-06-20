@@ -45,12 +45,6 @@ jobs:
           chmod +x ./devops-scripts/test_violation.sh
           ./devops-scripts/test_violation.sh ${{steps.detect_changes.outputs.changed_modules}}
 
-      - name: Show scan report
-        if: always()
-        run: |
-          chmod +x ./devops-scripts/showJsonReport.sh
-          ./devops-scripts/showJsonReport.sh
-
       - name: Show Scan Results on PR
         uses: actions/github-script@v7
         if: always()

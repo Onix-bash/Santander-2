@@ -23,7 +23,7 @@ jobs:
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -47,6 +47,7 @@ jobs:
           echo "::set-output name=json::$JSON_OUTPUT"
 
       - name: Format JSON for summary
+        if: always()
         id: format_json
         run: |
           JSON_OUTPUT=${{ steps.generate_json.outputs.json }}

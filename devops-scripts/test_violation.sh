@@ -15,3 +15,5 @@ echo "${source_paths_to_scan[@]}"
 # Run scanner using All engines with custom PMD config
 mkdir -p "output"
 sf scanner:run --target "${source_paths_to_scan[@]}" --severity-threshold=2 --verbose-violations --format json --pmdconfig "config/scanner/pmd_config.xml" --outfile output/report.json
+JSON_OUTPUT=$(cat output/report.json)
+echo "report=${JSON_OUTPUT}" >> "$GITHUB_OUTPUT"

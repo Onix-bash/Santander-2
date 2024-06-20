@@ -40,16 +40,19 @@ jobs:
         run: sf plugins install @salesforce/sfdx-scanner@4.2.0
 
       - name: Run SFDX Code Analyser
+        id: scan-report
         run: |
           chmod +x ./devops-scripts/test_violation.sh
           ./devops-scripts/test_violation.sh ${{steps.detect_changes.outputs.changed_modules}}
-          JSON_OUTPUT=$(cat output.json)
+
+      - name: Show scan summary
+        run: |
+          JSON_OUTPUT=${{steps.scan-report.outputs.report}}
           FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq '.')
           echo "$FORMATTED_JSON"
           echo '```json' >> $GITHUB_STEP_SUMMARY
           echo "$FORMATTED_JSON" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-
+          echo '```' >> $GITHUB_STEP_SUMMARY         
 
       - name: Show Scan Results on PR
         uses: actions/github-script@v7

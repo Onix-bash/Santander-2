@@ -46,7 +46,6 @@ start() {
 run_scanner() {
   report_name="all-engines-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$1"
   report_output_path="$module_directory/$report_name"
-
   sf scanner run --target $module --format $1 --engine pmd,eslint,cpd --pmdconfig $pmd_config_path --eslintconfig $eslint_config_path --outfile $report_output_path
 }
 
@@ -57,13 +56,11 @@ show_scanner_results() {
 
   # Read CSV data from file
   csv_data=$(< "$csv_file")
-
   # Calculate the number of failed entries (rows)
   local fail_count=$(awk 'NR > 1 { count++ } END { print count+0 }' "$csv_file")
   if [ "$fail_count" -eq 0 ]; then
      return
-  fi
-
+     else
   # Write the module's detailed report
   {
     cat <<EOL
@@ -134,6 +131,9 @@ EOL
   </tr>
 EOL
   } >> $scanner_summary
+  fi
+
+
 }
 
 unit_tables() {

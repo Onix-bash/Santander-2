@@ -49,11 +49,10 @@ jobs:
         if: always()
         run: |
           sudo apt-get install -y jq
+          echo "start"
           JSON_OUTPUT=$(cat output/report.json)
           FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq 'walk(if type == "object" and .message? then .message |= gsub("\\n"; "") else . end)')
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo "$FORMATTED_JSON" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY 
+          echo "$FORMATTED_JSON"
 
       - name: Show Scan Results on PR
         uses: actions/github-script@v7

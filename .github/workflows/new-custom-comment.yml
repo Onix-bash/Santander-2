@@ -43,16 +43,18 @@ jobs:
         run: |
           chmod +x ./devops-scripts/test_violation.sh
           ./devops-scripts/test_violation.sh ${{steps.detect_changes.outputs.changed_modules}}
-          JSON_OUTPUT=$(cat output/report.json)
-          echo "::set-output name=json::$JSON_OUTPUT"
+          JSON_OUTPUT=$(cat output.json)
+          echo "json=$JSON_OUTPUT" >> $GITHUB_ENV
 
       - name: Format JSON for summary
         if: always()
         id: format_json
         run: |
-          JSON_OUTPUT=${{ steps.generate_json.outputs.json }}
+          SON_OUTPUT=${{ env.json }}
           FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq '.')
-          echo "::set-output name=formatted_json::$FORMATTED_JSON"
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo "$FORMATTED_JSON" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Show Scan Results on PR
         uses: actions/github-script@v7

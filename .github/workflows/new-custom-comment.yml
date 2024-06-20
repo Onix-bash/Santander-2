@@ -48,9 +48,12 @@ jobs:
       - name: Show scan summary
         if: always()
         run: |
-           JSON_OUTPUT=$(cat output/report.json)
-           FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq 'walk(if type == "object" and .message? then .message |= gsub("\\n"; "") else . end)')
-           echo "$FORMATTED_JSON"    
+          sudo apt-get install -y jq
+          JSON_OUTPUT=$(cat output/report.json)
+          FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq 'walk(if type == "object" and .message? then .message |= gsub("\\n"; "") else . end)')
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo "$FORMATTED_JSON" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY 
 
       - name: Show Scan Results on PR
         uses: actions/github-script@v7

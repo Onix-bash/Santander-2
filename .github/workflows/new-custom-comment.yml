@@ -51,3 +51,11 @@ jobs:
           script: |
             const script = require('./devops-scripts/script-commit.js')
             await script({ github, context });
+
+      - name: Show scan report in summary
+        id: show-report
+        run: |
+          echo "### Scan Report" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+          cat output/report.json >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

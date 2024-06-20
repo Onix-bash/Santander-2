@@ -1,1 +1,3 @@
-const field = 'Account';
+function getName(name) {
+    console.log('Name: ', name)
+}

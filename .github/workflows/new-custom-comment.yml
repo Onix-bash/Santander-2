@@ -43,6 +43,15 @@ jobs:
         run: |
           chmod +x ./devops-scripts/test_violation.sh
           ./devops-scripts/test_violation.sh ${{steps.detect_changes.outputs.changed_modules}}
+          JSON_OUTPUT=$(cat output/report.json)
+          echo "::set-output name=json::$JSON_OUTPUT"
+
+      - name: Format JSON for summary
+        id: format_json
+        run: |
+          JSON_OUTPUT=${{ steps.generate_json.outputs.json }}
+          FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq '.')
+          echo "::set-output name=formatted_json::$FORMATTED_JSON"
 
       - name: Show Scan Results on PR
         uses: actions/github-script@v7
@@ -51,11 +60,3 @@ jobs:
           script: |
             const script = require('./devops-scripts/script-commit.js')
             await script({ github, context });
-
-      - name: Show scan report in summary
-        id: show-report
-        run: |
-          echo "### Scan Report" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
-          cat output/report.json >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

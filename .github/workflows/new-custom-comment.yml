@@ -50,7 +50,7 @@ jobs:
         if: always()
         id: format_json
         run: |
-          SON_OUTPUT=${{ env.json }}
+          JSON_OUTPUT=${{ env.json }}
           FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq '.')
           echo '```json' >> $GITHUB_STEP_SUMMARY
           echo "$FORMATTED_JSON" >> $GITHUB_STEP_SUMMARY

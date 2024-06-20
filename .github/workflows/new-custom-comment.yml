@@ -46,11 +46,11 @@ jobs:
           ./devops-scripts/test_violation.sh ${{steps.detect_changes.outputs.changed_modules}}
 
       - name: Show scan summary
+        if: always()
         run: |
-          JSON_OUTPUT="${{ steps.scan-report.outputs.report }}"
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo "$JSON_OUTPUT" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY    
+           JSON_OUTPUT=$(cat output/report.json)
+           FORMATTED_JSON=$(echo "$JSON_OUTPUT" | jq 'walk(if type == "object" and .message? then .message |= gsub("\\n"; "") else . end)')
+           echo "$FORMATTED_JSON"    
 
       - name: Show Scan Results on PR
         uses: actions/github-script@v7

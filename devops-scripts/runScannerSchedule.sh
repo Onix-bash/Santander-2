@@ -7,7 +7,6 @@ eslint_config_path="config/scanner/eslint_config.json"
 
 # Ignored Modules from Scanning
 ignored_modules=(
-  "application-logging"
   "destructiveChanges"
 )
 

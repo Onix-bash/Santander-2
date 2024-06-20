@@ -20,12 +20,12 @@ sf scanner:run --target "${source_paths_to_scan[@]}" --severity-threshold=$SEVER
 JSON_OUTPUT=$(cat output/report.json)
 
 # Remove newline characters from message field and filter by severity
-FILTERED_JSON=$(echo "$JSON_OUTPUT" | jq '[.[] | {engine, fileName, violations: [.violations[] | select(.severity <= $SEVERITY) | .message |= gsub("\\n"; "") ]} | select(.violations | length > 0)]')
+FILTERED_JSON=$(echo "$JSON_OUTPUT" | jq --arg severity "$SEVERITY" '[.[] | {engine, fileName, violations: [.violations[] | select(.severity <= ($severity | tonumber)) | .message |= gsub("\\n"; "") ]} | select(.violations | length > 0)]')
 
 # Output the scan report to the console
 echo "$FILTERED_JSON"
 
-# Exit with an error if there are any violations with severity
+# Exit with an error if there are any violations with severity <= $SEVERITY
 SEVERITY_COUNT=$(echo "$FILTERED_JSON" | jq 'map(.violations) | flatten | length')
 if [ "$SEVERITY_COUNT" -gt 0 ]; then
   echo "There are $SEVERITY_COUNT violations with severity $SEVERITY or lower."

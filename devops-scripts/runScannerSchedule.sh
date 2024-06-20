@@ -61,7 +61,7 @@ show_scanner_results() {
   local fail_count=$(awk 'NR > 1 { count++ } END { print count+0 }' "$csv_file")
   if [ "$fail_count" -eq 0 ]; then
      return
-     else
+  fi
   # Write the module's detailed report
   {
     cat <<EOL
@@ -132,7 +132,6 @@ EOL
   </tr>
 EOL
   } >> $scanner_summary
-  fi
 
 }
 

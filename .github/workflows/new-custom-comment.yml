@@ -49,9 +49,7 @@ jobs:
         if: always()
         run: |
           JSON_OUTPUT="${{ steps.scan-report.outputs.report }}"
-          echo '```json' >> $GITHUB_STEP_SUMMARY
           echo "$JSON_OUTPUT" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
       
 
       - name: Show Scan Results on PR

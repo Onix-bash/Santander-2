@@ -7,6 +7,7 @@ eslint_config_path="config/scanner/eslint_config.json"
 
 # Ignored Modules from Scanning
 ignored_modules=(
+  "application-logging"
   "destructiveChanges"
 )
 
@@ -46,7 +47,7 @@ start() {
 run_scanner() {
   report_name="all-engines-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$1"
   report_output_path="$module_directory/$report_name"
-  sf scanner run --target $module --format $1 --engine pmd,eslint,cpd --pmdconfig $pmd_config_path --eslintconfig $eslint_config_path --outfile $report_output_path
+sf scanner run --target $module --format $1 --engine pmd,eslint,cpd --pmdconfig $pmd_config_path --eslintconfig $eslint_config_path --outfile $report_output_path
 }
 
 # Show Scanner Results on the Job Summary page (from CSV into GIT Markdown)
@@ -132,7 +133,6 @@ EOL
 EOL
   } >> $scanner_summary
   fi
-
 
 }
 

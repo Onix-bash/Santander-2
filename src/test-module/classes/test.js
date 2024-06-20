@@ -1,3 +1,5 @@
 function getName(name) {
-    console.log('Name: ', name)
+    return('Name: ', name)
 }
+
+console.log(getName('Mike'))

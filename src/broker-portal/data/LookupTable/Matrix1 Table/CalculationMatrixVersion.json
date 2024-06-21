@@ -5,15 +5,15 @@
         "type": "CalculationMatrixVersion",
         "referenceId": "CalculationMatrixVersionRef1"
       },
-      "Name": "RuleOutcomeV2",
+      "Name": "RuleOutcome1 V3",
       "CalculationMatrix": {
         "attributes": {
           "type": "CalculationMatrix",
-          "url": "/services/data/v60.0/sobjects/CalculationMatrix/0lI2600000000CgEAI"
+          "url": "/services/data/v60.0/sobjects/CalculationMatrix/0lIKM00000000062AA"
         },
-        "Id": "0lI2600000000CgTES"
+        "Id": "0lIKM00000000062AA"
       },
-      "VersionNumber": 2
+      "VersionNumber": 3
     }
   ]
 }

@@ -21,15 +21,19 @@ git fetch origin
     module=$1
 
     for folder in "${acceptable_folders[@]}"; do
-      if [[ $file == src/$module/data/$folder/* && $is_set_input_version_run == false ]]; then
-        cd "$original_dir" && cd "src/$module/data/$folder" || exit 1
-        echo "Start set_input_version for module/folder: '$module/$folder'"
-        set_input_version
-        is_set_input_version_run=true
-      fi
+      # Iterate through each random subdirectory within the acceptable folders
+      for subdir in src/$module/data/$folder/*/; do
+        if [[ -d $subdir && $file == $subdir* && $is_set_input_version_run == false ]]; then
+          cd "$original_dir" && cd "$subdir" || exit 1
+          echo "Start set_input_version for module/folder: '$module/$folder/${subdir##*/}'"
+          set_input_version
+          is_set_input_version_run=true
+        fi
+      done
     done
   }
 
+  # Save the current directory
   original_dir=$(pwd)
   for module in "${modules[@]}"; do
     # Flag to track if set_input_version has been called for this module

@@ -1,0 +1,13 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "CalculationMatrixRow",
+        "referenceId": "CalculationMatrixRowRef1"
+      },
+      "Name": "55971adb32404eb2b680c29c2ea667ea",
+      "InputData": "{\n  \"RuleName\": \"Test\",\n  \"Decision\": \"REFER\"\n}",
+      "OutputData": "{\n  \"DecisionMessage\": \"Abc\"\n}"
+    }
+  ]
+}

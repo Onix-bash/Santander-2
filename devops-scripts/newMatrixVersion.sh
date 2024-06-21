@@ -11,6 +11,7 @@ fi
 
 start() {
   echo "feature/deploy-test-pr"
+  original_dir=$(pwd)
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
@@ -18,30 +19,31 @@ git fetch origin
   # Initialize an associative array to hold the diffs by module
 
   get_filepath_from_acceptable_folders() {
-    module=$1
+      module=$1
 
-    for folder in "${acceptable_folders[@]}"; do
-      # Iterate through each random subdirectory within the acceptable folders
-      for subdir in src/$module/data/$folder/*/; do
-        if [[ -d $subdir && $file == $subdir* && $is_set_input_version_run == false ]]; then
-          cd "$original_dir" && cd "$subdir" || exit 1
-          echo "Start set_input_version for module/folder: '$module/$folder/${subdir##*/}'"
-          set_input_version
-          is_set_input_version_run=true
+      for folder in "${acceptable_folders[@]}"; do
+        if [[ $file == src/$module/data/$folder/* && $is_set_input_version_run == false ]]; then
+          for subfolder in src/$module/data/$folder/*/; do
+            cd "$original_dir" || exit 1
+            if [ -d "$subfolder" ]; then
+              echo "Processing directory: $subfolder"
+              cd "$subfolder" || exit 1
+
+              echo "Start set_input_version for module/folder: '$module/$folder'"
+              set_input_version
+              is_set_input_version_run=true
+            fi
+          done
         fi
       done
-    done
   }
 
-  # Save the current directory
-  original_dir=$(pwd)
   for module in "${modules[@]}"; do
     # Flag to track if set_input_version has been called for this module
     is_set_input_version_run=false
 
     # Get the list of changed files use pattern "src/$module/data"
     git_diff=$(git diff-index --name-only $source_to_check_changes | grep "^src/$module/data")
-    echo "git_diff in src/module-name/data files: '$git_diff'"
 
     # Iterate over each changed file
     for file in $git_diff; do
@@ -56,19 +58,18 @@ set_input_version() {
   current_matrix_id=$(jq -r '.records[].CalculationMatrix.Id' CalculationMatrixVersion.json)
   echo "current_matrix_id:'$current_matrix_id'"
   # Create the correct Key and Value
-#  set_matrix_id=$(
-#    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
-#  )
-#  echo $set_matrix_id > CalculationMatrixVersion.json
-#
-#  # Delete unnecessary property
-#  delete_matrix_property=$(
-#    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
-#  )
-#  echo $delete_matrix_property > CalculationMatrixVersion.json
-#
-#  # Create Inactive Matrix Version from JSON
-#  create_matrix_data
+  set_matrix_id=$(
+    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
+  )
+  echo $set_matrix_id > CalculationMatrixVersion.json
+  # Delete unnecessary property
+  delete_matrix_property=$(
+    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
+  )
+  echo $delete_matrix_property > CalculationMatrixVersion.json
+
+  # Create Inactive Matrix Version from JSON
+  create_matrix_data
 }
 
 # Create Matrix Version and Matrix Rows

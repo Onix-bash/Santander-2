@@ -3,7 +3,7 @@
 #git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm #fix for dubious ownership issue TODO check more deeply for better solution
 git config --global --add safe.directory "*"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
-current="origin/$GITHUB_REF"
+current="origin/$GITHUB_HEAD_REF"
 
 if [ -n "$1" ]; then
   source_to_check_changes=$1

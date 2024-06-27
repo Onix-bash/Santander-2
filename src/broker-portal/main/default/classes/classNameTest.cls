@@ -5,4 +5,5 @@
 public with sharing class classNameTest {
  String variableNew1;
  //new comment
+
 }

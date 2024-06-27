@@ -1,43 +1,43 @@
-name: PR Open
+# Script is executable by schedule. At each run it scans all modules and stores scanning results as artifacts in CI jobs
 
-on: workflow_dispatch
-#   pull_request:
-# #    types: [opened, reopened, synchronize]
-#     paths:
-#     - 'src/**'
+name: Daily Code Scan
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Daily
 
 jobs:
-  validate-changes:
+  code_scanner:
     runs-on: ubuntu-latest
+    name: Daily Code Scan
     container:
       image: salesforce/cli:latest-full
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Install Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Scanner
+      - name: Install SFDX Code Analyser
         run: |
-         sf plugins install @salesforce/sfdx-scanner@latest-beta
-         npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
+          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
 
-      - name: Run ESLint
+      - name: Run Scanner
+        id: scanner
         run: |
-          echo "deploy-branch"
-          chmod +x ./scripts/reporting.sh
-          ./scripts/reporting.sh
-          
+          chmod +x ./devops-scripts/runScannerSchedule.sh
+          ./devops-scripts/runScannerSchedule.sh
+
       - name: Show Scan Results
         run: |
           cat output/scanner_results.html >> $GITHUB_STEP_SUMMARY
 
-
-#      - name: Deploy Lookup Tables
-#        run: |
-#          chmod +x ./scripts/newMatrixVersion.sh
-#          ./scripts/newMatrixVersion.sh
-
+      - name: Store Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Daily Scan Results in HTML
+          path: output/*/*.html

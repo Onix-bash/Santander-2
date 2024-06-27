@@ -1,15 +1,17 @@
 #!/bin/bash
 
+#git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm #fix for dubious ownership issue TODO check more deeply for better solution
 git config --global --add safe.directory "*"
-source_to_check_changes="origin/develop"
+source_to_check_changes="origin/$GITHUB_BASE_REF"
+current="origin/$GITHUB_HEAD_REF"
 
 if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi
 
 git fetch origin
-git_diff=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
-
+git_diff=$(git diff --name-only $source_to_check_changes...$current | grep -v "^src/")
+echo "git_diff $git_diff"
 # Check changes outside src folder
 if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 
@@ -32,13 +34,12 @@ if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
       for allowed_modification in "${ALLOWED_DEV_MODIFICATIONS_ARRAY[@]}"; do
         if [[ "$file" == "$allowed_modification"* ]]; then
           is_allowed=true
-          echo "Allow '$file'" 
           break
         fi
       done
 
       if ! $is_allowed; then
-        echo "Only DevOps team members can change this '$file'."
+        echo "Only DevOps team members can change '$file'."
         exit 1
       fi
     done <<< "$git_diff"
@@ -72,3 +73,13 @@ else
   echo "changed_modules=${changed_modules[*]}" >> "$GITHUB_OUTPUT"
 fi
 echo
+
+# TODO below code ideally should to be rewritten into single mechanism of changes analyser module, instead having another git diff call
+deleted_files=$(git diff $source_to_check_changes --name-status --diff-filter=D)
+if [ -n "$deleted_files" ]; then
+  echo "Deleted files found:"
+  echo "$deleted_files"
+  echo "deleted_files_found=true" >> "$GITHUB_OUTPUT"
+else
+  echo "No deleted files found."
+fi

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Retrieving a list of files from /src with an ACMR filter staged for commiting.
-FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^src/' | sed 's| |\\ |g')
+FILES=$(git diff --name-only develop...feature/pre-commit-hook | grep '^src/' | sed 's| |\\ |g')
 
 if [ -z "$FILES" ]; then
     exit 0

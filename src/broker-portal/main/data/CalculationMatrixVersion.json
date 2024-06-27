@@ -5,7 +5,7 @@
                 "type": "CalculationMatrixVersion",
                 "referenceId": "CalculationMatrixVersionRef1"
             },
-            "Name": "RuleOutcomeV14",
+            "Name": "RuleOutcomeV10",
             "CalculationMatrix": {
                 "attributes": {
                     "type": "CalculationMatrix",
@@ -13,7 +13,7 @@
                 },
                 "Id": "0lI2600000000CgEAI"
             },
-            "VersionNumber": 13
+            "VersionNumber": 10
         }
     ]
 }

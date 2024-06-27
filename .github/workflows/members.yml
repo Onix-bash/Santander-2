@@ -1,8 +1,12 @@
 name: Get Team Members
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, edited]
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - 'develop'
+  #   paths:
+  #     - 'src/**'
 
 jobs:
   my_job:
@@ -11,11 +15,10 @@ jobs:
       DEVOPS_TEAM: ${{ vars.DEVOPS_TEAM }}
       ALLOWED_DEV_MODIFICATIONS: ${{ vars.ALLOWED_DEV_MODIFICATIONS }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Turn comment into file
-        run: |
-          echo "start findChangedModules"
-          chmod +x ./scripts/findChangedModules.sh 
-          ./scripts/findChangedModules.sh
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Turn comment into file
+      run: |
+       chmod +x ./scripts/findChangedModules.sh 
+       ./scripts/findChangedModules.sh

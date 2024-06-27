@@ -1,13 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# Script is executable by schedule. At each run it scans all modules and stores scanning results as artifacts in CI jobs
 
+# PMD Custom Config Path
 pmd_config_path="config/scanner/pmd_config.xml"
-eslint_config_path="config/scanner/.eslintrc.json"
+eslint_config_path="config/scanner/eslint_config.json"
 
+# Ignored Modules from Scanning
 ignored_modules=(
+  "application-logging"
   "destructiveChanges"
 )
 
-# Create temporary files
+# Temporary files
 output_directory="output"
 mkdir -p "$output_directory"
 
@@ -39,20 +43,12 @@ start() {
   unit_tables
 }
 
-# Install Node.js if not already installed
-if ! command -v node &> /dev/null
-then
-    echo "Node.js not found, installing..."
-    curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-    apt-get install -y nodejs
-fi
-
 # Run Scanner using All Engines
 run_scanner() {
   report_name="all-engines-$module_name-$(date +"%Y-%m-%d-%H-%M-%S").$1"
   report_output_path="$module_directory/$report_name"
 
-  sf scanner run --target $module --format $1 --pmdconfig $pmd_config_path --eslintconfig $eslint_config_path --outfile $report_output_path
+  sf scanner run --target $module --format $1 --engine pmd,eslint,cpd --pmdconfig $pmd_config_path --eslintconfig $eslint_config_path --outfile $report_output_path
 }
 
 # Show Scanner Results on the Job Summary page (from CSV into GIT Markdown)
@@ -110,7 +106,6 @@ EOL
       } else {
         file_path = file
       }
-
       github_link = "https://github.com/" repo "/blob/" branch "/" file_path
 
       # Print Table Row
@@ -122,7 +117,7 @@ EOL
       printf "            <br/>File: %s\n", file
       printf "            <br/>Line: %s\n", line
       printf "            <br/>Column: %s\n", column
-      printf "            <br/><a href=\"%s\" title=\"%s\" target=\"_blank\">%s</a></td>\n", url, rule, rule
+      printf "            <br/><a href=\"%s\" target=\"_blank\" title=\"%s\">%s</a></td>\n", url, rule, rule
       printf "    </tr>\n"
     }'
 

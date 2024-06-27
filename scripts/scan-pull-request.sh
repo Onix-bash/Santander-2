@@ -1,5 +1,7 @@
 pmd_config_path="config/scanner/pmd_config.xml"
 eslint_config_path="config/scanner/.eslintrc.json"
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+echo "branch: '$current_branch'"
 
 git config --global --add safe.directory /__w/Santander-2/Santander-2
 output_directory="output"

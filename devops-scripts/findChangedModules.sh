@@ -7,6 +7,7 @@ current="$GITHUB_REF"
 echo "develop: $GITHUB_BASE_REF"
 echo "current: $GITHUB_HEAD_REF"
 
+
 if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi

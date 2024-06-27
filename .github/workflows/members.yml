@@ -1,12 +1,8 @@
 name: Get Team Members
 
 on:
-    workflow_dispatch:
-    # push:
-    #   branches:
-    #     - 'develop'
-    #   paths:
-    #     - 'src/**'
+    pull_request:
+        types: [opened, reopened, synchronize, edited]
 
 jobs:
     my_job:

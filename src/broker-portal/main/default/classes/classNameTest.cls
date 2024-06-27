@@ -5,7 +5,7 @@
 public with sharing class classNameTest {
 
      public void method1() {
-        // Large duplicated code block
+
         Integer a = 10;
         Integer b = 20;
         Integer c = a + b;

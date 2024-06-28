@@ -38,10 +38,12 @@ jobs:
               // Run Prettier
             
               try {
-                let result = await exec.exec('npx prettier --write ' + fileNames);
-                console.log('result', result);
+                await exec.exec('npx prettier --write ' + fileNames + | tee prettier-output.txt');
+                const report = JSON.parse(fs.readFileSync('prettier-output.txt', 'utf-8'));
+            
+                console.log('report', report);
                 // Commit and push changes
-                if (result) {
+                if (report) {
                 execSync('git config --global user.name "github-actions[bot]"');
                 execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
             

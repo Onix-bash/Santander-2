@@ -5,45 +5,45 @@ on:
 
 jobs:
   prettier:
-  runs-on: ubuntu-latest
-
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-
-    - name: Install Prettier and Plugins
-      run: npm install prettier prettier-plugin-apex @prettier/plugin-xml
-
-    - name: Get list of changed files
-      id: changed-files
-      uses: actions/github-script@v6
-      with:
-        script: |
-          const prNumber = context.payload.pull_request.number;
-          const repoOwner = context.repo.owner;
-          const repoName = context.repo.repo;
-
-          const { data: files } = await github.rest.pulls.listFiles({
-            owner: repoOwner,
-            repo: repoName,
-            pull_number: prNumber
-          })
-          const fileNames = files.map(f => f.filename).join(' ');
-          if (fileNames) {
-            // Run Prettier
-
-            try {
-              let result = await exec.exec('npx prettier --write ' + fileNames);
-              console.log(result);
-              // Commit and push changes
-              await exec.exec('git add ' + fileNames);
-              await exec.exec('git commit -m "Prettier code formatting"');
-              await exec.exec('git push');
-            } catch (error) {
-            console.error(`Error: ${error.message}`);
-           }
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+  
+      - name: Install Prettier and Plugins
+        run: npm install prettier prettier-plugin-apex @prettier/plugin-xml
+  
+      - name: Get list of changed files
+        id: changed-files
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+  
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: repoOwner,
+              repo: repoName,
+              pull_number: prNumber
+            })
+            const fileNames = files.map(f => f.filename).join(' ');
+            if (fileNames) {
+              // Run Prettier
+  
+              try {
+                let result = await exec.exec('npx prettier --write ' + fileNames);
+                console.log(result);
+                // Commit and push changes
+                await exec.exec('git add ' + fileNames);
+                await exec.exec('git commit -m "Prettier code formatting"');
+                await exec.exec('git push');
+              } catch (error) {
+              console.error(`Error: ${error.message}`);
+             }

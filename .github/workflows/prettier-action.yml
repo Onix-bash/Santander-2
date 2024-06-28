@@ -24,3 +24,4 @@ jobs:
           only_changed: True
           same_commit: True
           prettier_plugins: "prettier-plugin-apex @prettier/plugin-xml"
+          prettier_options: "--write **/*.{js,css,html,cls,trigger} --ignore-unknown"

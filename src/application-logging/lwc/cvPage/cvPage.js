@@ -192,10 +192,10 @@ export default class CvPage extends NavigationMixin (LightningElement) {
     addExperience() {
         let sessionData = createSessionData(this.labels);
 
-        createNewEmployeeRole({
-            username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).username,
-            sessionData: JSON.stringify(sessionData),
-        })
+                    createNewEmployeeRole({
+                        username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).username,
+                        sessionData: JSON.stringify(sessionData),
+                    })
             .then((result) => {
                 if (result) {
                 }

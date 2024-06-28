@@ -174,9 +174,7 @@ export default class CvPage extends NavigationMixin (LightningElement) {
      * Sets the component into edit mode for the title.
      * This method sets the 'isEditTitle' property to true, indicating that the component is now in edit mode for the title.
      */
-    editTitle() {
-        this.isEditTitle = true;
-    }
+    editTitle() {this.isEditTitle = true;}
 
     /**
      * Sets the component into edit mode for experience details.

@@ -1,7 +1,8 @@
 name: Prettier
 
 on:
-  pull_request:
+  workflow_dispatch:
+#  pull_request:
 
 jobs:
   prettier:
@@ -36,17 +37,17 @@ jobs:
             const fileNames = files.map(f => f.filename).join(' ');
             if (fileNames) {
               // Run Prettier
-              await exec.exec('npx prettier --write ' + fileNames);
-
-              // Configure Git
-              await exec.exec('git config --global user.name "github-actions[bot]"');
-              await exec.exec('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
-
-              // Commit and push changes
-              await exec.exec('git add ' + fileNames);
-              await exec.exec('git commit -m "Prettier code formatting"');
-              await exec.exec('git push');
-            }
+            
+              try {
+                await exec.exec('npx prettier --write ' + fileNames);
+  
+                // Commit and push changes
+                await exec.exec('git add ' + fileNames);
+                await exec.exec('git commit -m "Prettier code formatting"');
+                await exec.exec('git push');
+              } catch (error) {
+              console.error(`Error: ${error.message}`);
+             }
 
 #      - name: Run Prettier
 #        if: steps.changed-files.outputs.files != ''

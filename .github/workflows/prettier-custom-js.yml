@@ -38,7 +38,7 @@ jobs:
               // Run Prettier
             
               try {
-                await exec.exec('npx prettier --write ' + fileNames + '| tee prettier-output.txt');
+                await exec.exec('npx prettier --write ' + fileNames + ' | tee prettier-output.txt');
                 const report = JSON.parse(fs.readFileSync('prettier-output.txt', 'utf-8'));
             
                 console.log('report', report);

@@ -41,7 +41,7 @@ jobs:
             const util = require('util');
             const exec = util.promisify(require('child_process').exec);
             
-           
+            
             try {
             const { stdout, stderr } = await exec('npx prettier --write ' + fileNames + ' --ignore-unknown');
             console.log('Command output:', stdout);
@@ -54,12 +54,11 @@ jobs:
                 await exec.exec('git add ' + fileNames);
                 await exec.exec('git commit -m "Prettier code formatting"');
                 await exec.exec('git push');
-            } catch (error) {
-            console.error('Error executing command:', error);
             }
-
-               
-            }
+                } catch (error) {
+                console.error('Error executing command:', error);
+                }
+            
               } catch (error) {
               console.error(`Error: ${error.message}`);
              }

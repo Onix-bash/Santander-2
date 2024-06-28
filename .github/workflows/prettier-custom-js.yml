@@ -46,11 +46,7 @@ jobs:
             const { stdout, stderr } = await exec('npx prettier --write ' + fileNames + ' --ignore-unknown');
             console.log('Command output:', stdout);
             console.error('Command errors:', stderr);
-            } catch (error) {
-            console.error('Error executing command:', error);
-            }
-
-                // Commit and push changes
+             // Commit and push changes
                 if (stdout) {
                 execSync('git config --global user.name "github-actions[bot]"');
                 execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
@@ -58,6 +54,11 @@ jobs:
                 await exec.exec('git add ' + fileNames);
                 await exec.exec('git commit -m "Prettier code formatting"');
                 await exec.exec('git push');
+            } catch (error) {
+            console.error('Error executing command:', error);
+            }
+
+               
             }
               } catch (error) {
               console.error(`Error: ${error.message}`);

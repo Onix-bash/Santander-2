@@ -22,4 +22,5 @@ jobs:
           # This part is also where you can pass other options, for example:
           same_commit: true
           only_changed: true
+          prettier_options: --write **/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml} --no-error-on-unmatched-pattern
           prettier_plugins: "prettier-plugin-apex@2.0.1 @prettier/plugin-xml@2.0.1"

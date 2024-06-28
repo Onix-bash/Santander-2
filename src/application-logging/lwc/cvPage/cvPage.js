@@ -202,9 +202,7 @@ export default class CvPage extends NavigationMixin (LightningElement) {
                 this.connectedCallback();
                 this.setLoading();
             })
-            .catch((error) => {
-                console.error(error);
-            });
+            .catch((error) => { console.error(error);});
     }
 
     /**

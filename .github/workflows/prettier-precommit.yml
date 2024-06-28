@@ -34,18 +34,30 @@ jobs:
               pull_number: prNumber
             })
             const fileNames = files.map(f => f.filename).join(' ');
-            core.setOutput('files', fileNames);
+            if (fileNames) {
+              // Run Prettier
+              await exec.exec('npx prettier --write ' + fileNames);
 
-      - name: Run Prettier
-        if: steps.changed-files.outputs.files != ''
-        run: |
-          npx prettier --write ${{ steps.changed-files.outputs.files }}
+              // Configure Git
+              await exec.exec('git config --global user.name "github-actions[bot]"');
+              await exec.exec('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
 
-      - name: Commit changes
-        if: steps.changed-files.outputs.files != ''
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Prettier code formatting"
-          file_pattern: ${{ steps.changed-files.outputs.files }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              // Commit and push changes
+              await exec.exec('git add ' + fileNames);
+              await exec.exec('git commit -m "Prettier code formatting"');
+              await exec.exec('git push');
+            }
+
+#      - name: Run Prettier
+#        if: steps.changed-files.outputs.files != ''
+#        run: |
+#          npx prettier --write ${{ steps.changed-files.outputs.files }}
+#
+#      - name: Commit changes
+#        if: steps.changed-files.outputs.files != ''
+#        uses: stefanzweifel/git-auto-commit-action@v4
+#        with:
+#          commit_message: "Prettier code formatting"
+#          file_pattern: ${{ steps.changed-files.outputs.files }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

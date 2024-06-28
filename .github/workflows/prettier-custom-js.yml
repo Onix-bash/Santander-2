@@ -27,6 +27,7 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
+            const branch = context.payload.pull_request.head.ref;
             
             const { data: files } = await github.rest.pulls.listFiles({
               owner: repoOwner,
@@ -50,7 +51,7 @@ jobs:
                 if (stdout) {
                 await exec('git config --global user.name "github-actions[bot]"');
                 await exec('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
-            
+                await exec('git checkout -B ' + branch)
                 await exec('git add ' + fileNames);
                 await exec('git commit -m "Prettier code formatting"');
                 await exec('git push');

@@ -54,7 +54,7 @@ export default class CvPage extends NavigationMixin(LightningElement) {
     this.currentUserName = this.sessionDetails.name;
     this.userRecordType = await fetchStatus(
       this.sessionDetails.username,
-      JSON.stringify(this.sessionDetails),
+      JSON.stringify(this.sessionDetails)
     );
 
     this.avatar = JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS))
@@ -111,7 +111,7 @@ export default class CvPage extends NavigationMixin(LightningElement) {
 
     getEmployeeDetails({
       username: this.selectedEmployeeUsername || this.sessionDetails.username,
-      sessionData: JSON.stringify(this.sessionDetails),
+      sessionData: JSON.stringify(this.sessionDetails)
     })
       .then((employee) => {
         if (employee) {
@@ -205,7 +205,7 @@ export default class CvPage extends NavigationMixin(LightningElement) {
     createNewEmployeeRole({
       username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS))
         .username,
-      sessionData: JSON.stringify(sessionData),
+      sessionData: JSON.stringify(sessionData)
     })
       .then((result) => {
         if (result) {
@@ -253,19 +253,19 @@ export default class CvPage extends NavigationMixin(LightningElement) {
             ? this.languages
             : this.employeeDetails.languages,
         username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS))
-          .username,
+          .username
       };
     } else if (type === "title") {
       details = {
         title: this.title != null ? this.title : this.employeeDetails.title,
         username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS))
-          .username,
+          .username
       };
     }
     updateEmployeeDetails({
       cvData: JSON.stringify(details),
       sessionData: JSON.stringify(sessionData),
-      updateType: type,
+      updateType: type
     })
       .then((result) => {
         if (result) {
@@ -320,7 +320,7 @@ export default class CvPage extends NavigationMixin(LightningElement) {
         endDate: role.endDate,
         description: role.description,
         username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS))
-          .username,
+          .username
       };
 
       updatedRoles.push(roleDetails);
@@ -329,7 +329,7 @@ export default class CvPage extends NavigationMixin(LightningElement) {
     if (updatedRoles.length > 0) {
       updateEmployeeRoles({
         rolesData: JSON.stringify(updatedRoles),
-        sessionData: JSON.stringify(sessionData),
+        sessionData: JSON.stringify(sessionData)
       })
         .then((result) => {
           if (result) {
@@ -359,7 +359,7 @@ export default class CvPage extends NavigationMixin(LightningElement) {
 
     deleteEmployeeRole({
       roleId: this.employeeDetails.roles[index].roleId,
-      sessionData: JSON.stringify(sessionData),
+      sessionData: JSON.stringify(sessionData)
     })
       .then((result) => {
         if (result) {
@@ -387,8 +387,8 @@ export default class CvPage extends NavigationMixin(LightningElement) {
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
-        url: vfPageUrl,
-      },
+        url: vfPageUrl
+      }
     }).catch((error) => {
       console.error("Error navigating to VF page:", error);
     });
@@ -408,8 +408,8 @@ export default class CvPage extends NavigationMixin(LightningElement) {
     this[NavigationMixin.Navigate]({
       type: "standard__webPage",
       attributes: {
-        url: vfPageUrl,
-      },
+        url: vfPageUrl
+      }
     }).catch((error) => {
       console.error("Error navigating to VF page:", error);
     });
@@ -437,7 +437,7 @@ export default class CvPage extends NavigationMixin(LightningElement) {
     const {
       selectedEmployeeUsername,
       selectedEmployeeName,
-      selectedEmployeeAvatar,
+      selectedEmployeeAvatar
     } = event.detail;
 
     this.currentUserName = selectedEmployeeName;

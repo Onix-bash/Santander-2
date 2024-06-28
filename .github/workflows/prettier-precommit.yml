@@ -1,3 +1,30 @@
+#name: Prettier
+#
+#on:
+#  pull_request:
+#
+#jobs:
+#  prettier:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          # Make sure the actual branch is checked out when running on pull requests
+#          ref: ${{ github.head_ref }}
+#          # This is important to fetch the changes to the previous commit
+#          fetch-depth: 0
+#
+#      - name: Prettify code
+#        uses: creyD/prettier_action@v4.3
+#        with:
+#          # This part is also where you can pass other options, for example:
+#          only_changed: True
+#          same_commit: true
+#          prettier_options: '--write "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}" --no-error-on-unmatched-pattern'
+#          prettier_plugins: "prettier-plugin-apex@2.0.1 @prettier/plugin-xml@2.0.1"
+
 name: Prettier
 
 on:
@@ -8,19 +35,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          # Make sure the actual branch is checked out when running on pull requests
-          ref: ${{ github.head_ref }}
-          # This is important to fetch the changes to the previous commit
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          # This part is also where you can pass other options, for example:
-          only_changed: True
-          same_commit: true
-          prettier_options: '--write "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}" --no-error-on-unmatched-pattern'
-          prettier_plugins: "prettier-plugin-apex@2.0.1 @prettier/plugin-xml@2.0.1"
+          node-version: '20'
+
+      - name: Install Prettier and Plugins
+        run: npm install prettier prettier-plugin-apex @prettier/plugin-xml
+
+      - name: Get list of changed files
+        id: changed-files
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { data: files } = await github.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100
+            });
+
+            const fileNames = files.map(f => f.filename)
+              .filter(f => f.match(/\.(cls|cmp|component|css|html|js|json|md|page|trigger|xml|yaml|yml)$/))
+              .join(' ');
+
+            core.setOutput('files', fileNames);
+
+      - name: Run Prettier
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          npx prettier --write ${{ steps.changed-files.outputs.files }}
+
+      - name: Commit changes
+        if: steps.changed-files.outputs.files != ''
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Prettier code formatting"
+          file_pattern: ${{ steps.changed-files.outputs.files }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

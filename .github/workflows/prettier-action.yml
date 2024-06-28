@@ -20,7 +20,6 @@ jobs:
       - name: Prettify code
         uses: creyD/prettier_action@v4.3
         with:
-          # This part is also where you can pass other options, for example:
           only_changed: True
           same_commit: True
           prettier_plugins: "prettier-plugin-apex @prettier/plugin-xml"

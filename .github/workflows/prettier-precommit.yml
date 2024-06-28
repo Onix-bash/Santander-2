@@ -1,8 +1,7 @@
 name: Prettier
 
 on:
-  workflow_dispatch:
-#  pull_request:
+  pull_request:
 
 jobs:
   prettier:
@@ -24,41 +23,26 @@ jobs:
         id: changed-files
         uses: actions/github-script@v6
         with:
-          script: | 
+          script: |
             const prNumber = context.payload.pull_request.number;
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
-
             const { data: files } = await github.rest.pulls.listFiles({
               owner: repoOwner,
               repo: repoName,
               pull_number: prNumber
             })
             const fileNames = files.map(f => f.filename).join(' ');
-            if (fileNames) {
-              // Run Prettier
-            
-              try {
-                await exec.exec('npx prettier --write ' + fileNames);
-  
-                // Commit and push changes
-                await exec.exec('git add ' + fileNames);
-                await exec.exec('git commit -m "Prettier code formatting"');
-                await exec.exec('git push');
-              } catch (error) {
-              console.error(`Error: ${error.message}`);
-             }
-
-#      - name: Run Prettier
-#        if: steps.changed-files.outputs.files != ''
-#        run: |
-#          npx prettier --write ${{ steps.changed-files.outputs.files }}
-#
-#      - name: Commit changes
-#        if: steps.changed-files.outputs.files != ''
-#        uses: stefanzweifel/git-auto-commit-action@v4
-#        with:
-#          commit_message: "Prettier code formatting"
-#          file_pattern: ${{ steps.changed-files.outputs.files }}
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            core.setOutput('files', fileNames);
+      - name: Run Prettier
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          npx prettier --write ${{ steps.changed-files.outputs.files }}
+      - name: Commit changes
+        if: steps.changed-files.outputs.files != ''
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Prettier code formatting"
+          file_pattern: ${{ steps.changed-files.outputs.files }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

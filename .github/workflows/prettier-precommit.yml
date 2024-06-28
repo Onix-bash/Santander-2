@@ -50,19 +50,17 @@ jobs:
         id: changed-files
         uses: actions/github-script@v6
         with:
-          script: |
-            const pr = context.payload.pull_request;
-            const { data: files } = await github.pulls.listFiles({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number,
-              per_page: 100
-            });
+          script: | 
+            const prNumber = context.payload.pull_request.number;
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
 
-            const fileNames = files.map(f => f.filename)
-              .filter(f => f.match(/\.(cls|cmp|component|css|html|js|json|md|page|trigger|xml|yaml|yml)$/))
-              .join(' ');
-
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: repoOwner,
+              repo: repoName,
+              pull_number: prNumber
+           })
+            const fileNames = files.map(f => f.filename).join(' ');
             core.setOutput('files', fileNames);
 
       - name: Run Prettier

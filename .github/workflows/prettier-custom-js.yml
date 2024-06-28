@@ -38,7 +38,18 @@ jobs:
               // Run Prettier
             
               try {
-                await exec.exec('npx prettier --write ' + fileNames + ' | tee prettier-output.txt');
+            const util = require('util');
+            const exec = util.promisify(require('child_process').exec);
+            
+           
+            try {
+            const { stdout, stderr } = await exec('npx prettier --write ' + fileNames + ' --ignore-unknown');
+            console.log('Command output:', stdout);
+            console.error('Command errors:', stderr);
+            } catch (error) {
+            console.error('Error executing command:', error);
+            }
+            
                 const report = JSON.parse(fs.readFileSync('prettier-output.txt', 'utf-8'));
             
                 console.log('report', report);

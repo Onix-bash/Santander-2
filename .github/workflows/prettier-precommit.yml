@@ -1,8 +1,8 @@
 name: Prettier
 
 on:
-  workflow_dispatch:
-#  pull_request:
+#  workflow_dispatch:
+  pull_request:
 
 jobs:
   prettier:
@@ -39,11 +39,12 @@ jobs:
         if: steps.changed-files.outputs.files != ''
         run: |
           npx prettier --write ${{ steps.changed-files.outputs.files }} --ignore-unknown
+          git diff --name-only --diff-filter=M > changed_files.txt
       - name: Commit changes
         if: steps.changed-files.outputs.files != ''
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Prettier code formatting"
-          file_pattern: ${{ steps.changed-files.outputs.files }}
+          file_pattern: $(cat changed_files.txt)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,8 +2,7 @@
  * @created by Stanislav Grinko
  */
 
-public with sharing class classNameTest {
-  public void method1() {
+public with sharing class classNameTest {public void method1() {
     // Large duplicated code block
     Integer a = 10;
     Integer b = 20;

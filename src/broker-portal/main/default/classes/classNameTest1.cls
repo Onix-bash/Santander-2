@@ -13,6 +13,7 @@ public with sharing class classNameTest {
 
     String str1 = 'Hello';
     String str2 = 'World';
+    String str3 = '!';
     String result = str1 + ' ' + str2;
     System.debug(c);
 

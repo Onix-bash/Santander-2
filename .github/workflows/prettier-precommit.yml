@@ -34,6 +34,7 @@ jobs:
               pull_number: prNumber
             })
             const fileNames = files.map(f => f.filename).join(' ');
+            console.log('files', fileNames);
             core.setOutput('files', fileNames);
       - name: Run Prettier
         if: steps.changed-files.outputs.files != ''

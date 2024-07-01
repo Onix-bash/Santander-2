@@ -34,20 +34,16 @@ jobs:
               pull_number: prNumber
             })
             const fileNames = files.map(f => f.filename).join(' ');
-            console.log('fileNames',fileNames);
             core.setOutput('files', fileNames);
       - name: Run Prettier
         if: steps.changed-files.outputs.files != ''
         run: |
           npx prettier --write ${{ steps.changed-files.outputs.files }} --ignore-unknown
-          git diff --name-only --diff-filter=M > changed_files.txt
-          echo "Prettier chages:"
-          cat changed_files.txt
       - name: Commit changes
         if: steps.changed-files.outputs.files != ''
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Prettier code formatting"
-          file_pattern: $(cat changed_files.txt)
+          commit_message: "Prettier code formatting test 1"
+          file_pattern: ${{ steps.changed-files.outputs.files }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

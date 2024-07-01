@@ -6,10 +6,10 @@ on:
       modules_to_validate:
         description: List of modules to validate (space separated). If left blank then all modules will get validated
         type: string
-  pull_request:
-    types: [ opened, reopened, synchronize, edited]
-    paths:
-      - 'src/**'
+#  pull_request:
+#    types: [ opened, reopened, synchronize, edited]
+#    paths:
+#      - 'src/**'
 
 jobs:
   validate-changes:

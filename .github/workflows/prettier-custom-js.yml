@@ -1,0 +1,67 @@
+name: Prettier
+
+on:
+  workflow_dispatch:
+#  pull_request:
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Prettier and Plugins
+        run: npm install prettier prettier-plugin-apex @prettier/plugin-xml
+
+      - name: Get list of changed files
+        id: changed-files
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+            const branch = context.payload.pull_request.head.ref;
+            
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: repoOwner,
+              repo: repoName,
+              pull_number: prNumber
+            })
+            const fileNames = files.map(f => f.filename).join(' ');
+            if (fileNames) {
+              // Run Prettier
+            
+              try {
+            const util = require('util');
+            const exec = util.promisify(require('child_process').exec);
+            
+            
+            try {
+            const { stdout, stderr } = await exec('npx prettier --write ' + fileNames + ' --ignore-unknown');
+            console.log('Command output:', stdout);
+            console.error('Command errors:', stderr);
+             // Commit and push changes
+                if (stdout) {
+                await exec('git config --global user.name "github-actions[bot]"');
+                await exec('git config --global user.email "github-actions[bot]@users.noreply.github.com"');
+                await exec('git checkout -B ' + branch)
+                await exec('git add ' + fileNames);
+                await exec('git commit -m "Prettier code formatting"');
+                await exec('git push --set-upstream origin ' + branch);
+            }
+                } catch (error) {
+                console.error('Error executing command:', error);
+                }
+            
+              } catch (error) {
+              console.error(`Error: ${error.message}`);
+             }
+            }

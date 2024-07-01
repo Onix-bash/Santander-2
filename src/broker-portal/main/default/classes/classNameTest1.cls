@@ -11,7 +11,8 @@ public with sharing class classNameTest {
     System.debug(c);
 
     String str1 = 'Hello';
-    String str2 = 'World';String str3 = '!';
+    String str2 = 'World';
+    String str3 = '!';
     String result = str1 + ' ' + str2;
     System.debug(c);
 

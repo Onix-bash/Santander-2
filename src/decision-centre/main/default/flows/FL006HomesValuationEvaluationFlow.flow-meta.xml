@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <assignments>
+        <name>SetFlowOrchestrationValueToTrue</name>
+        <label>Set Flow Orchestration Value To True</label>
+        <locationX>50</locationX>
+        <locationY>350</locationY>
+        <assignmentItems>
+            <assignToReference>isOrchestrationConditionMet</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>VerifyValuationRecordExist</name>
+        <label>Verify Valuation Record Exist</label>
+        <locationX>182</locationX>
+        <locationY>242</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>ValuationRecordDoesNotExist</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>FetchValuationRecord</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SetFlowOrchestrationValueToTrue</targetReference>
+            </connector>
+            <label>Valuation Record Does Not Exist</label>
+        </rules>
+    </decisions>
+    <description>FL006-Homes-Valuation Evaluation Flow : This is Valuation Evaluation Flow to call from Flow Orchestration</description>
+    <environments>Default</environments>
+    <interviewLabel>FL006-Homes-Valuation Evaluation Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>FL006-Homes-Valuation Evaluation Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>EvaluationFlow</processType>
+    <recordLookups>
+        <name>FetchValuationRecord</name>
+        <label>Fetch Valuation Record</label>
+        <locationX>182</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>VerifyValuationRecordExist</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>HMMortgageApplication__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>ResidentialLoanApplicationId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>HMValuation__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>FetchValuationRecord</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>isOrchestrationConditionMet</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>ResidentialLoanApplicationId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

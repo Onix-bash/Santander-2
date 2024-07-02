@@ -1,0 +1,30 @@
+<template>
+    <c-logger></c-logger>
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_12-of-12 slds-float_none">
+            <label class="slds-form-element__label">{strCaseIdLabel}</label>
+            <lightning-helptext content={strvalidationHelptext}></lightning-helptext>
+        </div>
+        <div class="slds-col slds-size_4-of-12">
+            <lightning-input type="text" label="Case ID Search" value={caseId} placeholder="Enter Case Ids..." variant="label-hidden" max-length="11" onchange={handleInput}>
+                <lightning-icon
+                icon-name="utility:close"
+                size="large"
+                alternative-text="Indicates close"
+            >
+            </lightning-icon>
+            </lightning-input>
+            
+        </div>
+        <div class="slds-col slds-size_4-of-12">
+            <lightning-button variant="Search" label="Search" title="Enter Case Id" disabled={isSearchDisabled} onclick={handleSearch} class="slds-size_1-of-3 slds-var-m-left_x-small">
+            </lightning-button>
+        </div>
+        <div class="slds-var-p-top_medium slds-size_12-of-12">
+            <template if:true={isErrorDisplay}>
+                <div class="slds-text-color_error">{strErrorDisplay}</div>
+            </template>
+        </div>
+    </div>
+    
+</template>

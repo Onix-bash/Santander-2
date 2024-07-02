@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <description>FL006-Homes-Create Valuation Record: Create Valuation Record: Create dummy valuation record to Instruct Valuation, will remove this Flow once Integration will be in place</description>
+    <environments>Default</environments>
+    <interviewLabel>FL006-Homes-Create Valuation Record {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>FL006-Homes-Create Valuation Record</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>CreateValuationRecord</name>
+        <label>Create Valuation Record</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <inputAssignments>
+            <field>HMMortgageApplication__c</field>
+            <value>
+                <elementReference>ResidentialLoanApplicationId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>HMSurveyID__c</field>
+            <value>
+                <stringValue>12345</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>HMValuationStatus__c</field>
+            <value>
+                <stringValue>INSTRUCTED</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>HMValuationTransactionRequestId__c</field>
+            <value>
+                <stringValue>67890</stringValue>
+            </value>
+        </inputAssignments>
+        <object>HMValuation__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CreateValuationRecord</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>ResidentialLoanApplicationId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

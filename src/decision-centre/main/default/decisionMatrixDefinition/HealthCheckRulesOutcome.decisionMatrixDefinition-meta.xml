@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DecisionMatrixDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>HealthCheckRulesOutcome</label>
+    <processType>Bre</processType>
+    <type>Standard</type>
+    <versions>
+        <fullName>HealthCheckRulesOutcomeV2</fullName>
+        <columns>
+            <columnType>Input</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>1</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>RuleName</name>
+        </columns>
+        <columns>
+            <columnType>Input</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>2</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>Decision</name>
+        </columns>
+        <columns>
+            <columnType>Output</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>3</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>DecisionMessage</name>
+        </columns>
+        <decisionMatrixDefinition>HealthCheckRulesOutcome</decisionMatrixDefinition>
+        <label>HealthCheckRulesOutcomeV2</label>
+        <startDate>2024-04-09T15:20:51.000Z</startDate>
+        <status>Inactive</status>
+        <versionNumber>3</versionNumber>
+    </versions>
+</DecisionMatrixDefinition>

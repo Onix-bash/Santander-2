@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>HMNoSearchCompAccessMsg</fullName>
+        <categories>Create this Custom label to add the message for No Access to any of the Child component access.</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>NoSearchCompAccessMsg</shortDescription>
+        <value>No permission to access the search component. Please speak to your system administrator</value>
+    </labels>
+    <labels>
+        <fullName>HMSearchPageName</fullName>
+        <categories>Use this label for search page to display</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>SearchPageName</shortDescription>
+        <value>Flexi Search</value>
+    </labels>
+</CustomLabels>

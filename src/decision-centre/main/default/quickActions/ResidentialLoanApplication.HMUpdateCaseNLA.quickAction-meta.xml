@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Action to Update Case NLA</description>
+    <flowDefinition>FL009HomesTripCaseScreenFlow</flowDefinition>
+    <label>Update Case NLA</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

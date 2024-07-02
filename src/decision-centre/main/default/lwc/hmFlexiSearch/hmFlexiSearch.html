@@ -1,0 +1,33 @@
+<template>
+    <c-logger></c-logger>
+    <lightning-card variant="Narrow" title={strSearchName} icon-name="standard:search">
+        <template lwc:if={strErrorDisplay}>
+            <div class="slds-var-p-around_medium">
+                <div class="slds-text-color_error">{strErrorDisplay}</div>
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="slds-var-p-around_medium">
+                <lightning-radio-group name="radioGroup"
+                                label="Search Type"
+                                options={options}
+                                value={value}
+                                type="radio"
+                                onchange={handleChange}></lightning-radio-group>
+    
+                 <div class="slds-var-p-around_large">
+                    <template if:true={searchType}>
+                        <template lwc:if={searchType.isCaseId}>
+                            <c-hm-case-id-search-type>
+                            </c-hm-case-id-search-type> 
+                        </template>
+                        <template lwc:elseif={searchType.isMortgageAccountNumberSearch}>
+                            <c-hm-mortgage-account-number-search-type>
+                            </c-hm-mortgage-account-number-search-type> 
+                        </template>
+                    </template>
+                    </div>
+                </div>
+        </template>
+                            </lightning-card>
+</template>

@@ -5,7 +5,7 @@
 
 source_paths_to_scan=()
 IFS=$'\n' read -r -d '' -a "$IGNORED_MODULES_ARRAY" <<< "$(echo "$IGNORED_MODULES" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
-
+echo "${IGNORED_MODULES_ARRAY[@]}"
 
 start() {
   if [ -n "$1" ]; then
@@ -46,8 +46,8 @@ filter_modules_to_scan() {
   local modules_to_scan=("$@")
   echo "${modules_to_scan[@]}"
   for module in "${modules_to_scan[@]}"; do
-    if ! [[ ${IGNORED_MODULES_ARRAY[*]} =~ (^|[[:space:]])"$module"($|[[:space:]]) ]]; then
-      source_paths_to_scan+=("src/$module")
+     if ! [[ "${IGNORED_MODULES_ARRAY[*]}" =~ (^|[[:space:]])"$module"($|[[:space:]]) ]]; then
+       source_paths_to_scan+=("src/$module")
     fi
   done
 }

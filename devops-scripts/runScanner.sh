@@ -4,6 +4,8 @@
 # if there is no any module name provided then script validates all modules in /src except IGNORED_MODULES
 
 source_paths_to_scan=()
+IFS=$'\n' read -r -d '' -a "$IGNORED_MODULES_ARRAY" <<< "$(echo "$IGNORED_MODULES" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+
 
 start() {
   if [ -n "$1" ]; then
@@ -44,7 +46,7 @@ filter_modules_to_scan() {
   local modules_to_scan=("$@")
   echo "${modules_to_scan[@]}"
   for module in "${modules_to_scan[@]}"; do
-    if ! [[ ${IGNORED_MODULES[*]} =~ (^|[[:space:]])"$module"($|[[:space:]]) ]]; then
+    if ! [[ ${IGNORED_MODULES_ARRAY[*]} =~ (^|[[:space:]])"$module"($|[[:space:]]) ]]; then
       source_paths_to_scan+=("src/$module")
     fi
   done

@@ -1,0 +1,29 @@
+# Script is executable by schedule. At each run it scans all modules and stores scanning results as artifacts in CI jobs
+
+name: Daily Code Scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  code_scanner:
+    runs-on: ubuntu-latest
+    env:
+      IGNORED_MODULESS: ${{ vars.IGNORED_MODULES }}
+      SEVERITY: ${{ vars.SEVERITY }}
+    name: Daily Code Scan
+    container:
+      image: salesforce/cli:latest-full
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SFDX Code Analyser
+        run: |
+          sf plugins install @salesforce/sfdx-scanner@4.2.0
+          npm install @salesforce/eslint-config-lwc @lwc/eslint-plugin-lwc @salesforce/eslint-plugin-lightning eslint-plugin-import eslint-plugin-jest
+
+      - name: Run Scanner
+        id: scanner
+        run: |
+          chmod +x ./devops-scripts/runScanner.sh
+          ./devops-scripts/runScanner.sh

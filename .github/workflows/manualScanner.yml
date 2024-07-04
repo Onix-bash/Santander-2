@@ -9,7 +9,7 @@ jobs:
   code_scanner:
     runs-on: ubuntu-latest
     env:
-      IGNORED_MODULESS: ${{ vars.IGNORED_MODULES }}
+      IGNORED_MODULES: ${{ vars.IGNORED_MODULES }}
       SEVERITY: ${{ vars.SEVERITY }}
     name: Daily Code Scan
     container:

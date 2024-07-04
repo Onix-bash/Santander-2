@@ -26,4 +26,4 @@ jobs:
         id: scanner
         run: |
           chmod +x ./devops-scripts/runScanner.sh
-          ./devops-scripts/runScanner.sh
+          ./devops-scripts/runScanner.sh broken-portal

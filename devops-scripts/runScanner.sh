@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# script gets as parameter an array of module names
-# if there is no any module name provided then script validates all modules in /src except IGNORED_MODULES
+# Script gets as parameter an array of module names
+# If there is no any module name provided then script validates all modules in /src except IGNORED_MODULES
 
 source_paths_to_scan=()
 IFS=$'\n' read -r -d '' -a IGNORED_MODULES_ARRAY <<< "$(echo "$IGNORED_MODULES" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
-echo "$IGNORED_MODULES"
-echo "$SEVERITY"
+
 start() {
   if [ -n "$1" ]; then
     filter_modules_to_scan "$@"

@@ -1,6 +1,6 @@
 # Script is executable by schedule. At each run it scans all modules and stores scanning results as artifacts in CI jobs
 
-name: Daily Code Scan
+name: Manual Scan
 
 on:
   workflow_dispatch:

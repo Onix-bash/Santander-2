@@ -10,8 +10,6 @@ if [ -n "$1" ]; then
 fi
 
 start() {
-  echo "feature/deploy-test-pr"
-  original_dir=$(pwd)
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
@@ -38,6 +36,7 @@ git fetch origin
       done
   }
 
+  original_dir=$(pwd)
   for module in "${modules[@]}"; do
     # Flag to track if set_input_version has been called for this module
     is_set_input_version_run=false
@@ -121,7 +120,6 @@ enable_matrix_version() {
     current_matrix_version_id=$(sf data query --query "SELECT Id FROM CalculationMatrixVersion WHERE IsEnabled = TRUE AND CalculationMatrixId = '$current_matrix_id' AND Id != '$new_matrix_version_id' LIMIT 1" --json | jq -r .result.records[].Id)
     # Disable the previous Matrix Version
     disable_matrix_version
-
   else
     # Error. Delete Matrix Version to allow the next attempt
     delete_matrix_version
@@ -145,4 +143,3 @@ delete_matrix_version() {
 
 # Start
 start "$@"; exit
-

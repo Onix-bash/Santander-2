@@ -1,0 +1,12 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "CalculationMatrixVersion",
+        "referenceId": "CalculationMatrixVersionRef1"
+      },
+      "Name": "RuleOutcomeV1",
+      "VersionNumber": 1
+    }
+  ]
+}

@@ -10,7 +10,6 @@ if [ -n "$1" ]; then
 fi
 
 start() {
-  echo "feature/deploy-test-pr"
   # Array of your module directories
   modules=( $(cd src/; ls -1p | grep / | sed 's|/$||') )
 
@@ -18,16 +17,23 @@ git fetch origin
   # Initialize an associative array to hold the diffs by module
 
   get_filepath_from_acceptable_folders() {
-    module=$1
+      module=$1
 
-    for folder in "${acceptable_folders[@]}"; do
-      if [[ $file == src/$module/data/$folder/* && $is_set_input_version_run == false ]]; then
-        cd "$original_dir" && cd "src/$module/data/$folder" || exit 1
-        echo "Start set_input_version for module/folder: '$module/$folder'"
-        set_input_version
-        is_set_input_version_run=true
-      fi
-    done
+      for folder in "${acceptable_folders[@]}"; do
+        if [[ $file == src/$module/data/$folder/* && $is_set_input_version_run == false ]]; then
+          for subfolder in src/$module/data/$folder/*/; do
+            cd "$original_dir" || exit 1
+            if [ -d "$subfolder" ]; then
+              echo "Processing directory: $subfolder"
+              cd "$subfolder" || exit 1
+
+              echo "Start set_input_version for module/folder: '$module/$folder'"
+              set_input_version
+              is_set_input_version_run=true
+            fi
+          done
+        fi
+      done
   }
 
   original_dir=$(pwd)
@@ -37,7 +43,6 @@ git fetch origin
 
     # Get the list of changed files use pattern "src/$module/data"
     git_diff=$(git diff-index --name-only $source_to_check_changes | grep "^src/$module/data")
-    echo "git_diff in src/module-name/data files: '$git_diff'"
 
     # Iterate over each changed file
     for file in $git_diff; do
@@ -52,19 +57,18 @@ set_input_version() {
   current_matrix_id=$(jq -r '.records[].CalculationMatrix.Id' CalculationMatrixVersion.json)
   echo "current_matrix_id:'$current_matrix_id'"
   # Create the correct Key and Value
-#  set_matrix_id=$(
-#    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
-#  )
-#  echo $set_matrix_id > CalculationMatrixVersion.json
-#
-#  # Delete unnecessary property
-#  delete_matrix_property=$(
-#    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
-#  )
-#  echo $delete_matrix_property > CalculationMatrixVersion.json
-#
-#  # Create Inactive Matrix Version from JSON
-#  create_matrix_data
+  set_matrix_id=$(
+    jq '.records[] |= . + {"CalculationMatrixId": "'$current_matrix_id'"}' CalculationMatrixVersion.json
+  )
+  echo $set_matrix_id > CalculationMatrixVersion.json
+  # Delete unnecessary property
+  delete_matrix_property=$(
+    jq 'del(.records[].CalculationMatrix)' CalculationMatrixVersion.json
+  )
+  echo $delete_matrix_property > CalculationMatrixVersion.json
+
+  # Create Inactive Matrix Version from JSON
+  create_matrix_data
 }
 
 # Create Matrix Version and Matrix Rows
@@ -116,7 +120,6 @@ enable_matrix_version() {
     current_matrix_version_id=$(sf data query --query "SELECT Id FROM CalculationMatrixVersion WHERE IsEnabled = TRUE AND CalculationMatrixId = '$current_matrix_id' AND Id != '$new_matrix_version_id' LIMIT 1" --json | jq -r .result.records[].Id)
     # Disable the previous Matrix Version
     disable_matrix_version
-
   else
     # Error. Delete Matrix Version to allow the next attempt
     delete_matrix_version
@@ -140,4 +143,3 @@ delete_matrix_version() {
 
 # Start
 start "$@"; exit
-

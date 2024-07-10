@@ -1,0 +1,12 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "CalculationMatrixVersion",
+        "referenceId": "CalculationMatrixVersionRef1"
+      },
+      "Name": "HealthCheckRulesOutcome V4",
+      "VersionNumber": 4
+    }
+  ]
+}

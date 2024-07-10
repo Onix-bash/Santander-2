@@ -5,8 +5,8 @@
         "type": "CalculationMatrixVersion",
         "referenceId": "CalculationMatrixVersionRef1"
       },
-      "Name": "HealthCheckRulesOutcome V1",
-      "VersionNumber": 1
+      "Name": "RuleOutcomeV4",
+      "VersionNumber": 4
     }
   ]
 }

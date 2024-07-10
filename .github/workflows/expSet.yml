@@ -22,7 +22,8 @@ jobs:
       - name: Install Dep
         run: npm install xml2js child_process
 
-      - name: Install SFDX Code Analyser
-        run: |
-          git config --global --add safe.directory /__w/Santander-2/Santander-2
-          node devops-scripts/deployExpressionSets.js
+      - name: Run develop
+        run: node devops-scripts/deployExpressionSets.js
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ${{ github.base_ref }}

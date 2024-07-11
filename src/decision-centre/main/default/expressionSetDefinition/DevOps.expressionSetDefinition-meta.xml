@@ -6,7 +6,7 @@
     <versions>
         <fullName>DevOps_V1</fullName>
         <expressionSetDefinition>DevOps</expressionSetDefinition>
-        <label>DevOpsHomesApplicationTestVersion V1</label>
+        <label>DevOpsHomesApplicationTestVersion V2</label>
         <processType>Bre</processType>
         <shouldShowExplExternally>false</shouldShowExplExternally>
         <startDate>2024-07-03T07:53:34.000Z</startDate>

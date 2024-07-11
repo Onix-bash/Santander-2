@@ -1,31 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>HMFlexiSearchController</members>
-        <members>HMFlexiSearchControllerTest</members>
-        <members>HMFlexiSearchService</members>
-        <members>HMFlexiSearchServiceTest</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>HMDecisionCentre</members>
-        <name>CustomApplication</name>
-    </types>
-    <types>
-        <members>HMNoSearchCompAccessMsg</members>
-        <members>HMSearchPageName</members>
-        <name>CustomLabel</name>
-    </types>
-    <types>
-        <members>CustomLabels</members>
-        <name>CustomLabels</name>
-    </types>
-    <types>
-        <members>HealthCheckRulesOutcome</members>
-        <members>RuleOutcome</members>
-        <name>DecisionMatrixDefinition</name>
-    </types>
-    <types>
+        <members>DevOps</members>
         <members>HomesApplicantChecksFTB</members>
         <members>HomesApplicantChecksPOMF</members>
         <members>HomesApplicantChecksRemortgage</members>
@@ -37,54 +13,5 @@
         <members>HomesApplicationCheckSwitcher</members>
         <name>ExpressionSetDefinition</name>
     </types>
-    <types>
-        <members>HMAccountRecordPage</members>
-        <members>HMApplicationCaseDecisionUI</members>
-        <members>HMResidentialLoanApplicationRecordPage</members>
-        <members>HMUnderwriteHomePage</members>
-        <members>HM_Application_Checks_UI</members>
-        <members>HM_Application_Risk_Call_UI</members>
-        <members>Valuation_Record_Page</members>
-        <name>FlexiPage</name>
-    </types>
-    <types>
-        <members>FL001HomesAppCheckScreenFlow</members>
-        <members>FL001HomesCreateAppCheckRecords</members>
-        <members>FL003HomesCreateHealthCheckRecords</members>
-        <members>FL003HomesHealthCheckScreenFlow</members>
-        <members>FL004HomesUpdateUserAcceptDecision</members>
-        <members>FL004HomesUpdateUserDeclineDecision</members>
-        <members>FL006HomesAppChecksEvaluationFlow</members>
-        <members>FL006HomesCreateValuationRecord</members>
-        <members>FL006HomesMortgageApplicationFlowOrchestration</members>
-        <members>FL006HomesValuationEvaluationFlow</members>
-        <members>FL007HomesManualDecisionScreenFlow</members>
-        <members>FL008HomesValuationInstructionScreenFlow</members>
-        <members>FL009HomesTripCaseScreenFlow</members>
-        <members>FL010HomesExceptionLogging</members>
-        <members>FL010HomesExceptionLoggingFlow</members>
-        <members>FL010HomesExceptionLoggingScreenFlow</members>
-        <name>Flow</name>
-    </types>
-    <types>
-        <members>hmCaseIdSearchType</members>
-        <members>hmFlexiSearch</members>
-        <members>hmMortgageAccountNumberSearchType</members>
-        <name>LightningComponentBundle</name>
-    </types>
-    <types>
-        <members>HMAppDecision__c.Accept</members>
-        <members>HMAppDecision__c.Decline</members>
-        <members>ResidentialLoanApplication.HMInstructValuation</members>
-        <members>ResidentialLoanApplication.HMManualDecision</members>
-        <members>ResidentialLoanApplication.HMUpdateCaseNLA</members>
-        <members>ResidentialLoanApplication.Run_Application_Checks</members>
-        <members>ResidentialLoanApplication.Run_Health_Checks</members>
-        <name>QuickAction</name>
-    </types>
-    <types>
-        <members>Application_Decision_Timeline</members>
-        <name>TimelineObjectDefinition</name>
-    </types>
-    <version>58.0</version>
+    <version>60.0</version>
 </Package>

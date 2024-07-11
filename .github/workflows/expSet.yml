@@ -8,9 +8,7 @@ on:
 jobs:
   code_scanner:
     runs-on: ubuntu-latest
-    name: CLI install
-    container:
-      image: salesforce/cli:latest-full
+    name: ES Exclude
     steps:
       - uses: actions/checkout@v4
 

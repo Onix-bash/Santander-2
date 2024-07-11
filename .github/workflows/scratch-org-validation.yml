@@ -1,0 +1,118 @@
+name: 'Validation using Scratch'
+on:
+  workflow_call:
+    inputs:
+      auth_url:
+        required: true
+        type: string
+        description: Auth URL of Org to be used for validation
+
+jobs:
+  validate-changes:
+    name: CI Org Validation
+    runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
+    env:
+      # Sets the deployment destination from sfdx-project.json
+      SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+      DEPLOY_DESTINATION: ${{ vars.DEPLOY_DESTINATION }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SEVERITY: ${{ vars.SEVERITY }}
+      UNIT_TEST_IGNORE_CLASSES: ${{ vars.UNIT_TEST_IGNORE_CLASSES }}
+      UNIT_TEST_MIN_COVERAGE: ${{ vars.UNIT_TEST_MIN_COVERAGE }}
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Validate src-temp folder changes
+        run: |
+          chmod +x ./devops-scripts/tempFolder.sh
+          ./devops-scripts/tempFolder.sh
+
+      - name: Validate SFDX health
+        run: sf -v
+
+      - name: Get Changed Modules
+        id: detect_changes
+        run: |
+          chmod +x ./devops-scripts/findChangedModules.sh
+          ./devops-scripts/findChangedModules.sh
+          deleted_files=$(git diff origin/$GITHUB_BASE_REF --name-status --diff-filter=D)
+
+      - name: Install SFDX Code Analyser
+        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
+
+      - name: Run SFDX Code Analyser
+        run: |
+          chmod +x ./devops-scripts/runScanner.sh
+          ./devops-scripts/runScanner.sh ${{steps.detect_changes.outputs.changed_modules}}
+
+      - name: Show Scan Results on PR
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            const script = require('./devops-scripts/showScanPR.js')
+            await script({ github, context });
+
+      - name: Install Flow Analyser
+        run: echo Y | sf plugins install lightning-flow-scanner
+
+      - name: Run Flow Analyser
+        run: |
+          chmod +x ./devops-scripts/runFlowScanner.sh
+          ./devops-scripts/runFlowScanner.sh ${{steps.detect_changes.outputs.changed_modules}}
+
+      - name: Authenticate CI-Org
+        env:
+          ENCODED_SECRET: ${{ inputs.auth_url }}
+        run: |
+          export SFDXAUTHURL=$(echo $ENCODED_SECRET | base64 -di | tr -d '\n')
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--alias=CI-Org --set-default"
+
+      - name: Get CI-Org Info
+        id: ci_org_info
+        run: |
+          org_info=$(sf org display --verbose --json --target-org CI-Org | sed s/\\\\n//g)
+          org_id=$(echo "$org_info" | jq -r '.result.id')
+          echo "org_id=$org_id" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Source Tracking
+        uses: actions/cache/restore@v4
+        with:
+          key: source-tracking-${{ steps.ci_org_info.outputs.org_id }}
+          path: |
+            .sf
+            .sfdx
+
+      - name: Deploy sources
+        run: |
+          sf project deploy start --ignore-conflicts --target-org CI-Org --verbose --ignore-warnings
+
+      - name: Run Unit Tests
+        shell: bash
+        run: |
+          chmod +x ./devops-scripts/runApexTests.sh
+          ./devops-scripts/runApexTests.sh
+
+      - name: Validate removed metadata
+        if: ${{ steps.detect_changes.outputs.deleted_files_found == 'true' }}
+        env:
+          SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+          DEPLOY_DESTINATION: ${{ vars.DEPLOY_DESTINATION }}
+        run: |
+          echo "Validating dependencies of deleted files..."
+          sf project delete tracking --target-org CI-Org --no-prompt
+          sf project deploy start --source-dir ./src --target-org CI-Org --ignore-conflicts
+
+      - name: Check coverage for flows
+        env:
+          REQUIRED_FLOW_COVERAGE: ${{ vars.REQUIRED_FLOW_COVERAGE }}
+        run: |
+          npm ci
+          npm run check-flow-coverage -- --required-coverage $REQUIRED_FLOW_COVERAGE --target-org CI-Org

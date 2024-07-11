@@ -5,8 +5,6 @@ const {execSync} = require('child_process');
 console.log(process.env.GITHUB_HEAD_REF)
 
 // Get environment variables from GitHub Actions
-const GITHUB_HEAD_REF = process.env.GITHUB_HEAD_REF || 'feature/expression-set-check';
-const GITHUB_BASE_REF = process.env.GITHUB_BASE_REF ||'main';
 const sourceToCheckChanges = `origin/${GITHUB_BASE_REF}`;
 const currentBranch = `origin/${GITHUB_HEAD_REF}`;
 
@@ -24,6 +22,7 @@ function getDiff() {
             .map((filename => filename.split('/').slice(-1).join()));
 
         // Delete unchanged ES from sourcePackage.xml
+        console.log('gitDiff', gitDiff)
         deleteESMeta(gitDiff);
     } catch (error) {
         console.error('Error executing git diff:', error.message);

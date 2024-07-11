@@ -22,6 +22,5 @@ jobs:
 
       - name: Run develop
         run: |
-          git config --global --add safe.directory "*"
           node devops-scripts/excludeESMeta.js
 

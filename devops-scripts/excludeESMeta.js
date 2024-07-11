@@ -17,6 +17,9 @@ const EXCLUDE_TYPE = 'ExpressionSetDefinition'; // Metadata types to exclude
 function getDiff() {
     try {
         execSync('git fetch origin');
+        const diff = execSync(`git diff --name-only ${sourceToCheckChanges}...${currentBranch}`);
+        console.log(`git diff --name-only ${sourceToCheckChanges}...${currentBranch}`)
+        console.log('diff', diff);
         const gitDiff = execSync(`git diff --name-only ${sourceToCheckChanges}...${currentBranch}`)
             .toString()
             .split('\n')

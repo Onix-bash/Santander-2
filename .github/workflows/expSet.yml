@@ -8,7 +8,7 @@ on:
 jobs:
   code_scanner:
     runs-on: ubuntu-latest
-    name: Daily Code Scan
+    name: CLI install
     container:
       image: salesforce/cli:latest-full
     steps:
@@ -25,5 +25,5 @@ jobs:
       - name: Run develop
         run: node devops-scripts/deployExpressionSets.js
         env:
-          GITHUB_HEAD_REF: ${{ github.head_ref }}
-          GITHUB_BASE_REF: ${{ github.base_ref }}
+          GITHUB_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}

@@ -17,10 +17,10 @@ const EXCLUDE_TYPE = 'ExpressionSetDefinition'; // Metadata types to exclude
 function getDiff() {
     try {
         execSync('git fetch origin');
-        const ESD_PATH='src/decision-centre/main/default/expressionSetDefinition';
-        const gitDiff = execSync(`git diff --name-only ${sourceToCheckChanges}...${currentBranch} ${ESD_PATH}`)
+        const gitDiff = execSync(`git diff --name-only ${sourceToCheckChanges}...${currentBranch}`)
             .toString()
             .split('\n')
+            .filter(file => file && file.startsWith('src/decision-centre/main/default/expressionSetDefinition'))
             .map((filename => filename.split('/').slice(-1).join()));
 
         // Delete unchanged ES from sourcePackage.xml

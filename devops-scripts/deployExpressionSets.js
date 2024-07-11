@@ -3,8 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const argv = require('yargs-parser')(process.argv.slice(2))
 const {execSync} = require('child_process');
-console.log('argv', argv)
-console.log(argv.GITHUB_BASE_REF,argv.GITHUB_HEAD_REF)
+const head = process.env.GITHUB_HEAD_REF;
+const base = process.env.GITHUB_BASE_REF;
+console.log('branches env:', head, base);
 // Get environment variables from GitHub Actions
 const sourceToCheckChanges = `origin/${argv.GITHUB_BASE_REF}`;
 const currentBranch = `origin/${argv.GITHUB_HEAD_REF}`;

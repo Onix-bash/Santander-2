@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const argv = require('yargs-parser')(process.argv.slice(2))
 const {execSync} = require('child_process');
-console.log(argv)
+console.log('argv', argv)
 console.log(argv.GITHUB_BASE_REF,argv.GITHUB_HEAD_REF)
 // Get environment variables from GitHub Actions
 const sourceToCheckChanges = `origin/${argv.GITHUB_BASE_REF}`;

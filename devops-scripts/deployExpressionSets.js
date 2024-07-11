@@ -2,7 +2,6 @@ const xml2js = require('xml2js');
 const fs = require('fs');
 const path = require('path');
 const {execSync} = require('child_process');
-console.log(process.env.GITHUB_HEAD_REF)
 
 // Get environment variables from GitHub Actions
 const sourceToCheckChanges = `origin/${GITHUB_BASE_REF}`;

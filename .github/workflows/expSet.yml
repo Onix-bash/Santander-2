@@ -23,7 +23,9 @@ jobs:
         run: npm install xml2js child_process yargs-parser
 
       - name: Run develop
-        run: node devops-scripts/deployExpressionSets.js --GITHUB_HEAD_REF $GITHUB_HEAD_REF --GITHUB_BASE_REF $GITHUB_BASE_REF
+        run: |
+          git config --global --add safe.directory "*"
+          node devops-scripts/deployExpressionSets.js --GITHUB_HEAD_REF $GITHUB_HEAD_REF --GITHUB_BASE_REF $GITHUB_BASE_REF
         env:
           GITHUB_HEAD_REF: ${{ github.event.pull_request.head.ref }}
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}

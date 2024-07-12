@@ -9,7 +9,7 @@ const GITHUB_BASE_BRANCH = GITHUB_HEAD_REF.length ? `origin/${GITHUB_BASE_REF}` 
 const GITHUB_CURRENT_BRANCH = GITHUB_BASE_REF.length ? `origin/${GITHUB_HEAD_REF}` : '';
 
 execSync('git fetch origin');
-        const gitDiff = execSync(`git diff --name-only ${GITHUB_BASE_BRANCH}...${GITHUB_CURRENT_BRANCH}`)
+        const gitDiff = execSync(`git diff --name-only ${GITHUB_BASE_BRANCH}`)
             .toString()
             .split('\n')
             .map((filename => filename.split('/').slice(-1).join()));

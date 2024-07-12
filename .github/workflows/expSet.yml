@@ -25,5 +25,7 @@ jobs:
         run: npm install yargs-parser child_process
 
       - name: Run develop
-        run: node devops-scripts/test.js --base-branch '^HEAD'
+        run: |
+          git config --global --add safe.directory "*"
+          node devops-scripts/test.js --base-branch '^HEAD'
 

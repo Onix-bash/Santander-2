@@ -1,14 +1,14 @@
 const xml2js = require('xml2js');
 const fs = require('fs');
 const path = require('path');
-const argv = require('yargs-parser')(process.argv.slice(2))
+
 const {execSync} = require('child_process');
-const head = process.env.GITHUB_HEAD_REF;
-const base = process.env.GITHUB_BASE_REF;
-console.log('branches env:', head, base);
+const GITHUB_BASE_REF = process.env.GITHUB_HEAD_REF ||  'develop';
+const GITHUB_HEAD_REF = process.env.GITHUB_BASE_REF || 'feature/test-ES-yml';
+
 // Get environment variables from GitHub Actions
-const sourceToCheckChanges = `origin/${argv.GITHUB_BASE_REF}`;
-const currentBranch = `origin/${argv.GITHUB_HEAD_REF}`;
+const sourceToCheckChanges = `origin/${GITHUB_BASE_REF}`;
+const currentBranch = `origin/${GITHUB_HEAD_REF}`;
 
 const PACKAGE_XML = 'sourcePackage.xml'; // Path to deploy
 const EXCLUDE_TYPE = 'ExpressionSetDefinition'; // Metadata types to exclude

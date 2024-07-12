@@ -3,7 +3,7 @@ const {execSync} = require('child_process');
 
 const GITHUB_HEAD_REF = process.env.GITHUB_HEAD_REF;
 const GITHUB_BASE_REF = process.env.GITHUB_BASE_REF;
-console.log('head', GITHUB_HEAD_REF,'base', GITHUB_BASE_REF)
+console.log('head', GITHUB_HEAD_REF.length,'base', GITHUB_BASE_REF)
 
 const GITHUB_BASE_BRANCH = GITHUB_HEAD_REF ? `origin/${GITHUB_BASE_REF}` : 'HEAD^'
 const GITHUB_CURRENT_BRANCH = GITHUB_BASE_REF ? `origin/${GITHUB_HEAD_REF}` : 'origin';

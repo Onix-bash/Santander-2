@@ -2,8 +2,8 @@ const argv = require('yargs-parser')(process.argv.slice(2))
 const {execSync} = require('child_process');
 console.log(argv.baseBranch)
 
-const sourceToCheckChanges = argv.baseBranch ? argv.baseBranch : `origin/${GITHUB_BASE_REF}`;
-const currentBranch = `origin/${GITHUB_HEAD_REF}`;
+const sourceToCheckChanges = argv.baseBranch ? argv.baseBranch : `origin/${process.env.GITHUB_BASE_REF}`;
+const currentBranch = `origin/${process.env.GITHUB_HEAD_REF}`;
 
 
 console.log(sourceToCheckChanges,currentBranch )

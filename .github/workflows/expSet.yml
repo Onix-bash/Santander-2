@@ -3,7 +3,9 @@
 name: Exp Set
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - 'develop'
 
 jobs:
   code_scanner:

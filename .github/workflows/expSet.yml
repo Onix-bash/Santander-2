@@ -20,10 +20,8 @@ jobs:
           node-version: '20'
 
       - name: Install Dep
-        run: npm install xml2js child_process
+        run: npm install yargs-parser child_process
 
       - name: Run develop
-        run: node devops-scripts/deployExpressionSets.js
-        env:
-          GITHUB_HEAD_REF: ${{ github.head_ref }}
-          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: node devops-scripts/test.js --base-branch '^HEAD'
+

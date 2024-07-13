@@ -30,6 +30,6 @@ jobs:
         run: |
           cat sourcePackage.xml
           git config --global --add safe.directory "*"
-          node devops-scripts/test.js --base-branch 'HEAD^'
+          node devops-scripts/deployExpressionSets.js
           cat sourcePackage.xml
 

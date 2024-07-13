@@ -18,13 +18,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Install Dep
-        run: npm install yargs-parser child_process
+        run: npm install xml2js child_process
 
       - name: Run develop
         run: |

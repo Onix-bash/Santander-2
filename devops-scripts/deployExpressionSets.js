@@ -6,7 +6,7 @@ const GITHUB_HEAD_REF = process.env.GITHUB_HEAD_REF;
 const GITHUB_BASE_REF = process.env.GITHUB_BASE_REF;
 const GITHUB_BASE_BRANCH = GITHUB_HEAD_REF ? `origin/${GITHUB_BASE_REF}` : 'HEAD^';
 const GITHUB_CURRENT_BRANCH = GITHUB_BASE_REF ? `origin/${GITHUB_HEAD_REF}` : '';
-
+console.log('GITHUB_CURRENT_BRANCH', GITHUB_CURRENT_BRANCH, 'GITHUB_BASE_BRANCH',GITHUB_BASE_BRANCH);
 const EXPRESSION_SET_FOLDER = 'src/decision-centre/main/default/expressionSetDefinition';
 const XML_NAME = 'sourcePackage.xml'; 
 const EXCLUDE_TYPE = 'ExpressionSetDefinition';

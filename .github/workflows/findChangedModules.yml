@@ -1,4 +1,4 @@
-name: Get Team Members
+name: FindChangedModules
 
 on:
     pull_request:

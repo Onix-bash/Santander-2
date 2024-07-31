@@ -2,18 +2,17 @@
 
 #git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm #fix for dubious ownership issue TODO check more deeply for better solution
 git config --global --add safe.directory "*"
+
 source_to_check_changes="origin/$GITHUB_BASE_REF"
-current="origin/$GITHUB_HEAD_REF"
-echo "$source_to_check_changes...$current"
+current_branch="origin/$GITHUB_HEAD_REF"
+
 if [ -n "$1" ]; then
   source_to_check_changes=$1
 fi
 
 git fetch origin
-git_diff=$(git diff --name-only $source_to_check_changes...$current | grep -v "^src/")
-echo "git_diff $git_diff"
-git_diff2=$(git diff --name-only $source_to_check_changes | grep -v "^src/")
-echo "git_diff2 $git_diff2"
+git_diff=$(git diff --name-only $source_to_check_changes...$current_branch | grep -v "^src/")
+
 # Check changes outside src folder
 if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 

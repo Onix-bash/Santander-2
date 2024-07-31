@@ -1,7 +1,8 @@
 #!/bin/bash
+
+set -e
 # script gets as parameter an array of module names
 # if there is no any module name provided then script validates all sources under /src folder
-
 source_paths_to_validate=('src/')
 if [ -n "$1" ]; then
   source_paths_to_validate=()
@@ -19,8 +20,16 @@ else
 
   command_result=$(sf project generate manifest --source-dir "${source_paths_to_validate[@]}" --name sourcePackage)
   echo "Package generated: $command_result"
+
+  node devops-scripts/addChangedDecisionCenterMetadata.js
+  set_decision_centre_status=$?
+  if [ $set_decision_centre_status -ne 0 ]; then
+   exit 1
+  fi
+
   # Track "Deployment Id" allowing to Cancel the Job
   validate_command_result=$(sf project deploy validate --manifest sourcePackage.xml --post-destructive-changes "src/destructiveChanges/destructiveChanges.xml" --test-level RunSpecifiedTests --tests "${testClasses[@]}" --ignore-warnings --async --json)
+
   echo "Validation job details: $validate_command_result"
   deployment_id=$(echo "$validate_command_result" | jq -r .result.id)
   echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"

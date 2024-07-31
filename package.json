@@ -17,5 +17,8 @@
     "/{aura,lwc}/**/*.js": [
       "eslint"
     ]
+  },
+  "dependencies": {
+    "yargs-parser": "^21.1.1"
   }
 }

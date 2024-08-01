@@ -24,6 +24,7 @@ jobs:
       DEVOPS_TEAM: ${{ vars.DEVOPS_TEAM }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SEVERITY: ${{ vars.SEVERITY }}
+      IGNORED_SCAN_MODULES: ${{ vars.IGNORED_SCAN_MODULES }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2

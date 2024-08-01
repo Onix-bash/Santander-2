@@ -1,11 +1,19 @@
 const xml2js = require('xml2js');
 const fs = require('fs');
+<<<<<<<< HEAD:devops-scripts/excludeESMeta.js
 const {execSync} = require('child_process');
 
 const GITHUB_BASE_REF = process.env.GITHUB_HEAD_REF;
 const GITHUB_HEAD_REF = process.env.GITHUB_BASE_REF;
 console.log(GITHUB_BASE_REF);
 console.log(GITHUB_HEAD_REF);
+========
+const path = require('path');
+
+const {execSync} = require('child_process');
+const GITHUB_BASE_REF = process.env.GITHUB_HEAD_REF ||  'develop';
+const GITHUB_HEAD_REF = process.env.GITHUB_BASE_REF || 'feature/test-ES-yml';
+>>>>>>>> c441fd5639e6cee18c992d3d129857db0fed1843:devops-scripts/deployExpressionSets.js
 
 // Get environment variables from GitHub Actions
 const sourceToCheckChanges = `origin/${GITHUB_BASE_REF}`;

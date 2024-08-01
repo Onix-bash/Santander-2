@@ -14,6 +14,9 @@ jobs:
       DEPLOY_DESTINATION: ${{ vars.DEPLOY_DESTINATION }}
       SEVERITY: ${{ vars.SEVERITY }}
       MIN_COVERAGE: ${{ vars.MIN_COVERAGE }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_LINK: ${{ github.event.pull_request.html_url }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it

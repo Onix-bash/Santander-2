@@ -1,6 +1,5 @@
 #!/bin/bash
 changed_files=$1
-echo "Action Number: 99" > error_info.txt
 echo "Pull Request Number: $PR_NUMBER" >> error_info.txt
 echo "Pull Request Title: $PR_TITLE" >> error_info.txt
 echo "Pull Request Link: $PR_LINK" >> error_info.txt

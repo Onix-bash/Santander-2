@@ -32,14 +32,13 @@ jobs:
           deleted_files=$(git diff origin/$GITHUB_BASE_REF --name-status --diff-filter=D)
 
       - name: Run potentially failing step
-        id: step2
+        id: error_step
         run: |
-          echo "This might fail"
-          exit 1  # Simulating a failure condition
-        continue-on-error: true
+          echo "Simulating a failure condition"
+          exit 1  
 
       - name: Capture error message
-        if: ${{ steps.step2.outcome == 'failure' }}
+        if: ${{ steps.error_step.outcome == 'failure' }}
         run: |
          chmod +x ./devops-scripts/writeError.sh
          ./devops-scripts/writeError.sh ${{steps.detect_changes.outputs.changed_modules}}

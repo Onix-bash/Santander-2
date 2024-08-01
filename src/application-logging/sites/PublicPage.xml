@@ -6,7 +6,7 @@
     </actionOverrides>
     <actionOverrides>
         <actionName>Accept</actionName>
-        <formFactor>Large</formFactor>
+        <formFactor>Small</formFactor>
         <type>Default</type>
     </actionOverrides>
     <actionOverrides>

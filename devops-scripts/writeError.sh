@@ -7,7 +7,7 @@ echo "Head Ref: $GITHUB_HEAD_REF" >> error_info.txt
 echo "Base Ref: $GITHUB_BASE_REF" >> error_info.txt
 echo "Repository: $GITHUB_REPOSITORY" >> error_info.txt
 echo "Run ID: $GITHUB_RUN_ID" >> error_info.txt
-echo "Edited Files: $changed_files" >> error_info.txt # Example file path
+echo "Edited Modules: $changed_files" >> error_info.txt # Example file path
 echo "Show file"
 cat error_info.txt
 # Read the file content to a variable

@@ -9,6 +9,7 @@ public with sharing class classNameTest {
         Integer a = 10;
         Integer b = 20;
         Integer c = a + b;
+        System.debug(c);
 
         String str1 = 'Hello';
         String str2 = 'World';

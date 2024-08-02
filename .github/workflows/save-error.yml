@@ -1,0 +1,44 @@
+name: 'Set log error'
+on:
+  pull_request:
+
+jobs:
+  validate-changes:
+    name: CI Org Validation
+    runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
+    env:
+      # Sets the deployment destination from sfdx-project.json
+      SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+      DEPLOY_DESTINATION: ${{ vars.DEPLOY_DESTINATION }}
+      SEVERITY: ${{ vars.SEVERITY }}
+      MIN_COVERAGE: ${{ vars.MIN_COVERAGE }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_LINK: ${{ github.event.pull_request.html_url }}
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Changed Modules
+        id: detect_changes
+        run: |
+          chmod +x ./devops-scripts/findChangedModules.sh
+          ./devops-scripts/findChangedModules.sh
+          deleted_files=$(git diff origin/$GITHUB_BASE_REF --name-status --diff-filter=D)
+
+      - name: Run potentially failing step
+        id: error_step
+        run: |
+          echo "Simulating a failure condition"
+          exit 1  
+
+      - name: Capture error message
+        if: ${{ failure() && steps.error_step.outcome == 'failure' }}
+        run: |
+         chmod +x ./devops-scripts/writeError.sh
+         ./devops-scripts/writeError.sh ${{steps.detect_changes.outputs.changed_modules}}

@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "GITHUB_BASE_BRANCH: $GITHUB_BASE_BRANCH"
+echo "GITHUB_CURRENT_BRANCH: $GITHUB_CURRENT_BRANCH"
 
 if [ -n "$GITHUB_BASE_REF" ]; then
   source_to_check_changes="origin/$GITHUB_BASE_REF"
@@ -7,9 +9,9 @@ if [ -n "$GITHUB_BASE_REF" ]; then
 fi
 
 if [ -n "$GITHUBa_HEAD_REF" ]; then
-  source_to_check_changes="origin/$GITHUB_HEAD_REF"
+  current_branch="origin/$GITHUB_HEAD_REF"
   else
-  source_to_check_changes=""
+  current_branch=""
 fi
 echo "source_to_check_changes: $source_to_check_changes"
 echo "current_branch: $current_branch"

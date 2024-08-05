@@ -23,6 +23,6 @@ for file_path in $changed_es_files; do
   echo "!$file_path" >> .forceignore
 done
 
-cat ß.forceignore
+cat .forceignore
 
 

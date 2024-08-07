@@ -11,11 +11,11 @@ echo "source_to_check_changes $source_to_check_changes"
 echo "current_branch $current_branch"
 ES_PATH='^src/.*/expressionSetDefinition/'
 
-git fetch origin
+#git fetch origin
 changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
 echo "current: $changed_es_files"
 
-changed_all=$(git diff "$source_to_check_changes")
+changed_all=$(git diff --name-only "$source_to_check_changes")
 echo "all: $changed_all"
 
 changed_head=$(git diff "HEAD^" | grep -E $ES_PATH)

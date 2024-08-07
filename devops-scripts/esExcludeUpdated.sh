@@ -1,4 +1,3 @@
-# esExcludeUpdated.sh
 #!/bin/bash
 
 # Default branches to compare

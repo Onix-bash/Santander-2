@@ -12,8 +12,9 @@ ES_PATH='^src/.*/expressionSetDefinition/'
 
 git fetch origin
 changed_es_files=$(git diff --name-only $source_to_check_changes | grep -E $ES_PATH)
-echo "$source_to_check_changes...$current_branch"
 
+changed=$(git diff --name-only $source_to_check_changes)
+echo "changed all: $changed"
 for file_path in $changed_es_files; do
   echo "!$file_path" >> .forceignore
   echo "changed: $file_path"

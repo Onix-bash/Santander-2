@@ -19,3 +19,4 @@ jobs:
                   echo "start findChangedModules"
                   chmod +x ./devops-scripts/esExclude.sh 
                   ./devops-scripts/esExclude.sh
+                  cat .forceignore

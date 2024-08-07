@@ -17,10 +17,10 @@ changed_es_files=$(git diff --name-only $source_to_check_changes...$current_bran
 echo "changed_es_files: $changed_es_files"
 
 # Get the list of all changed files from the source branch
-changed_all=$(git diff --name-only $source_to_check_changes..$current_branch)
+changed_all=$(git diff --name-only $source_to_check_changes..$current_branch | grep -E $ES_PATH)
 echo "changed_all: $changed_all"
 
-all=$(git diff --name-only $source_to_check_changes)
+all=$(git diff --name-only $source_to_check_changes | grep -E $ES_PATH)
 echo "all: $all"
 
 for file_path in $changed_es_files; do

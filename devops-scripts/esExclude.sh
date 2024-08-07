@@ -4,7 +4,8 @@ git config --global --add safe.directory "*"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 current_branch="origin/$GITHUB_HEAD_REF"
 
-if [ -n "$1" && -n $git_diff ]; then
+if [ -n "$1" ]; then
+  echo "show null"
   source_to_check_changes=$1
   current_branch=""
 fi

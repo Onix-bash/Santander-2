@@ -11,7 +11,7 @@ echo "$source_to_check_changes"
 echo "$current_branch"
 ES_PATH='^src/.*/expressionSetDefinition/'
 
-git fetch
+git fetch develop
 changed_es_files=$(git diff --name-only $source_to_check_changes..$current_branch | grep -E $ES_PATH)
 
 changed_all=$(git diff "$source_to_check_changes" | grep -E $ES_PATH)

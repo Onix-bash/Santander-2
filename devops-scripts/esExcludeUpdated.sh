@@ -7,8 +7,8 @@ if [ -n "$1" ]; then
   source_to_check_changes=$1
   current_branch=""
 fi
-#source_to_check_changes="origin/develop"
-#current_branch=""
+echo "$source_to_check_changes"
+echo "$current_branch"
 ES_PATH='^src/.*/expressionSetDefinition/'
 
 git fetch origin

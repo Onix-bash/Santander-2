@@ -11,11 +11,15 @@ echo "$source_to_check_changes"
 echo "$current_branch"
 ES_PATH='^src/.*/expressionSetDefinition/'
 
-git fetch develop
-changed_es_files=$(git diff --name-only $source_to_check_changes..$current_branch | grep -E $ES_PATH)
+git fetch origin
+changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
+echo "current: $changed_es_files"
 
 changed_all=$(git diff "$source_to_check_changes" | grep -E $ES_PATH)
 echo "all: $changed_all"
+
+changed_head=$(git diff "HEAD^" | grep -E $ES_PATH)
+echo "head: $changed_changed_head"
 
 for file_path in $changed_es_files; do
   echo "!$file_path" >> .forceignore

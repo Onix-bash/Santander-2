@@ -11,7 +11,7 @@ if [ -n "$1" ]; then
   current_branch=""
 fi
 
-git fetch develop
+git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes...$current_branch | grep -v "^src/")
 
 # Check changes outside src folder

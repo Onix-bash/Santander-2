@@ -8,6 +8,7 @@ current_branch="origin/$GITHUB_HEAD_REF"
 
 if [ -n "$1" ]; then
   source_to_check_changes=$1
+  current_branch=""
 fi
 
 git fetch origin

@@ -4,11 +4,12 @@ git config --global --add safe.directory "*"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 current_branch="origin/$GITHUB_HEAD_REF"
 
-if [ -n "$1" ]; then
+if [ -n "$1" && -n $git_diff ]; then
   source_to_check_changes=$1
   current_branch=""
 fi
-
+echo "1: $1"
+echo "2: $2"
 ES_PATH='^src/.*/expressionSetDefinition/'
 
 git fetch origin

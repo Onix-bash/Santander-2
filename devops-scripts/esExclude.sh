@@ -22,7 +22,6 @@ if [[ -n "$2" && "$2" == 'scratch' ]]; then
   echo "not scratch"
   changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
   echo "branch $source_to_check_changes"
-  echo "changed $changed_es_files"
 fi
 
 echo "$changed_es_files"

@@ -18,6 +18,6 @@ jobs:
 
             - name: Turn comment into file
               run: |
-                  echo "start findChangedModules"
+                  echo "start ES script"
                   chmod +x ./devops-scripts/esExcludeUpdated.sh
                   ./devops-scripts/esExcludeUpdated.sh 'origin/develop'

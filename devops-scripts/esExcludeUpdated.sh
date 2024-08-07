@@ -2,11 +2,11 @@
 
 # Default branches to compare
 source_to_check_changes="origin/$GITHUB_BASE_REF"
-current_branch="$GITHUB_HEAD_REF"
+current_branch="origin/$GITHUB_HEAD_REF"
 
 # Override if an argument is passed
 if [ -n "$1" ]; then
-  source_to_check_changes="origin/$1"
+  source_to_check_changes="$1"
 fi
 
 ES_PATH='^src/.*/expressionSetDefinition/'

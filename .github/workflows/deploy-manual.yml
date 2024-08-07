@@ -4,10 +4,7 @@ name: 'Manual Deployment'
 
 on:
   workflow_dispatch:
-    inputs:
-      modules_to_deploy:
-        description: List of modules to deploy (space separated). If left blank then all modules will get deployed
-        type: string
+
 jobs:
   deploy-changes:
     # The type of runner that the job will run on
@@ -30,7 +27,7 @@ jobs:
           ./devops-scripts/es-exclude-forceignore.sh ${{ github.event.inputs.modules_to_deploy }}
 
       - name: es
-        id: es
+        id: es2
         run: |
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
           ./devops-scripts/es-exclude-forceignore.sh

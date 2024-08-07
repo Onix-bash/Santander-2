@@ -27,7 +27,7 @@ else
   compared_branches="$source_to_check_changes...$current_branch"
 fi
 
-changed_es_files=$(git diff --name-only compared_branches | grep -E $ES_PATH)
+changed_es_files=$(git diff --name-only $compared_branches | grep -E $ES_PATH)
 echo "$changed_es_files"
 for file_path in $changed_es_files; do
   echo "!$file_path" >> .forceignore

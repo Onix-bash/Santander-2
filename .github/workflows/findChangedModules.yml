@@ -12,7 +12,7 @@ jobs:
             ALLOWED_DEV_MODIFICATIONS: ${{ vars.ALLOWED_DEV_MODIFICATIONS }}
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v2
               with:
                   fetch-depth: 0
 
@@ -20,4 +20,4 @@ jobs:
               run: |
                   echo "start ES script"
                   chmod +x ./devops-scripts/esExcludeUpdated.sh
-                  ./devops-scripts/esExcludeUpdated.sh 'origin/develop'
+                  ./devops-scripts/esExcludeUpdated.sh

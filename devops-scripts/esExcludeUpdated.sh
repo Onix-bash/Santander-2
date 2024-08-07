@@ -21,7 +21,7 @@ changed_all=$(git diff --name-only $source_to_check_changes..$current_branch | g
 echo "changed_all: $changed_all"
 
 all=$(git diff --name-only $source_to_check_changes | grep -E $ES_PATH)
-echo "all: $all"
+echo "only develop: $all"
 
 for file_path in $changed_es_files; do
   echo "!$file_path" >> .forceignore

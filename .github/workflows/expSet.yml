@@ -1,0 +1,26 @@
+# Script is executable by schedule. At each run it scans all modules and stores scanning results as artifacts in CI jobs
+
+name: Exp Set
+
+on:
+  pull_request:
+
+jobs:
+  code_scanner:
+    runs-on: ubuntu-latest
+    name: ES Exclude
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dep
+        run: npm install xml2js child_process
+
+      - name: Run develop
+        run: |
+          node devops-scripts/excludeESMeta.js
+

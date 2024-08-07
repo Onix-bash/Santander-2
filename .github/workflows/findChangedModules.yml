@@ -17,5 +17,5 @@ jobs:
             - name: Turn comment into file
               run: |
                   echo "start findChangedModules"
-                  chmod +x ./devops-scripts/findChangedModules.sh 
-                  ./devops-scripts/findChangedModules.sh
+                  chmod +x ./devops-scripts/esExclude.sh 
+                  ./devops-scripts/esExclude.sh

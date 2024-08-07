@@ -16,6 +16,7 @@ ES_PATH='^src/.*/expressionSetDefinition/'
 git fetch origin
 if [[ -n "$2" && "$2" == 'scratch' ]]; then
   echo "if scratch"
+  echo "branch $source_to_check_changes"
   changed_es_files=$(git diff --name-only $source_to_check_changes | grep -E $ES_PATH)
   else
   echo "not scratch"

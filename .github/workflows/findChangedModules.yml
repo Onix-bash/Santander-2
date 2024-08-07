@@ -20,4 +20,4 @@ jobs:
               run: |
                   echo "start findChangedModules"
                   chmod +x ./devops-scripts/esExclude.sh
-                  ./devops-scripts/esExclude.sh 'HEAD^'
+                  ./devops-scripts/esExclude.sh

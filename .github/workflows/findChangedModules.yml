@@ -21,3 +21,4 @@ jobs:
                   echo "start ES script"
                   chmod +x ./devops-scripts/esExclude.sh
                   ./devops-scripts/esExclude.sh
+                  

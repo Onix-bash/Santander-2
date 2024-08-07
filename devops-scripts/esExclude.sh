@@ -19,10 +19,13 @@ if [[ -n "$2" && "$2" == 'scratch' ]]; then
   echo "$current_branch"
   compared_branches="$source_to_check_changes..$current_branch"
 elif [[ -n "$1" ]]; then
-
+  echo "$source_to_check_changes"
+  echo "$current_branch"
   echo "Condition: HEAD^"
   compared_branches="$source_to_check_changes"
 else
+  echo "$source_to_check_changes"
+  echo "$current_branch"
   echo "Condition: default"
   compared_branches="$source_to_check_changes...$current_branch"
 fi

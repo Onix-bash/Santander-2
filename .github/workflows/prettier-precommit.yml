@@ -2,6 +2,7 @@ name: Prettier
 
 on:
   pull_request:
+permissions: write-all
 
 jobs:
   prettier:

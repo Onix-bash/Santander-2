@@ -37,8 +37,8 @@ jobs:
           echo "Simulating a failure condition"
           exit 1  
 
-      - name: Capture error message
-        if: ${{ failure() && steps.error_step.outcome == 'failure' }}
-        run: |
-         chmod +x ./devops-scripts/writeError.sh
-         ./devops-scripts/writeError.sh ${{steps.detect_changes.outputs.changed_modules}}
+#      - name: Capture error message
+#        if: ${{ failure() && steps.error_step.outcome == 'failure' }}
+#        run: |
+#         chmod +x ./devops-scripts/writeError.sh
+#         ./devops-scripts/writeError.sh ${{steps.detect_changes.outputs.changed_modules}}

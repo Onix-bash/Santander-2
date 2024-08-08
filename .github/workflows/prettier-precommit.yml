@@ -1,0 +1,47 @@
+name: Prettier
+
+on:
+  pull_request:
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Prettier and Plugins
+        run: npm install prettier prettier-plugin-apex @prettier/plugin-xml
+
+      - name: Get list of changed files
+        id: changed-files
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: repoOwner,
+              repo: repoName,
+              pull_number: prNumber
+            })
+            const fileNames = files.map(f => f.filename).join(' ');
+            core.setOutput('files', fileNames);
+      - name: Run Prettier
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          npx prettier --write ${{ steps.changed-files.outputs.files }}
+      - name: Commit changes
+        if: steps.changed-files.outputs.files != ''
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Prettier code formatting"
+          file_pattern: ${{ steps.changed-files.outputs.files }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

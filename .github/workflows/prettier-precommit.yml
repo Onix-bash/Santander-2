@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: salesforce/cli:latest-full
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Checkout code

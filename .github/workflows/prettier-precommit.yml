@@ -31,13 +31,16 @@ jobs:
               repo: repoName,
               pull_number: prNumber
             })
+            console.log('files: ', files);
             const nonDeletedFiles = files.filter(f => f.status !== 'removed');
             const fileNames = nonDeletedFiles.map(f => f.filename).join(' ');
+            console.log('fileNames: ', fileNames);
             core.setOutput('files', fileNames);
-            console.log(fileNames)
       - name: Run Prettier
         if: steps.changed-files.outputs.files != ''
         run: |
+          files=${{ steps.changed-files.outputs.files }}
+          echo "$files"
           npx prettier --write ${{ steps.changed-files.outputs.files }}
       - name: Commit changes
         if: steps.changed-files.outputs.files != ''

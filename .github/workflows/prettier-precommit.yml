@@ -2,7 +2,6 @@ name: Prettier
 
 on:
   pull_request:
-permissions: write-all
 
 jobs:
   prettier:
@@ -34,7 +33,6 @@ jobs:
               repo: repoName,
               pull_number: prNumber
             })
-            console.log('files: ', files);
             const nonDeletedFiles = files.filter(f => f.status !== 'removed');
             const fileNames = nonDeletedFiles.map(f => f.filename).join(' ');
             console.log('fileNames: ', fileNames);
@@ -42,8 +40,7 @@ jobs:
       - name: Run Prettier
         if: steps.changed-files.outputs.files != ''
         run: |
-          files=${{ steps.changed-files.outputs.files }}
-          echo "$files"
+          npx prettier --check ${{ steps.changed-files.outputs.files }}
           npx prettier --write ${{ steps.changed-files.outputs.files }}
       - name: Commit changes
         if: steps.changed-files.outputs.files != ''

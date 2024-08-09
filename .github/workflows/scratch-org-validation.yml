@@ -10,7 +10,6 @@ jobs:
       image: salesforce/cli:latest-full
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BRANCH_REF: ${{ github.ref }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -130,6 +129,7 @@ jobs:
       PR_NUMBER: ${{ github.event.pull_request.number }}
       PR_TITLE: ${{ github.event.pull_request.title }}
       PR_LINK: ${{ github.event.pull_request.html_url }}
+      BRANCH_REF: ${{ github.ref }}
       environment: "MaxDevOps"
     needs: [ validate-changes ]
     if: ${{ always() && needs.validate-changes.outputs.full_validation_failed == 'true' && ! contains(needs.*.result, 'cancelled') }}

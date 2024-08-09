@@ -10,6 +10,7 @@ if [ -n "$1" ]; then
 fi
 
 if [ -n "$2" ]; then
+  source_to_check_changes="origin/$1"
   current_branch=$2
 fi
 

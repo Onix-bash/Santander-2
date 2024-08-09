@@ -21,8 +21,6 @@ jobs:
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           git config --global --add safe.directory "*"
-          git diff --name-only develop
-          git diff --name-only original/develop
           git diff --name-only HEAD^
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
           ./devops-scripts/es-exclude-forceignore.sh "develop"

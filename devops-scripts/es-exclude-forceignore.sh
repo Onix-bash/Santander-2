@@ -3,8 +3,10 @@
 git config --global --add safe.directory "*"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 current_branch="origin/$GITHUB_HEAD_REF"
-echo "$source_to_check_changes"
-echo "$current_branch"
+
+BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+echo "$BRANCH_NAME"
+
 if [ -n "$1" ]; then
   source_to_check_changes=$1
   current_branch=""

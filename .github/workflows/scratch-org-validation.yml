@@ -113,8 +113,12 @@ jobs:
           exit 1
 
       - name: Set Output Based on Step Result
+        id: full_validate_result
         if: ${{ failure() && steps.full_validate.outcome == 'failure' }}
         run: echo "full_validation_failed=true" >> $GITHUB_ENV
+
+    outputs:
+      full_validation_failed: ${{ steps.full_validate_result.outputs.full_validation_failed }}
 
   capture-error-message:
     name: Capture Error message
@@ -127,7 +131,7 @@ jobs:
       PR_LINK: ${{ github.event.pull_request.html_url }}
       environment: "MaxDevOps"
     needs: [ validate-changes ]
-    if: ${{ always() && env.validation_failed == 'true' && ! contains(needs.*.result, 'cancelled') }}
+    if: ${{ always() && needs.validate-changes.outputs.full_validation_failed == 'true' && ! contains(needs.*.result, 'cancelled') }}
     steps:
       - name: Set Error Log
         run: |

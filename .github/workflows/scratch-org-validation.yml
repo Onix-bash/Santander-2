@@ -123,7 +123,7 @@ jobs:
       PR_LINK: ${{ github.event.pull_request.html_url }}
       environment: "MaxDevOps"
       needs: validate-changes
-    if: ${{ always() && needs.validate-changes.result == 'failure' }}
+    if: always()
     steps:
       - name: Set Error Log
         run: |

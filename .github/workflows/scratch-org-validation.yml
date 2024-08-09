@@ -20,7 +20,7 @@ jobs:
         id: full_validate
         run: |
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "" ""
+          ./devops-scripts/es-exclude-forceignore.sh "" "manual"
           echo "Simulating a failure condition"
           exit 1
 

@@ -20,6 +20,7 @@ jobs:
         id: full_validate
         run: |
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          git fetch origin
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
           ./devops-scripts/es-exclude-forceignore.sh "$BRANCH_NAME" "original/develop"
           echo "Simulating a failure condition"

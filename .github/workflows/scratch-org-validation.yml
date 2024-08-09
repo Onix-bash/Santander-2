@@ -115,7 +115,7 @@ jobs:
       - name: Set Output Based on Step Result
         id: full_validate_result
         if: ${{ failure() && steps.full_validate.outcome == 'failure' }}
-        run: echo "validation_failed=true" >> $GITHUB_OUTPUT
+        run: echo "full_validation_failed=true" >> $GITHUB_OUTPUT
 
     outputs:
       full_validation_failed: ${{ steps.full_validate_result.outputs.full_validation_failed }}

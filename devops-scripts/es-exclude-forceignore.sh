@@ -8,6 +8,10 @@ if [ -n "$1" ]; then
   current_branch=""
 fi
 
+if [ -n "$2" ]; then
+  current_branch=$2
+fi
+
 ES_PATH='src/decision-centre/main/default/expressionSetDefinition'
 
 git fetch origin
@@ -17,3 +21,4 @@ echo "changed_es_files: $changed_es_files"
 for file_path in $changed_es_files; do
   echo "!$file_path" >> .forceignore
 done
+cat .forceignore

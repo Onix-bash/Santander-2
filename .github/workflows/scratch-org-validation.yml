@@ -10,7 +10,7 @@ jobs:
       image: salesforce/cli:latest-full
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      BRANCH_REF: ${{ github.ref }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -136,4 +136,6 @@ jobs:
       - name: Set Error Log
         run: |
           echo "run script set error"
+          chmod +x ./devops-scripts/es-exclude-forceignore.sh
+          ./devops-scripts/es-exclude-forceignore.sh "${{ env.BRANCH_REF }}"          
 

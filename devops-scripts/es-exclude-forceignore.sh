@@ -1,5 +1,5 @@
 #!/bin/bash
-
+git config --global --add safe.directory "*"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 current_branch="origin/$GITHUB_HEAD_REF"
 
@@ -9,8 +9,9 @@ if [ -n "$1" ]; then
 fi
 
 if [ -n "$2" ]; then
-  source_to_check_changes="origin/$1"
-  current_branch=$2
+    git fetch origin develop:develop
+    source_to_check_changes="develop"
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
 fi
 
 ES_PATH='src/decision-centre/main/default/expressionSetDefinition'

@@ -19,15 +19,8 @@ jobs:
       - name: Validate Full Metadata
         id: full_validate
         run: |
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          git config --global --add safe.directory "*"
-          git fetch origin develop:develop
-          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          echo "Current branch: $CURRENT_BRANCH"
-          echo "Diff between $CURRENT_BRANCH and develop:"
-          git diff develop...$CURRENT_BRANCH --name-only
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "develop"
+          ./devops-scripts/es-exclude-forceignore.sh "" ""
           echo "Simulating a failure condition"
           exit 1
 

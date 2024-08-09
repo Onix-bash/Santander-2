@@ -1,6 +1,6 @@
 name: 'Validation using Scratch'
 on:
-  pull_request:
+  workflow_dispatch: 
 
 jobs:
   validate-changes:

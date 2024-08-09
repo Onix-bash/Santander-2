@@ -13,7 +13,7 @@ fi
 
 git fetch origin
 git_diff=$(git diff --name-only $source_to_check_changes...$current_branch | grep -v "^src/")
-
+echo "git_diff: $git_diff"
 # Check changes outside src folder
 if [[ -n $DEVOPS_TEAM && -n $git_diff ]]; then
 

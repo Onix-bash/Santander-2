@@ -10,7 +10,7 @@ jobs:
       image: salesforce/cli:latest-full
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BRANCH_REF: ${{ github.ref }}
+      BRANCH_REF: ${{ github.event.ref }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -20,9 +20,9 @@ jobs:
       - name: Validate Full Metadata
         id: full_validate
         run: |
-          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+          echo "$BRANCH_REF"
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "$BRANCH_NAME" "original/develop"
+          ./devops-scripts/es-exclude-forceignore.sh "${{ env.BRANCH_REF }}" "original/develop"
           echo "Simulating a failure condition"
           exit 1
 

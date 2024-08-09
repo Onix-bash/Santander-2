@@ -112,6 +112,10 @@ jobs:
           echo "Simulating a failure condition"
           exit 1
 
+      - name: Set Output Based on Step Result
+        if: ${{ failure() && steps.full_validate.outcome == 'failure' }}
+        run: echo "full_validation_failed=true" >> $GITHUB_ENV
+
   capture-error-message:
     name: Capture Error message
     runs-on: ubuntu-latest
@@ -123,7 +127,7 @@ jobs:
       PR_LINK: ${{ github.event.pull_request.html_url }}
       environment: "MaxDevOps"
     needs: [ validate-changes ]
-    if: ${{ always() && needs.validate-changes.steps.full_validate.conclusion == 'failure' && ! contains(needs.*.result, 'cancelled') }}
+    if: ${{ always() && env.validation_failed == 'true' && ! contains(needs.*.result, 'cancelled') }}
     steps:
       - name: Set Error Log
         run: |

@@ -137,5 +137,5 @@ jobs:
         run: |
           echo "run script set error"
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "${{ env.BRANCH_REF }}"          
+          ./devops-scripts/es-exclude-forceignore.sh "${{ env.BRANCH_REF }}" "original/develop"
 

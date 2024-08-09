@@ -1,5 +1,6 @@
 #!/bin/bash
 
+git config --global --add safe.directory "*"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 current_branch="origin/$GITHUB_HEAD_REF"
 

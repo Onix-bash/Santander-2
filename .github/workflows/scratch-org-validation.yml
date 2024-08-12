@@ -109,8 +109,10 @@ jobs:
       - name: Validate Full Metadata
         id: full_validate
         run: |
+          git config --global --add safe.directory "*"
+          branch=$(git branch --show-current)
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "${{ env.BRANCH_REF }}" "original/develop"
+          ./devops-scripts/es-exclude-for
           echo "Simulating a failure condition"
           exit 1
 

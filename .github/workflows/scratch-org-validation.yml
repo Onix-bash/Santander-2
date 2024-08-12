@@ -22,7 +22,7 @@ jobs:
           git config --global --add safe.directory "*"
           branch=$(git branch --show-current)
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "" "$branch"
+          ./devops-scripts/es-exclude-forceignore.sh "develop" "$branch"
           cat .forceignore
           echo "Simulating a failure condition"
           exit 1

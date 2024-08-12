@@ -9,14 +9,14 @@ if [ -n "$1" ]; then
 fi
 
 if [ -n "$2" ]; then
-    git fetch origin develop:develop
+#    git fetch origin develop:develop
     source_to_check_changes="develop"
-    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    current_branch=$2
 fi
 
 ES_PATH='src/decision-centre/main/default/expressionSetDefinition'
 
-git fetch origin
+#git fetch origin
 changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch $ES_PATH)
 echo "changed_es_files: $changed_es_files"
 

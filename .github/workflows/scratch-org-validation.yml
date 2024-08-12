@@ -21,7 +21,8 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           current_branch=$(git rev-parse --abbrev-ref HEAD)
-          echo "cur: $current_branch" 
+          changed_es_files=$(git diff --name-only HEAD^...$current_branch src)
+          echo "changed: $changed_es_files" 
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
           ./devops-scripts/es-exclude-forceignore.sh "" "manual"
           echo "Simulating a failure condition"

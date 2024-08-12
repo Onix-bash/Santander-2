@@ -20,12 +20,11 @@ jobs:
         id: full_validate
         run: |
           git config --global --add safe.directory "*"
-          current_branch=$(git rev-parse --abbrev-ref HEAD)
           branch=$(git branch --show-current)
 
           echo "branch: $branch" 
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "" "manual"
+          ./devops-scripts/es-exclude-forceignore.sh "HEAD^" "origin/$branch"
           echo "Simulating a failure condition"
           exit 1
 

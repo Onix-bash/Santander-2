@@ -19,6 +19,8 @@ jobs:
       - name: Validate Full Metadata
         id: full_validate
         run: |
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "cur: $current_branch" 
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
           ./devops-scripts/es-exclude-forceignore.sh "" "manual"
           echo "Simulating a failure condition"

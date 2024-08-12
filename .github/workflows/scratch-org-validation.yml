@@ -20,9 +20,10 @@ jobs:
         id: full_validate
         run: |
           git config --global --add safe.directory "*"
-          branch=$(git branch --show-current)
+          current_branch=$(git branch --show-current)
+          parent_branch=$(git show-branch | grep '*' | grep -v "$current_branch" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "develop" "$branch"
+          ./devops-scripts/es-exclude-forceignore.sh "$parent_branch" "$branch"
           cat .forceignore
           echo "Simulating a failure condition"
           exit 1

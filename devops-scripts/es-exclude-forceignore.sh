@@ -14,10 +14,10 @@ if [ -n "$2" ]; then
     current_branch=$2
 fi
 
-ES_PATH='src/decision-centre/main/default/expressionSetDefinition'
+ES_PATH='^src/.*/expressionSetDefinition/'
 
 #git fetch origin
-changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch $ES_PATH)
+changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
 echo "changed_es_files: $changed_es_files"
 
 for file_path in $changed_es_files; do

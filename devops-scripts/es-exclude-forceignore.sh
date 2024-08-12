@@ -9,7 +9,8 @@ if [ -n "$1" ]; then
 fi
 
 if [ -n "$2" ]; then
-    git fetch origin develop $1
+    git fetch origin develop:develop
+    source_to_check_changes="develop"
     current_branch=$2
 fi
 

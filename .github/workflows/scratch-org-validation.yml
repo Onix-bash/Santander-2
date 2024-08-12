@@ -24,7 +24,7 @@ jobs:
 
           echo "branch: $branch" 
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "HEAD^" "$branch"
+          ./devops-scripts/es-exclude-forceignore.sh "" "$branch"
           echo "Simulating a failure condition"
           exit 1
 

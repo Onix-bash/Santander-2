@@ -8,11 +8,14 @@ if [ -n "$1" ]; then
   current_branch=""
 fi
 
-ES_PATH='src/decision-centre/main/default/expressionSetDefinition'
+if [ -n "$2" ]; then
+    git fetch origin develop:develop
+    current_branch=$2
+fi
 
-git fetch origin
-changed_es_files=$(git diff --name-only $source_to_check_changes $ES_PATH)
-echo "changed_es_files: $changed_es_files"
+ES_PATH='^src/.*/expressionSetDefinition/'
+
+changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
 
 for file_path in $changed_es_files; do
   echo "!$file_path" >> .forceignore

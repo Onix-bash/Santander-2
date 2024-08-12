@@ -19,6 +19,7 @@ jobs:
       - name: Validate Full Metadata
         id: full_validate
         run: |
+          git config --global --add safe.directory "*"
           current_branch=$(git rev-parse --abbrev-ref HEAD)
           echo "cur: $current_branch" 
           chmod +x ./devops-scripts/es-exclude-forceignore.sh

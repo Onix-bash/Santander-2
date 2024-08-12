@@ -111,8 +111,9 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           branch=$(git branch --show-current)
+          echo "$branch"
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-for
+          ./devops-scripts/es-exclude-forceignore.sh
           echo "Simulating a failure condition"
           exit 1
 

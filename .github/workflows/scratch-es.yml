@@ -18,16 +18,6 @@ jobs:
       - name: Compare Metadata Directories
         run: |
           git config --global --add safe.directory "*"
-          branch=$(git branch --show-current)
-          echo "$branch"
-          echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
-          git fetch origin
-          git checkout develop
-          branch_start=$(git branch --show-current)
-          echo "$branch_start"
-          echo "Start comparing"
           chmod +x ./devops-scripts/es-from-scratch.sh
           ./devops-scripts/es-from-scratch.sh
-          git checkout ${{ env.current_branch }}
-          branch_finish=$(git branch --show-current)
-          echo "$branch_finish"
+          

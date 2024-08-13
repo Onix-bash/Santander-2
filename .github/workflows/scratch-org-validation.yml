@@ -110,10 +110,15 @@ jobs:
         id: full_validate
         run: |
           git config --global --add safe.directory "*"
-          branch=$(git branch --show-current)
-          echo "$branch"
+          current_branch=$(git branch --show-current)
+          echo "Current branch: $current_branch"
+
+          # Get the default branch (e.g., develop)
+          default_branch=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
+          echo "Default branch: $default_branch"
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "develop" "$branch"
+          ./devops-scripts/es-exclude-forceignore.sh "$default_branch" "$current_branch"
+          cat .forceignore
           echo "Simulating a failure condition"
           exit 1
 

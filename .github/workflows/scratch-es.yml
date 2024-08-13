@@ -17,7 +17,9 @@ jobs:
 
       - name: Compare Metadata Directories
         run: |
-          ggit config --global --add safe.directory /__w/Santander/Santander
+          ggit config --global --add safe.directory "*"
+          branch=$(git branch --show-current)
+          echo "$branch"
           echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
           git fetch origin
           git checkout develop

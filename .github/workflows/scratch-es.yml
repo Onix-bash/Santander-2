@@ -28,7 +28,7 @@ jobs:
           ./devops-scripts/es-from-scratch.sh
           git checkout -- .
           # Checkout back to the original branch
-          git checkout $current_branch
+          git checkout $current_branch --force
 
           # Use the changed_files output from the script
           echo "${{ env.changed_files }}"

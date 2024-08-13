@@ -20,12 +20,16 @@ jobs:
         id: full_validate
         run: |
           git config --global --add safe.directory "*"
-          current_branch=$(git branch --show-current)
-          parent_branch=$(git show-branch | grep '*' | grep -v "$current_branch" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
-          echo "$current_branch"
-          echo "$parent_branch"
+          current_branch="${{ github.event.inputs.branch }}"
+          default_branch=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
+
+          # Find the common ancestor between current branch and default branch
+          common_ancestor=$(git merge-base "$current_branch" "$default_branch")
+
+          # Infer the parent branch
+          parent_branch=$(git branch --contains "$common_ancestor" | grep -v "$current_branch" | head -n 1 | sed 's/\* //')
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "$parent_branch" "$branch"
+          ./devops-scripts/es-exclude-forceignore.sh "$parent_branch" "$current_branch"
           cat .forceignore
           echo "Simulating a failure condition"
           exit 1

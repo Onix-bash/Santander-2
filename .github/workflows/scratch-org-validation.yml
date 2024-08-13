@@ -22,6 +22,8 @@ jobs:
           git config --global --add safe.directory "*"
           current_branch=$(git branch --show-current)
           parent_branch=$(git show-branch | grep '*' | grep -v "$current_branch" | head -n1 | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/[\^~].*//')
+          echo "$current_branch"
+          echo "$parent_branch"
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
           ./devops-scripts/es-exclude-forceignore.sh "$parent_branch" "$branch"
           cat .forceignore

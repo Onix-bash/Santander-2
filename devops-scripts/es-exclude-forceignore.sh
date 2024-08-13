@@ -9,7 +9,7 @@ if [ -n "$1" ]; then
 fi
 
 if [ -n "$2" ]; then
-    current_branch="origin/$2"
+    current_branch="$2"
 fi
 
 ES_PATH='^src/.*/expressionSetDefinition/'

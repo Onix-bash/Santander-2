@@ -23,9 +23,6 @@ jobs:
           current_branch=$(git branch --show-current)
           echo "Current branch: $current_branch"
 
-          # Fetch all branches and history
-          git fetch --all
-
           # Get the default branch (e.g., develop)
           default_branch=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
           echo "Default branch: $default_branch"

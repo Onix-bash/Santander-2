@@ -990,6 +990,6 @@
             <type>Variable</type>
             <value>False</value>
         </variables>
-        <versionNumber>2</versionNumber>
+        <versionNumber>1</versionNumber>
     </versions>
 </ExpressionSetDefinition>

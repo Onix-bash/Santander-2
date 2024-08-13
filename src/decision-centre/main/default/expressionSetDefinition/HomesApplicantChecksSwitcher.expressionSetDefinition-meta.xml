@@ -4,7 +4,7 @@
     <processType>Bre</processType>
     <template>false</template>
     <versions>
-        <fullName>HomesApplicantChecksSwitcher_V2</fullName>
+        <fullName>HomesApplicantChecksSwitcher_V1</fullName>
         <expressionSetDefinition>HomesApplicantChecksSwitcher</expressionSetDefinition>
         <label>HomesApplicantChecks_Switcher</label>
         <processType>Bre</processType>
@@ -990,6 +990,6 @@
             <type>Variable</type>
             <value>False</value>
         </variables>
-        <versionNumber>2</versionNumber>
+        <versionNumber>1</versionNumber>
     </versions>
 </ExpressionSetDefinition>

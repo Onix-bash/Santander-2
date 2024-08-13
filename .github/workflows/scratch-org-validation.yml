@@ -21,6 +21,7 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           current_branch="${{ github.event.inputs.branch }}"
+          echo "$current_branch"
           default_branch=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
 
           # Find the common ancestor between current branch and default branch

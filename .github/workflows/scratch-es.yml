@@ -1,0 +1,30 @@
+name: Compare Retrieved Metadata with Branch
+
+on:
+  pull_request:
+
+jobs:
+  compare-metadata:
+    runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
+
+    steps:
+      - name: Checkout Git repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Compare Metadata Directories
+        run: |
+          ggit config --global --add safe.directory /__w/Santander/Santander
+          echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
+          git fetch origin
+          git checkout main
+          branch_start=$(git branch --show-current)
+          echo "$branch_start"
+          chmod +x ./devops-scripts/es-from-scratch.sh
+          ./devops-scripts/es-from-scratch.sh
+          git checkout ${{ env.current_branch }}
+          branch_finish=$(git branch --show-current)
+          echo "$branch_finish"

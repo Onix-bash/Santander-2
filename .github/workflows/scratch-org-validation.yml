@@ -25,13 +25,9 @@ jobs:
           git fetch origin
           default_branch=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
           echo "$default_branch"
-          # Find the common ancestor between current branch and default branch
-          common_ancestor=$(git merge-base "$current_branch" "$default_branch")
 
-          # Infer the parent branch
-          parent_branch=$(git branch --contains "$common_ancestor" | grep -v "$current_branch" | head -n 1 | sed 's/\* //')
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "$parent_branch" "$current_branch"
+          ./devops-scripts/es-exclude-forceignore.sh "$default_branch" "$current_branch"
           cat .forceignore
           echo "Simulating a failure condition"
           exit 1

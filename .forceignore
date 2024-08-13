@@ -1,0 +1,25 @@
+# .forceignore v2
+# List files or directories below to ignore them when running force:source:push, force:source:pull, and force:source:status
+# More information: https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_exclude_source.htm
+
+package.xml
+src-env-specific-alias-post/**
+src-env-specific-alias-pre/**
+
+# LWC configuration files
+**/jsconfig.json
+**/.eslintrc.json
+
+# LWC Jest
+**/__tests__/**
+
+**/README.md
+
+**/decisionMatrixDefinition/**
+ 
+
+# Above 2 paths needs to be deployed only during initial scratch org code deployment
+src/integration-services/external-service-samples/**
+**/externalServiceRegistrations/SolicitorPanel.externalServiceRegistration-meta.xml
+# TODO:  Solicitor external Service is not being deployed due to following error, Integration Squad support needed to resolve this:
+# The schema is not supported or we could not identify the schema type from your API spec. Use supported schemas such as OpenAPI version 2 and OpenAPI version 3, or check the schema type field in your API spec. Ensure that the schema is valid by using a tool like Swagger Editor.

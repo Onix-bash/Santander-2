@@ -1,11 +1,4 @@
 #!/bin/bash
-current_branch=$(git branch --show-current)
-echo "$current_branch"
-git fetch origin
-git checkout develop
-branch_start=$(git branch --show-current)
-echo "$branch_start"
-
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 
 DIR1="scratch_es/main/default/expressionSetDefinition"
@@ -13,22 +6,17 @@ DIR2="src/decision-centre/main/default/expressionSetDefinition"
 
 # Run the diff command and get the list of changed files
 changed_files=$(diff -qr "$DIR1" "$DIR2" | grep -E '^Files ' | awk '{print $2}' | sed "s|^$DIR1/||")
-git checkout $current_branch
-branch_finish=$(git branch --show-current)
-echo "$branch_finish"
+
 # Check if any files are detected
 if [ -z "$changed_files" ]; then
     echo "No differences found between CI-Org and develop."
+    changed_files=""
 else
     echo "Differences found in: $changed_files"
-
-    # Add the changed files to .forceignore with "!" prefix
-    for file in $changed_files; do
-        # Check if the entry already exists in .forceignore
-        if ! grep -qx "!$file" .forceignore; then
-            echo "!$file" >> .forceignore
-        fi
-    done
 fi
 
-cat .forceignore
+# Format changed_files (e.g., replace newlines with spaces or commas)
+formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
+
+# Set the GitHub Action output
+echo "changed_files=$formatted_changed_files" >> $GITHUB_ENV

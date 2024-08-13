@@ -4,7 +4,7 @@
     <processType>Bre</processType>
     <template>false</template>
     <versions>
-        <fullName>HomesApplicationCheckRemortgage_V8</fullName>
+        <fullName>HomesApplicationCheckRemortgage_V7</fullName>
         <expressionSetDefinition>HomesApplicationCheckRemortgage</expressionSetDefinition>
         <label>HomesApplicationCheck_Remortgage</label>
         <processType>Bre</processType>
@@ -1034,6 +1034,6 @@
             <type>Variable</type>
             <value>False</value>
         </variables>
-        <versionNumber>8</versionNumber>
+        <versionNumber>7</versionNumber>
     </versions>
 </ExpressionSetDefinition>

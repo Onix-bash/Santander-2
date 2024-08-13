@@ -14,6 +14,7 @@ if [ -n "$2" ]; then
 fi
 
 ES_PATH='^src/.*/expressionSetDefinition/'
+
 git fetch origin
 changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
 

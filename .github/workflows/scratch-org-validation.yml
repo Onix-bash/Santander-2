@@ -20,11 +20,11 @@ jobs:
         id: full_validate
         run: |
           git config --global --add safe.directory "*"
-          current_branch="${{ github.event.inputs.branch }}"
+          current_branch=$(git branch --show-current)
           echo "$current_branch"
           git fetch origin
           default_branch=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
-
+          echo "$default_branch"
           # Find the common ancestor between current branch and default branch
           common_ancestor=$(git merge-base "$current_branch" "$default_branch")
 

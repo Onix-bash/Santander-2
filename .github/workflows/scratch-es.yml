@@ -26,7 +26,6 @@ jobs:
           echo "$branch_start"
           chmod +x ./devops-scripts/es-from-scratch.sh
           ./devops-scripts/es-from-scratch.sh
-          git checkout -- ./devops-scripts/es-from-scratch.sh
           git checkout $current_branch
           for file in ${{ env.changed_files }}; do
               if ! grep -qx "!$file" .forceignore; then

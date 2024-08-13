@@ -23,11 +23,17 @@ jobs:
           git checkout origin/develop
           branch_start=$(git branch --show-current)
           echo "$branch_start"
-          echo "script start"
+          
           chmod +x ./devops-scripts/es-from-scratch.sh
           ./devops-scripts/es-from-scratch.sh
+          git checkout -- devops-scripts/es-from-scratch.sh
+          # Checkout back to the original branch
           git checkout $current_branch
+
+          # Use the changed_files output from the script
           echo "${{ env.changed_files }}"
+          
+          # Add changes to .forceignore
           for file in ${{ env.changed_files }}; do
               if ! grep -qx "!$file" .forceignore; then
                   echo "!$file" >> .forceignore
@@ -36,6 +42,11 @@ jobs:
                   echo "$file is already in .forceignore"
               fi
           done
-          cat .forceignore
-          git checkout -- .forceignore
           
+          cat .forceignore
+
+          # Reset any changes to the script that might have been detected
+          git checkout -- devops-scripts/es-from-scratch.sh
+          
+          # Ensure .forceignore is not staged
+          git checkout -- .forceignore

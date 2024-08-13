@@ -10,7 +10,7 @@ changed_files=$(diff -qr "$DIR1" "$DIR2" | grep -E '^Files ' | awk '{print $2}' 
 
 # Check if any files are detected
 if [ -z "$changed_files" ]; then
-    echo "No differences found between CI-Org and ."
+    echo "No differences found between CI-Org and develop."
 else
     echo "Differences found in: $changed_files"
 

@@ -23,6 +23,7 @@ jobs:
           git checkout origin/develop
           branch_start=$(git branch --show-current)
           echo "$branch_start"
+          echo "script start"
           chmod +x ./devops-scripts/es-from-scratch.sh
           ./devops-scripts/es-from-scratch.sh
           git checkout $current_branch

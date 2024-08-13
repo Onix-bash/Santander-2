@@ -9,11 +9,12 @@ if [ -n "$1" ]; then
 fi
 
 if [ -n "$2" ]; then
-    current_branch="$2"
+    source_to_check_changes="origin/$1"
+    current_branch="origin/$2"
 fi
 
 ES_PATH='^src/.*/expressionSetDefinition/'
-
+git fetch origin
 changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
 
 for file_path in $changed_es_files; do

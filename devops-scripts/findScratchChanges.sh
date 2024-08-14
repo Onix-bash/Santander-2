@@ -11,7 +11,7 @@ all_expression_sets="combined_expressionSetDefinition"
 
 # Create the directory to store combined files
 mkdir -p "$all_expression_sets"
-
+ls
 # Find all expressionSetDefinition directories and copy files to the combined directory
 src_dirs=$(find src -type d -name 'expressionSetDefinition')
 

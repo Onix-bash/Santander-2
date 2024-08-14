@@ -20,7 +20,7 @@ jobs:
         id: ci_org_es_changes
         run: |
           git config --global --add safe.directory "*"
-          current_branch=${{ inputs.branch }}
+          echo "${{ inputs.branch }}"
           git fetch origin
           git checkout origin/develop
           #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
@@ -44,7 +44,7 @@ jobs:
           echo "changed_files=$formatted_changed_files" >> "$GITHUB_OUTPUT"
           
           git checkout -- .
-          git checkout "$current_branch
+          git checkout "${{ inputs.branch }}"
 
       - name: Handle Changes
         run: |

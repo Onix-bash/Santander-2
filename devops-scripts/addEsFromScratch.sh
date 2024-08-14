@@ -12,6 +12,7 @@ else
         # Check if the entry already exists in .forceignore
         if ! grep -qx "!$file" .forceignore; then
             echo "!$file" >> .forceignore
+            echo "Added !$file to .forceignore"
         fi
     done
 fi

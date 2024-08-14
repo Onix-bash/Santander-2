@@ -17,7 +17,7 @@ jobs:
         id: ci_org_es_changes
         run: |
           git config --global --add safe.directory "*"
-          echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
+          current_branch=$(git branch --show-current)
           git fetch origin
           git checkout origin/develop
           branch_start=$(git branch --show-current)

@@ -19,11 +19,8 @@ jobs:
       - name: Compare Metadata CI-Org and Develop Branch
         id: ci_org_es_changes
         run: |
-          git stash --include-untracked
-          echo "Changes stashed."
           chmod +x ./devops-scripts/findScratchChanges.sh
           ./devops-scripts/findScratchChanges.sh "${{ inputs.branch }}"
-          git stash pop
 
       - name: Handle Changes
         run: |

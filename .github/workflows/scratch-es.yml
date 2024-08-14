@@ -19,14 +19,8 @@ jobs:
       - name: Compare Metadata CI-Org and Develop Branch
         id: ci_org_es_changes
         run: |
-          git config --global --add safe.directory "*"
-          branch="${{ inputs.branch }}"
-          git fetch origin
-          git checkout origin/develop
           chmod +x ./devops-scripts/findScratchChanges.sh
-          ./devops-scripts/findScratchChanges.sh
-          git checkout -- .
-          git checkout "$branch"
+          ./devops-scripts/findScratchChanges.sh "${{ inputs.branch }}"
 
       - name: Handle Changes
         run: |

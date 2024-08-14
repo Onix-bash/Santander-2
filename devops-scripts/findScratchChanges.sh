@@ -1,5 +1,8 @@
 #!/bin/bash
-
+git config --global --add safe.directory "*"
+current_branch=$1
+git fetch origin
+git checkout origin/develop
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 
 DIR1="scratch_es/main/default/expressionSetDefinition"
@@ -19,3 +22,6 @@ changed_files=$(diff -qr "$DIR1" "$DIR2" | grep -E '^Files ' | awk '{print $2}' 
 formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
 echo "$formatted_changed_files"
 echo "changed_files=$formatted_changed_files" >> "$GITHUB_OUTPUT"
+
+git checkout -- .
+git checkout "$current_branch"

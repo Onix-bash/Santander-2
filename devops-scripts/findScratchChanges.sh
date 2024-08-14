@@ -11,17 +11,20 @@ all_expression_sets="combined_expressionSetDefinition"
 
 # Create the directory to store combined files
 mkdir -p "$all_expression_sets"
-ls
+
 # Find all expressionSetDefinition directories and copy files to the combined directory
 src_dirs=$(find src -type d -name 'expressionSetDefinition')
 
 for dir in $src_dirs; do
     echo "Processing directory: $dir"
-    find "$dir" -type f -exec cp --parents {} "$all_expression_sets/" \;
+    # Copy files to the combined directory without preserving the parent directory structure
+    find "$dir" -type f -exec cp {} "$all_expression_sets/" \;
 done
 
+# Compare DIR1 with the combined directory
 changed_files=$(diff -qr "$DIR1" "$all_expression_sets" | grep -E '^Files ' | awk '{print $2, $4}' | sed "s|^$DIR1/||")
 formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
+
 
 # Check if there are any changed files
 if [ -n "$formatted_changed_files" ]; then

@@ -39,8 +39,6 @@ jobs:
 
       - name: Handle Changes
         run: |
-          if [ -n "${{ steps.ci_org_es_changes.outputs.changed_files }}" ]; then
-            echo "start addEsFromScratch"
-            chmod +x ./devops-scripts/addEsFromScratch.sh
-            ./devops-scripts/addEsFromScratch.sh "${{ steps.compare_dirs.outputs.changed_files }}"
-          fi
+          echo "start addEsFromScratch"
+          chmod +x ./devops-scripts/addEsFromScratch.sh
+          ./devops-scripts/addEsFromScratch.sh "${{ steps.compare_dirs.outputs.changed_files }}"

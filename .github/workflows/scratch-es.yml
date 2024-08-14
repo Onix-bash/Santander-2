@@ -26,10 +26,9 @@ jobs:
           ./devops-scripts/findScratchChanges.sh
           git checkout -- .
           git checkout $current_branch
-          echo "in yml $changed_files"
-          if [ -n "$changed_files" ]; then
+          if [ -n "${{ env.changed_files }}" ]; then
           chmod +x ./devops-scripts/addEsFromScratch.sh
-          ./devops-scripts/addEsFromScratch.sh
+          ./devops-scripts/addEsFromScratch.sh "${{ env.changed_files }}"
           fi
           branch_finish=$(git branch --show-current)
           echo "$branch_finish"

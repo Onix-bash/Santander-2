@@ -34,7 +34,7 @@ if [ -n "$expression_set_names" ]; then
 
     # Remove the <members> and add only changed
     sed -i '/<members>\*<\/members>/d' "$temp_manifest"
-    for name in $unique_names; do
+    for name in $expression_set_names; do
       # Add file before <name> tag
       sed -i "/<name>/i <members>$name</members>" "$temp_manifest"
     done

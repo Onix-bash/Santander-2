@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Check if any files are detected
+echo "$1"
 if [ -z "$1" ]; then
     echo "No differences found between CI-Org and develop."
 else

@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Compare Metadata Directories
+      - name: Compare Metadata CI-Org and Develop Branch
         id: ci_org_es_changes
         run: |
           git config --global --add safe.directory "*"

@@ -2,7 +2,7 @@
 git config --global --add safe.directory "*"
 current_branch=$1
 git fetch origin
-git checkout origin/develop
+git checkout develop --force
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 
 DIR1="scratch_es/main/default/expressionSetDefinition"

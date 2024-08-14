@@ -26,9 +26,10 @@ jobs:
           ./devops-scripts/findScratchChanges.sh
           git checkout -- .
           git checkout $current_branch
-          if [ -n "${{ env.changed_files }}" ]; then
+          echo "${{ env.formatted_changed_files }}"
+          if [ -n "${{ env.formatted_changed_files }}" ]; then
             chmod +x ./devops-scripts/addEsFromScratch.sh
-            ./devops-scripts/addEsFromScratch.sh "${{ env.changed_files }}"
+            ./devops-scripts/addEsFromScratch.sh "${{ env.formatted_changed_files }}"
           fi
           branch_finish=$(git branch --show-current)
           echo "$branch_finish"

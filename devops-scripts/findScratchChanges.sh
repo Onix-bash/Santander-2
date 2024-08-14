@@ -4,7 +4,7 @@ current_branch=$1
 git fetch origin
 git stash push -m "temporary stash" && git checkout origin/develop
 
-sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
+#sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 
 scratch_expression_sets_dir="scratch_es/main/default/expressionSetDefinition"
 branch_expression_sets_dir="all_expression_sets"

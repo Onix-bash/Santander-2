@@ -21,7 +21,6 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           branch="${{ inputs.branch }}"
-          echo "Current branch: $branch"
           git fetch origin
           git checkout origin/develop
           chmod +x ./devops-scripts/findScratchChanges.sh

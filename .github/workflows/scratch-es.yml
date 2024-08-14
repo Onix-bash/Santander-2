@@ -18,6 +18,7 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           current_branch=$(git branch --show-current)
+          echo "$current_branch"
           git fetch origin
           git checkout origin/develop
           branch_start=$(git branch --show-current)
@@ -28,7 +29,7 @@ jobs:
           echo "$current_branch"
           git checkout -- .
           echo "checkout"
-          git checkout origin/$current_branch
+          git checkout "$current_branch"
           branch_finish=$(git branch --show-current)
           echo "$branch_finish"
 

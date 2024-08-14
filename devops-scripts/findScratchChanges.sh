@@ -12,17 +12,15 @@ src_dirs=$(find src -type d -name 'expressionSetDefinition')
 # Initialize an empty list of changed files
 changed_files=""
 
-# Loop through each directory found
+# Loop through each directory found in src/
 for dir in $src_dirs; do
     echo "Processing directory: $dir"
 
-    # Relative path from src
+    # Determine the corresponding directory in DIR1
     relative_path=$(echo "$dir" | sed 's|^src/||')
-
-    # Full path in DIR1
     dir_in_scratch_es="$DIR1/$(basename "$relative_path")"
 
-    # Check if directory exists in scratch_es and compare files
+    # Check if the corresponding directory exists in scratch_es
     if [ -d "$dir_in_scratch_es" ]; then
         # Loop through files in the src directory
         find "$dir" -type f | while read -r file_in_src; do
@@ -33,7 +31,7 @@ for dir in $src_dirs; do
             if [ ! -f "$file_in_scratch_es" ] || ! diff -q "$file_in_scratch_es" "$file_in_src" > /dev/null; then
                 # File is new or changed
                 echo "$relative_file_path"
-                changed_files+="$relative_path/$relative_file_path "
+                changed_files+="$relative_file_path "
             fi
         done
     else

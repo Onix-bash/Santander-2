@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExpressionSetDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>HomesApplicantChecksFTB</label>
+    <label>HomesApplicantChecksPOMF</label>
     <processType>Bre</processType>
     <template>false</template>
     <versions>
-        <fullName>HomesApplicantChecksFTB_V2</fullName>
-        <expressionSetDefinition>HomesApplicantChecksFTB</expressionSetDefinition>
-        <label>HomesApplicantChecksFTB</label>
+        <fullName>HomesApplicantChecksPOMF_V3</fullName>
+        <expressionSetDefinition>HomesApplicantChecksPOMF</expressionSetDefinition>
+        <label>HomesApplicantChecksPOMF</label>
         <processType>Bre</processType>
         <shouldShowExplExternally>false</shouldShowExplExternally>
-        <startDate>2024-08-14T11:33:27.000Z</startDate>
+        <startDate>2024-02-14T11:33:27.000Z</startDate>
         <status>Active</status>
         <steps>
             <label>Branch</label>
@@ -62,6 +62,48 @@
             <stepType>Branch</stepType>
         </steps>
         <steps>
+            <label>Branch</label>
+            <name>Branch32</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>11</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>Branch</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Rule14Outcome</assignedParameter>
+                <expression>FailValue</expression>
+            </assignment>
+            <label>Calculation</label>
+            <name>Calculation</name>
+            <parentStep>Rule14</parentStep>
+            <resultIncluded>true</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Rule14Outcome</assignedParameter>
+                <expression>PassValue</expression>
+            </assignment>
+            <label>Calculation</label>
+            <name>Calculation35</name>
+            <parentStep>DefaultLane34</parentStep>
+            <resultIncluded>true</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
             <label>Default Lane</label>
             <name>DefaultLane</name>
             <parentStep>Branch</parentStep>
@@ -109,6 +151,17 @@
             <label>Default Lane</label>
             <name>DefaultLane28</name>
             <parentStep>Branch31</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>DefaultPath</stepType>
+        </steps>
+        <steps>
+            <label>Default Lane</label>
+            <name>DefaultLane34</name>
+            <parentStep>Branch32</parentStep>
             <resultIncluded>false</resultIncluded>
             <sequenceNumber>2</sequenceNumber>
             <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
@@ -290,6 +343,85 @@
             <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>Condition</stepType>
+        </steps>
+        <steps>
+            <advancedCondition>
+                <conditionLogic>1 AND 2 AND 3 AND 4</conditionLogic>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>1</sequenceNumber>
+                    <sourceFieldName>Applicant1_EmployedOrSelfemployed</sourceFieldName>
+                    <value>true</value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>2</sequenceNumber>
+                    <sourceFieldName>Applicant2_EmployedOrSelfemployed</sourceFieldName>
+                    <value>true</value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>3</sequenceNumber>
+                    <sourceFieldName>HasChildcareAndEducationOutgoings</sourceFieldName>
+                    <value>0</value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <criteria>
+                    <operator>GreaterThanOrEquals</operator>
+                    <sequenceNumber>4</sequenceNumber>
+                    <sourceFieldName>DependentsCount</sourceFieldName>
+                    <value>1</value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <resultParameter>condition_output__10</resultParameter>
+            </advancedCondition>
+            <label>Rule 14</label>
+            <name>Rule14</name>
+            <parentStep>Branch32</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>AdvancedCondition</stepType>
+        </steps>
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>RuleOutcome</decisionTableName>
+                <mappings>
+                    <input>true</input>
+                    <name>RuleName</name>
+                    <output>false</output>
+                    <type>Parameter</type>
+                    <value>Rule14Name</value>
+                </mappings>
+                <mappings>
+                    <input>true</input>
+                    <name>Decision</name>
+                    <output>false</output>
+                    <type>Parameter</type>
+                    <value>Rule14Outcome</value>
+                </mappings>
+                <mappings>
+                    <input>false</input>
+                    <name>DecisionMessage</name>
+                    <output>true</output>
+                    <type>Parameter</type>
+                    <value>Rule14DecisionMessage</value>
+                </mappings>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>Rule 14 Outcome</label>
+            <name>Rule14Outcome</name>
+            <resultIncluded>true</resultIncluded>
+            <sequenceNumber>12</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
         </steps>
         <steps>
             <actionType>GetOutputsFromDecisionMatrix</actionType>
@@ -540,6 +672,38 @@
         </steps>
         <variables>
             <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Applicant1_EmployedOrSelfemployed</description>
+            <input>true</input>
+            <name>Applicant1_EmployedOrSelfemployed</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Applicant2_EmployedOrSelfemployed</description>
+            <input>true</input>
+            <name>Applicant2_EmployedOrSelfemployed</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>0</decimalPlaces>
+            <description>DependentsCount</description>
+            <input>true</input>
+            <name>DependentsCount</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
             <dataType>Text</dataType>
             <decimalPlaces>2</decimalPlaces>
             <description>EmployerName</description>
@@ -578,6 +742,17 @@
             <name>FirstName</name>
             <output>false</output>
             <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>0</decimalPlaces>
+            <description>HasChildcareAndEducationOutgoings</description>
+            <input>true</input>
+            <name>HasChildcareAndEducationOutgoings</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
         </variables>
         <variables>
             <collection>false</collection>
@@ -708,6 +883,37 @@
             <input>true</input>
             <name>PreviousMiddleName</name>
             <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Rule14DecisionMessage</description>
+            <input>false</input>
+            <name>Rule14DecisionMessage</name>
+            <output>true</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Rule14Name</description>
+            <input>false</input>
+            <name>Rule14Name</name>
+            <output>false</output>
+            <type>Constant</type>
+            <value>Insufficient Childcare Costs</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Rule14Outcome</description>
+            <input>false</input>
+            <name>Rule14Outcome</name>
+            <output>true</output>
             <type>Variable</type>
         </variables>
         <variables>
@@ -877,11 +1083,10 @@
         </variables>
         <variables>
             <collection>false</collection>
-            <dataType>Text</dataType>
+            <dataType>DecisionMatrix</dataType>
+            <description>RuleOutcome</description>
             <input>false</input>
-            <lookupName>RuleOutcome</lookupName>
-            <lookupType>DecisionMatrix</lookupType>
-            <name>RuleOutcome__DecisionMessage</name>
+            <name>RuleOutcome</name>
             <output>true</output>
             <type>Variable</type>
         </variables>
@@ -903,6 +1108,27 @@
             <name>condition_output__1</name>
             <output>false</output>
             <resultStep>Rule1</resultStep>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <description>condition_output__10</description>
+            <input>false</input>
+            <name>condition_output__10</name>
+            <output>false</output>
+            <resultStep>Rule14</resultStep>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <description>condition_output__11</description>
+            <input>false</input>
+            <name>condition_output__11</name>
+            <output>false</output>
             <type>Variable</type>
             <value>False</value>
         </variables>
@@ -990,6 +1216,6 @@
             <type>Variable</type>
             <value>False</value>
         </variables>
-        <versionNumber>2</versionNumber>
+        <versionNumber>3</versionNumber>
     </versions>
 </ExpressionSetDefinition>

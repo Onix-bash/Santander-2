@@ -23,9 +23,9 @@ done
 
 # Compare DIR1 with the combined directory
 changed_files=$(diff -qr "$DIR1" "$all_expression_sets_dir" | grep -E '^Files ' | awk '{print $2, $4}' | sed "s|^$DIR1/||")
-echo "$changed_files"
-# Extract the base names without the path or file extension and remove duplicates
-unique_names=$(echo "$changed_files" | sed -e 's/\.expressionSetDefinition-meta\.xml$//' | xargs -n1 basename | sort -u)
+
+# Extract base names without paths or file extensions and remove duplicates
+unique_names=$(echo "$changed_files" | sed -e 's|.*/||' -e 's/\.expressionSetDefinition-meta\.xml$//' | sort -u)
 
 # Check if there are any changed files
 if [ -n "$unique_names" ]; then

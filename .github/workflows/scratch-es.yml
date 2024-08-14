@@ -17,8 +17,9 @@ jobs:
         run: |
           git config --global --add safe.directory "*"
           echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
+          echo "$current_branch"
           git fetch origin
-          git_diff=$(git diff --name-only origin/develop..origin$current_branch | grep -v "^src/.*/expressionSetDefinition/")
+          git_diff=$(git diff --name-only origin/develop..origin/$current_branch | grep -v "^src/.*/expressionSetDefinition/")
           echo "$git_diff"
 #          git checkout develop
 #          branch_start=$(git branch --show-current)

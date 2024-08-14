@@ -19,23 +19,15 @@ jobs:
       - name: Compare Metadata Directories
         id: ci_org_es_changes
         run: |
-          echo "${{ inputs.branch }}"
           git config --global --add safe.directory "*"
           branch="${{ inputs.branch }}"
-          echo "Branch: $branch"
+          echo "Current branch: $branch"
           git fetch origin
           git checkout origin/develop
-          branch_start=$(git branch --show-current)
-          echo "$branch_start"
-          echo "start findScratchChanges"
           chmod +x ./devops-scripts/findScratchChanges.sh
           ./devops-scripts/findScratchChanges.sh
-          echo "$current_branch"
           git checkout -- .
-          echo "checkout"
           git checkout "$branch"
-          branch_finish=$(git branch --show-current)
-          echo "$branch_finish"
 
       - name: Handle Changes
         run: |

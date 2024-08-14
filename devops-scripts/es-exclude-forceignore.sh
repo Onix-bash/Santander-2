@@ -3,15 +3,15 @@
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 current_branch="origin/$GITHUB_HEAD_REF"
 
-if [ -n "$1" ]; then
+if [[ -n "$1" && "$1" == "HEAD^" ]]; then
   source_to_check_changes=$1
   current_branch=""
+elif [[ "$1" == "release" ]]; then
+  current_branch="origin/$(git branch --show-current)"
+  source_to_check_changes="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
 fi
-
-if [ -n "$2" ]; then
-    source_to_check_changes="origin/$1"
-    current_branch="origin/$2"
-fi
+ echo "$source_to_check_changes"
+ echo "$current_branch"
 
 ES_PATH='^src/.*/expressionSetDefinition/'
 git fetch origin

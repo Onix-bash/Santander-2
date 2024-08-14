@@ -18,7 +18,7 @@ jobs:
           git config --global --add safe.directory "*"
           echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
           git fetch origin
-          git checkout develop
+          git checkout origin/develop
           branch_start=$(git branch --show-current)
           echo "$branch_start"
           echo "start findScratchChanges"

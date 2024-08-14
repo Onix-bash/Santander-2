@@ -28,4 +28,3 @@ echo "$diff_output"
 ## Set the GitHub Action output
 #echo "changed_files=$formatted_changed_files" >> $GITHUB_ENV
 #git status
-

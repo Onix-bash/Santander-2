@@ -21,6 +21,7 @@ jobs:
           git checkout develop
           branch_start=$(git branch --show-current)
           echo "$branch_start"
+          echo "start findScratchChanges"
           chmod +x ./devops-scripts/findScratchChanges.sh
           ./devops-scripts/findScratchChanges.sh
           git checkout -- .

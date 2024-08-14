@@ -8,4 +8,4 @@ jobs:
     name: CI-Org Validation
     uses: ./.github/workflows/scratch-es.yml
     with:
-      branch: ${{ github.ref_name }}
+      branch: ${{ github.head_ref }}

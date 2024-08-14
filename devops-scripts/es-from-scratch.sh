@@ -2,7 +2,9 @@
 git config --global --add safe.directory "*"
 git fetch origin
 git stash push -u -m "Pre-rebase changes"
+git status
 git rebase origin/develop
+git status
 
 branch_start=$(git branch --show-current)
 echo "$branch_start"

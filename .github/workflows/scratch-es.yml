@@ -16,7 +16,7 @@ jobs:
       - name: Compare Metadata Directories
         run: |
           git config --global --add safe.directory "*"
-          echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
+          current_branch=$(git branch --show-current)
           echo "$current_branch"
           git fetch origin
           git_diff=$(git diff --name-only origin/develop..origin/$current_branch | grep -v "^src/.*/expressionSetDefinition/")

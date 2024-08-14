@@ -7,10 +7,10 @@ git stash push -m "temporary stash" && git checkout origin/develop
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 
 DIR1="scratch_es/main/default/expressionSetDefinition"
-all_expression_sets="combined_expressionSetDefinition"
 
+all_expression_sets_dir="all_expression_sets"
 # Create the directory to store combined files
-mkdir -p "$all_expression_sets"
+mkdir -p "$all_expression_sets_dir"
 
 # Find all expressionSetDefinition directories and copy files to the combined directory
 src_dirs=$(find src -type d -name 'expressionSetDefinition')
@@ -18,11 +18,11 @@ src_dirs=$(find src -type d -name 'expressionSetDefinition')
 for dir in $src_dirs; do
     echo "Processing directory: $dir"
     # Copy files to the combined directory without preserving the parent directory structure
-    find "$dir" -type f -exec cp {} "$all_expression_sets/" \;
+    find "$dir" -type f -exec cp {} "$all_expression_sets_dir/" \;
 done
 
 # Compare DIR1 with the combined directory
-changed_files=$(diff -qr "$DIR1" "$all_expression_sets" | grep -E '^Files ' | awk '{print $2, $4}' | sed "s|^$DIR1/||")
+changed_files=$(diff -qr "$DIR1" "$all_expression_sets_dir" | grep -E '^Files ' | awk '{print $2, $4}' | sed "s|^$DIR1/||")
 formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
 
 

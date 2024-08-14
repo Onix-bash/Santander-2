@@ -15,5 +15,13 @@ jobs:
 
       - name: Compare Metadata Directories
         run: |
-          chmod +x ./devops-scripts/es-from-scratch.sh
-          ./devops-scripts/es-from-scratch.sh
+          git config --global --add safe.directory "*"
+          echo "current_branch=$(git branch --show-current)" >> $GITHUB_ENV
+          git fetch origin
+          git_diff=$(git diff --name-only $source_to_check_changes..$current_branch | grep -v "^src/.*/expressionSetDefinition/")
+          echo "$git_diff"
+#          git checkout develop
+#          branch_start=$(git branch --show-current)
+#          echo "$branch_start"
+#          chmod +x ./devops-scripts/es-from-scratch.sh
+#          ./devops-scripts/es-from-scratch.sh

@@ -1,5 +1,5 @@
 #!/bin/bash
-git config --global --add safe.directory "*"
+
 git fetch origin
 git stash push -u -m "Pre-rebase changes"
 git status

@@ -7,5 +7,7 @@ DIR2="src/decision-centre/main/default/expressionSetDefinition"
 
 # Run the diff command and get the list of changed files
 changed_files=$(diff -qr "$DIR1" "$DIR2" | grep -E '^Files ' | awk '{print $2}' | sed "s|^$DIR1/||")
-echo "$changed_files"
-echo "changed_files=$changed_files" >> $GITHUB_ENV
+
+# Format the changed files to be space-separated on a single line
+formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
+echo "changed_files=$formatted_changed_files" >> $GITHUB_ENV

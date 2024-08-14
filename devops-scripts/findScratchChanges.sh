@@ -7,8 +7,8 @@ git stash push -m "temporary stash" && git checkout origin/develop
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 
 DIR1="scratch_es/main/default/expressionSetDefinition"
-
 all_expression_sets_dir="all_expression_sets"
+
 # Create the directory to store combined files
 mkdir -p "$all_expression_sets_dir"
 
@@ -23,13 +23,14 @@ done
 
 # Compare DIR1 with the combined directory
 changed_files=$(diff -qr "$DIR1" "$all_expression_sets_dir" | grep -E '^Files ' | awk '{print $2, $4}' | sed "s|^$DIR1/||")
-formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
-
+echo "$changed_files"
+# Extract the base names without the path or file extension and remove duplicates
+unique_names=$(echo "$changed_files" | sed -e 's/\.expressionSetDefinition-meta\.xml$//' | xargs -n1 basename | sort -u)
 
 # Check if there are any changed files
-if [ -n "$formatted_changed_files" ]; then
+if [ -n "$unique_names" ]; then
     echo "Differences found in:"
-    echo "$formatted_changed_files"
+    echo "$unique_names"
 
     # Generate the manifest
     sf project generate manifest --metadata ExpressionSetDefinition --name expressionSetManifest
@@ -45,9 +46,9 @@ if [ -n "$formatted_changed_files" ]; then
     sed -i '/<members>\*<\/members>/d' "$temp_manifest"
 
     # Add changed files to the manifest
-    for file in $formatted_changed_files; do
+    for name in $unique_names; do
         # Add the new member entry before the closing </types> tag
-        sed -i "/<\/types>/i <members>$file</members>" "$temp_manifest"
+        sed -i "/<\/types>/i <members>$name</members>" "$temp_manifest"
     done
 
     # Move the updated manifest to the original file

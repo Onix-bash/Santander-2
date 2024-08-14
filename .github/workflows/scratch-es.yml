@@ -1,12 +1,15 @@
 name: Compare Retrieved Metadata with Branch
 
 on:
-  pull_request:
+  workflow_call:
+    inputs:
+      branch:
+        required: false
+        type: string
 
 jobs:
   compare-metadata:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Git repository
         uses: actions/checkout@v2
@@ -17,8 +20,8 @@ jobs:
         id: ci_org_es_changes
         run: |
           git config --global --add safe.directory "*"
-          current_branch=$(git rev-parse --abbrev-ref HEAD)
-          echo "$current_branch"
+          branch="${{ inputs.branch }}"
+          echo "$branch"
           git fetch origin
           git checkout origin/develop
           branch_start=$(git branch --show-current)

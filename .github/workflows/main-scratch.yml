@@ -1,0 +1,11 @@
+name: Compare Metadata with Develop
+
+on:
+  pull_request:
+
+jobs:
+  validate-changes:
+    name: CI-Org Validation
+    uses: ./.github/workflows/scratch-es.yml
+    with:
+      branch: ${{ github.ref_name }}

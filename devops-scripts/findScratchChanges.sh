@@ -3,11 +3,12 @@ git config --global --add safe.directory "*"
 current_branch=$1
 git fetch origin
 git checkout origin/develop --force
+cd ..
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 
 DIR1="scratch_es/main/default/expressionSetDefinition"
 DIR2="src/decision-centre/main/default/expressionSetDefinition"
-cat scratch_es/main/expressionSetDefinition/HomesApplicantChecksFTB.expressionSetDefinition-meta.xml
+
 # Check if the retrieval command was successful
 if [ ! -d "$DIR1" ] || [ -z "$(ls -A "$DIR1")" ]; then
     echo "No data retrieved from Salesforce or directory is empty."

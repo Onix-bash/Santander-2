@@ -1,8 +1,9 @@
 #!/bin/bash
 git config --global --add safe.directory "*"
 git fetch origin
-git rebase origin/develop
 git stash pop
+git rebase origin/develop
+
 branch_start=$(git branch --show-current)
 echo "$branch_start"
 git status

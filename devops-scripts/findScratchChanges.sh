@@ -20,7 +20,7 @@ for dir in $src_dirs; do
     find "$dir" -type f -exec cp --parents {} "$all_expression_sets/" \;
 done
 
-changed_files=$(diff -qr "$DIR1" "$combined_dir" | grep -E '^Files ' | awk '{print $2, $4}' | sed "s|^$DIR1/||")
+changed_files=$(diff -qr "$DIR1" "$all_expression_sets" | grep -E '^Files ' | awk '{print $2, $4}' | sed "s|^$DIR1/||")
 formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
 
 # Check if there are any changed files

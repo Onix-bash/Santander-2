@@ -44,12 +44,17 @@ if [ -n "$unique_names" ]; then
 
     # Remove the wildcard <members>*</members> from the manifest
     sed -i '/<members>\*<\/members>/d' "$temp_manifest"
+    # Remove the <name>ExpressionSetDefinition</name> row and move it to the end of the types section
+    sed -i '/<name>ExpressionSetDefinition<\/name>/d' "$temp_manifest"
 
     # Add changed files to the manifest
     for name in $unique_names; do
         # Add the new member entry before the closing </types> tag
         sed -i "/<\/types>/i <members>$name</members>" "$temp_manifest"
     done
+    # Add the <name>ExpressionSetDefinition</name> entry back after all <members> entries
+    sed -i '/<\/types>/i <name>ExpressionSetDefinition<\/name>' "$temp_manifest"
+
 
     # Move the updated manifest to the original file
     mv "$temp_manifest" "$manifest_file"

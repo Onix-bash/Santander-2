@@ -2,6 +2,8 @@
 git config --global --add safe.directory "*"
 git fetch origin
 git rebase origin/develop
+branch_start=$(git branch --show-current)
+echo "$branch_start"
 git status
 diff_output=$(git diff --name-only HEAD@{1} HEAD -- src/decision-centre/main/default/expressionSetDefinition)
 

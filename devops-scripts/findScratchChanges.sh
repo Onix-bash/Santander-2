@@ -2,7 +2,8 @@
 git config --global --add safe.directory "*"
 current_branch=$1
 git fetch origin
-git checkout origin/develop --force
+git stash push -m "temporary stash" && git checkout origin/develop
+
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
 ls
 DIR1="scratch_es/main/default/expressionSetDefinition"
@@ -23,4 +24,5 @@ echo "$formatted_changed_files"
 echo "changed_files=$formatted_changed_files" >> "$GITHUB_OUTPUT"
 echo "$current_branch"
 git checkout -- .
-git checkout "$current_branch" --force
+git checkout "$current_branch"
+git stash pop

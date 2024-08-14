@@ -17,7 +17,7 @@ jobs:
         id: ci_org_es_changes
         run: |
           git config --global --add safe.directory "*"
-          current_branch=$(git branch --show-current)
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
           echo "$current_branch"
           git fetch origin
           git checkout origin/develop

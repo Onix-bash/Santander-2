@@ -25,4 +25,4 @@ echo "changed_files=$formatted_changed_files" >> "$GITHUB_OUTPUT"
 echo "$current_branch"
 git checkout -- .
 git checkout "$current_branch"
-git stash pop
+git checkout -- .

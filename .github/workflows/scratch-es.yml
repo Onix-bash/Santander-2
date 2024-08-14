@@ -6,8 +6,6 @@ on:
 jobs:
   compare-metadata:
     runs-on: ubuntu-latest
-    container:
-      image: salesforce/cli:latest-full
 
     steps:
       - name: Checkout Git repository

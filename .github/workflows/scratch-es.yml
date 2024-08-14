@@ -21,9 +21,3 @@ jobs:
         run: |
           chmod +x ./devops-scripts/findScratchChanges.sh
           ./devops-scripts/findScratchChanges.sh "${{ inputs.branch }}"
-
-      - name: Handle Changes
-        run: |
-          echo "start addEsFromScratch"
-          chmod +x ./devops-scripts/addEsFromScratch.sh
-          ./devops-scripts/addEsFromScratch.sh "${{ steps.ci_org_es_changes.outputs.changed_files }}"

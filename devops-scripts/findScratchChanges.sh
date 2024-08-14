@@ -5,23 +5,39 @@ git fetch origin
 git stash push -m "temporary stash" && git checkout origin/develop
 
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
-ls
+
 DIR1="scratch_es/main/default/expressionSetDefinition"
 DIR2="src/decision-centre/main/default/expressionSetDefinition"
 
 ## Check if the retrieval command was successful
 if [ ! -d "$DIR1" ] || [ -z "$(ls -A "$DIR1")" ]; then
-    echo "No data retrieved from Salesforce or directory is empty."
-    echo "changed_files=" >> "$GITHUB_OUTPUT"
+    echo "ExpressionSets wasn't retrieved from CI-Org."
 fi
 
-# Run the diff command and get the list of changed files
 changed_files=$(diff -qr "$DIR1" "$DIR2" | grep -E '^Files ' | awk '{print $2}' | sed "s|^$DIR1/||")
 
-# Format the changed files to be space-separated on a single line
-formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
-echo "$formatted_changed_files"
-echo "changed_files=$formatted_changed_files" >> "$GITHUB_OUTPUT"
+# Check if there are changed files to deploy
+if [ -n "$changed_files" ]; then
+    echo "Differences found in:"
+    echo "$changed_files"
+
+    # Step 6: Generate the manifest
+    sf project generate manifest --metadata ExpressionSetDefinition --name expressionSetManifest
+
+    # Step 7: Clean the manifest to include only changed files
+    for file in $changed_files; do
+        xmlstarlet ed -L \
+            -d "//members[. != '*'][not(. = '${file%%/*}')] | //members[. = '*']" \
+            esManifest/package.xml
+    done
+
+    # Step 8: Deploy the changed files using the cleaned manifest
+#    sf project deploy start --manifest expressionSetManifest.xml --target-org CI-Org --test-level RunLocalTests --ignore-warnings --ignore-conflicts --verbose
+    cat expressionSetManifest.xml
+else
+    echo "No differences, nothing to deploy."
+fi
+
 echo "$current_branch"
 git checkout -- .
 git checkout "$current_branch"

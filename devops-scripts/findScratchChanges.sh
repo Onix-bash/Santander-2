@@ -23,6 +23,6 @@ changed_files=$(diff -qr "$DIR1" "$DIR2" | grep -E '^Files ' | awk '{print $2}' 
 formatted_changed_files=$(echo "$changed_files" | tr '\n' ' ')
 echo "$formatted_changed_files"
 echo "changed_files=$formatted_changed_files" >> "$GITHUB_OUTPUT"
-
+echo "$current_branch"
 git checkout -- .
-git checkout "$current_branch"
+git checkout "$current_branch" --force

@@ -1,0 +1,29 @@
+name: Compare Retrieved Metadata with Branch
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: false
+        type: string
+
+jobs:
+  compare-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Git repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Compare Metadata CI-Org and Develop Branch
+        id: ci_org_es_changes
+        run: |
+          chmod +x ./devops-scripts/findScratchChanges.sh
+          ./devops-scripts/findScratchChanges.sh "${{ inputs.branch }}"
+
+      - name: Handle Changes
+        run: |
+          echo "start addEsFromScratch"
+          chmod +x ./devops-scripts/addEsFromScratch.sh
+          ./devops-scripts/addEsFromScratch.sh "${{ steps.ci_org_es_changes.outputs.changed_files }}"

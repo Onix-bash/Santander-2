@@ -5,7 +5,7 @@ git fetch origin
 git checkout origin/develop --force
 cd ..
 #sf project retrieve start --metadata ExpressionSetDefinition --output-dir scratch_es --ignore-conflicts
-
+ls
 DIR1="scratch_es/main/default/expressionSetDefinition"
 DIR2="src/decision-centre/main/default/expressionSetDefinition"
 
@@ -13,7 +13,6 @@ DIR2="src/decision-centre/main/default/expressionSetDefinition"
 if [ ! -d "$DIR1" ] || [ -z "$(ls -A "$DIR1")" ]; then
     echo "No data retrieved from Salesforce or directory is empty."
     echo "changed_files=" >> "$GITHUB_OUTPUT"
-    exit 0
 fi
 
 # Run the diff command and get the list of changed files

@@ -17,27 +17,5 @@ jobs:
 
       - name: Compare Metadata Directories
         run: |
-          git config --global --add safe.directory "*"
-          current_branch=$(git branch --show-current)
-          git fetch origin
-          git checkout origin/develop
           chmod +x ./devops-scripts/es-from-scratch.sh
           ./devops-scripts/es-from-scratch.sh
-          git checkout -- .
-          # Checkout back to the original branch
-          git checkout $current_branch --force
-          branch_now=$(git branch --show-current)
-          echo "$branch_now"
-          # Use the changed_files output from the script
-          echo "${{ env.changed_files }}"
-          
-          # Add changes to .forceignore
-          for file in ${{ env.changed_files }}; do
-              if ! grep -qx "!$file" .forceignore; then
-                  echo "!$file" >> .forceignore
-                  echo "Added !$file to .forceignore"
-              else
-                  echo "$file is already in .forceignore"
-              fi
-          done
-          cat .forceignore

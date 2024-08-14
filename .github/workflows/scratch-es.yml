@@ -1,0 +1,21 @@
+name: Compare Retrieved Metadata with Branch
+
+on:
+  pull_request:
+
+jobs:
+  compare-metadata:
+    runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
+
+    steps:
+      - name: Checkout Git repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Compare Metadata Directories
+        run: |
+          chmod +x ./devops-scripts/es-from-scratch.sh
+          ./devops-scripts/es-from-scratch.sh

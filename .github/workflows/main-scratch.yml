@@ -9,3 +9,4 @@ jobs:
     uses: ./.github/workflows/scratch-es.yml
     with:
       branch: ${{ github.head_ref }}
+      auth_url: "Auth URL of Org to be used for validation"

@@ -3,13 +3,9 @@ name: Compare Retrieved Metadata with Branch
 on:
   workflow_call:
     inputs:
-      auth_url:
-        required: true
+      current_branch:
+        required: false
         type: string
-        description: Auth URL of Org to be used for validation
-    branch:
-      required: false
-      type: string
 
 jobs:
   compare-metadata:

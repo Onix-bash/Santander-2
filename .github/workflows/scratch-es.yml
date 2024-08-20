@@ -18,6 +18,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Test
+        run: |
+          echo "ES"
+          chmod +x ./devops-scripts/includeChangesESIntoPackage.sh
+          ./devops-scripts/includeChangesESIntoPackage.sh    
+
       - name: Compare Metadata CI-Org and Develop Branch
         id: ci_org_es_changes
         run: |

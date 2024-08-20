@@ -1,6 +1,6 @@
 # Changelog will be written to changelog branch
 
-name: 'Manual Deployment'
+name: 'Test includeChangedESIntoPackage.sh in manual run'
 
 on:
   workflow_dispatch:
@@ -23,11 +23,5 @@ jobs:
       - name: es
         id: es
         run: |
-          chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh ${{ github.event.inputs.modules_to_deploy }}
-
-      - name: es
-        id: es2
-        run: |
-          chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh
+          chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
+          ./devops-scripts/includeChangedESIntoPackage.sh

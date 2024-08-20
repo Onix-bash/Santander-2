@@ -25,5 +25,5 @@ jobs:
         id: es
         run: |
           echo "Pr"
-          chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
-          ./devops-scripts/includeChangedESIntoPackage.sh
+          chmod +x ./devops-scripts/includeChangesESIntoPackage.sh
+          ./devops-scripts/includeChangesESIntoPackage.sh

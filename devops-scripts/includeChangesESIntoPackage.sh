@@ -2,6 +2,11 @@
 # $1 - PR was merged into <base> branch OR <release> branch was executed to be validated/deployed manually
 echo "This script was triggered by the $GITHUB_WORKFLOW workflow."
 echo "MANUAL_WORKFLOWS $MANUAL_WORKFLOWS"
+event_name=$GITHUB_EVENT_NAME
+
+# Output the event name
+echo "This workflow was triggered by the $event_name event."
+
 if [ -n "$MANUAL_WORKFLOWS" ]; then
   echo "start"
   IFS=$'\n' read -r -d '' -a MANUAL_WORKFLOW_ARRAY <<< "$(echo "$MANUAL_WORKFLOWS" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"

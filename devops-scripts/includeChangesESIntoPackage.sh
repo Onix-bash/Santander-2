@@ -2,24 +2,38 @@
 # $1 - PR was merged into <base> branch OR <release> branch was executed to be validated/deployed manually
 echo "This script was triggered by the $GITHUB_WORKFLOW workflow."
 
-current_branch="origin/$GITHUB_HEAD_REF"
-source_to_check_changes="origin/$GITHUB_BASE_REF"
+if [ -n "$MANUAL_WORKFLOWS" ]; then
+  IFS=$'\n' read -r -d '' -a MANUAL_WORKFLOW_ARRAY <<< "$(echo "$MANUAL_WORKFLOWS" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+  is_manual=false
+  echo "${MANUAL_WORKFLOW_ARRAY[@]}"
+  for workflow in "${MANUAL_WORKFLOW_ARRAY[@]}"; do
+    if [[ "$workflow" == "$GITHUB_WORKFLOW" ]]; then
+      is_manual=true
+      break
+    fi
+  done
 
-if [[ -n "$1" && "$1" == "HEAD^" ]]; then
-  # PR was merged into <base> branch
-  current_branch=""
-  source_to_check_changes=$1
-elif [[ "$1" == "release" ]]; then
-  # <release> branch was executed
-  current_branch="origin/$(git branch --show-current)"
-  source_to_check_changes="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
+  current_branch="origin/$GITHUB_HEAD_REF"
+  source_to_check_changes="origin/$GITHUB_BASE_REF"
+
+ if $is_manual; then
+    # PR was merged into <base> branch
+    current_branch=""
+    source_to_check_changes="HEAD^"
+ else
+   # <release> branch was executed
+   current_branch="origin/$(git branch --show-current)"
+   source_to_check_changes="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
+ fi
+
+  ES_PATH='^src/.*/expressionSetDefinition/'
+
+  git fetch origin
+  changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
+
+  for file_path in $changed_es_files; do
+    echo "!$file_path" >> .forceignore
+  done
+
+
 fi
-
-ES_PATH='^src/.*/expressionSetDefinition/'
-
-git fetch origin
-changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
-
-for file_path in $changed_es_files; do
-  echo "!$file_path" >> .forceignore
-done

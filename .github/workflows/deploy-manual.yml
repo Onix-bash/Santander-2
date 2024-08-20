@@ -14,6 +14,7 @@ jobs:
       # Sets the deployment destination from sfdx-project.json
       SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
       DEPLOY_DESTINATION: ${{ vars.DEPLOY_DESTINATION }}
+      MANUAL_WORKFLOWS: ${{ vars.MANUAL_WORKFLOWS }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2

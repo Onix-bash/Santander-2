@@ -21,14 +21,15 @@ jobs:
       # Sets the allowed modifications to be controlled by DevOps team members
       ALLOWED_DEV_MODIFICATIONS: ${{ vars.ALLOWED_DEV_MODIFICATIONS }}
       DEVOPS_TEAM: ${{ vars.DEVOPS_TEAM }}
+      MANUAL_WORKFLOWS: ${{ vars.MANUAL_WORKFLOWS }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: Test ES
+      - name: Test
         run: |
-          git config --global --add safe.directory /__w/Santander-2/Santander-2
-          chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
-          ./devops-scripts/includeChangedESIntoPackage.sh
+          echo "Merge"
+          chmod +x ./devops-scripts/includeChangesESIntoPackage.sh
+          ./devops-scripts/includeChangesESIntoPackage.sh

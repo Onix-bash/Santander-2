@@ -31,8 +31,8 @@ jobs:
           chmod +x ./devops-scripts/findChangedModules.sh
           ./devops-scripts/findChangedModules.sh HEAD^   #compare changes vs previous commit in develop branch
 
-      - name: Forceignore
-        run: |
-          chmod +x ./devops-scripts/esExclude.sh
-          ./devops-scripts/esExclude.sh HEAD^   #compare changes vs previous commit in develop branch
-
+#      - name: Forceignore
+#        run: |
+#          chmod +x ./devops-scripts/esExclude.sh
+#          ./devops-scripts/esExclude.sh HEAD^   #compare changes vs previous commit in develop branch
+#

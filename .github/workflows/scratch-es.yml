@@ -1,0 +1,33 @@
+name: Compare Retrieved Metadata with Branch
+
+on:
+  workflow_call:
+    inputs:
+      current_branch:
+        required: false
+        type: string
+
+jobs:
+  compare-metadata:
+    runs-on: ubuntu-latest
+    container:
+      image: salesforce/cli:latest-full
+    steps:
+      - name: Checkout Git repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Test
+        run: |
+          echo "ES"
+          git config --global --add safe.directory /__w/Santander-2/Santander-2
+          chmod +x ./devops-scripts/includeChangesESIntoPackage.sh
+          ./devops-scripts/includeChangesESIntoPackage.sh    
+
+      - name: Compare Metadata CI-Org and Develop Branch
+        id: ci_org_es_changes
+        run: |
+          echo  s"${{ inputs.branch }}"
+          chmod +x ./devops-scripts/findScratchChanges.sh
+          ./devops-scripts/findScratchChanges.sh "${{ inputs.branch }}"

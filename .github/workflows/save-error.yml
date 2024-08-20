@@ -31,11 +31,11 @@ jobs:
           ./devops-scripts/findChangedModules.sh
           deleted_files=$(git diff origin/$GITHUB_BASE_REF --name-status --diff-filter=D)
 
-      - name: Run potentially failing step
-        id: error_step
-        run: |
-          echo "Simulating a failure condition"
-          exit 1  
+#      - name: Run potentially failing step
+#        id: error_step
+#        run: |
+#          echo "Simulating a failure condition"
+#          exit 1
 
 #      - name: Capture error message
 #        if: ${{ failure() && steps.error_step.outcome == 'failure' }}

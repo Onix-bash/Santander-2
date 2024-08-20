@@ -1,6 +1,6 @@
 # Changelog will be written to changelog branch
 
-name: 'Test includeChangedESIntoPackage.sh in manual run'
+name: 'Test includeChangedESIntoPackage.sh in pr run'
 
 on:
   workflow_dispatch:
@@ -14,6 +14,7 @@ jobs:
       # Sets the deployment destination from sfdx-project.json
       SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
       DEPLOY_DESTINATION: ${{ vars.DEPLOY_DESTINATION }}
+      MANUAL_WORKFLOWS: ${{ vars.MANUAL_WORKFLOWS }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
@@ -23,6 +24,6 @@ jobs:
       - name: es
         id: es
         run: |
-          echo "Manual"
-          chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
-          ./devops-scripts/includeChangedESIntoPackage.sh
+          echo "Pr"
+          chmod +x ./devops-scripts/includeChangesESIntoPackage.sh
+          ./devops-scripts/includeChangesESIntoPackage.sh

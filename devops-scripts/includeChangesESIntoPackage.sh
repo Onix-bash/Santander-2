@@ -19,7 +19,7 @@ if [ -n "$MANUAL_WORKFLOWS" ]; then
 
  if $is_manual; then
     # PR was merged into <base> branch
-    current_branch=""
+    current_branch="origin/$(git branch --show-current)"
     source_to_check_changes="HEAD^"
  else
    # <release> branch was executed

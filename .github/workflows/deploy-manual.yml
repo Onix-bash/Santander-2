@@ -23,5 +23,6 @@ jobs:
       - name: es
         id: es
         run: |
+          echo "Manual"
           chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
           ./devops-scripts/includeChangedESIntoPackage.sh

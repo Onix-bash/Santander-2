@@ -1,7 +1,7 @@
 #!/bin/bash
 # $1 - PR was merged into <base> branch OR <release> branch was executed to be validated/deployed manually
 echo "This script was triggered by the $GITHUB_WORKFLOW workflow."
-
+echo "MANUAL_WORKFLOWS $MANUAL_WORKFLOWS"
 if [ -n "$MANUAL_WORKFLOWS" ]; then
   IFS=$'\n' read -r -d '' -a MANUAL_WORKFLOW_ARRAY <<< "$(echo "$MANUAL_WORKFLOWS" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
   is_manual=false

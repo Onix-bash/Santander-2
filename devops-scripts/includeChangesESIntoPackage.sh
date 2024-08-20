@@ -14,18 +14,14 @@ if [ -n "$MANUAL_WORKFLOWS" ]; then
     fi
   done
 
+ if $is_manual; then
+    # PR was merged into <base> branch
+    current_branch="origin/$(git branch --show-current)"
+    source_to_check_changes="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
+ else
   current_branch="origin/$GITHUB_HEAD_REF"
   source_to_check_changes="origin/$GITHUB_BASE_REF"
-
-# if $is_manual; then
-#    # PR was merged into <base> branch
-#    current_branch="origin/$(git branch --show-current)"
-#    source_to_check_changes="HEAD^"
-# else
-#   # <release> branch was executed
-#   current_branch="origin/$(git branch --show-current)"
-#   source_to_check_changes="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
-# fi
+ fi
 
 
   echo "current_branch= $current_branch"

@@ -24,10 +24,5 @@ jobs:
         id: es
         run: |
           chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh ${{ github.event.inputs.modules_to_deploy }}
+          ./devops-scripts/includeChangesESIntoPackage.sh 
 
-      - name: es
-        id: es2
-        run: |
-          chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh

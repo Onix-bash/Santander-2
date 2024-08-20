@@ -19,8 +19,8 @@ if [ -n "$MANUAL_WORKFLOWS" ]; then
     current_branch="origin/$(git branch --show-current)"
     source_to_check_changes="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
  else
-  current_branch="origin/$GITHUB_HEAD_REF"
-  source_to_check_changes="origin/$GITHUB_BASE_REF"
+    current_branch="origin/$GITHUB_HEAD_REF"
+    source_to_check_changes="origin/$GITHUB_BASE_REF"
  fi
 
 

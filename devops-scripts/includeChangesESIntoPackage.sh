@@ -3,6 +3,7 @@
 echo "This script was triggered by the $GITHUB_WORKFLOW workflow."
 echo "MANUAL_WORKFLOWS $MANUAL_WORKFLOWS"
 if [ -n "$MANUAL_WORKFLOWS" ]; then
+  echo "start"
   IFS=$'\n' read -r -d '' -a MANUAL_WORKFLOW_ARRAY <<< "$(echo "$MANUAL_WORKFLOWS" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
   is_manual=false
 
@@ -13,7 +14,7 @@ if [ -n "$MANUAL_WORKFLOWS" ]; then
       break
     fi
   done
-
+echo "is_manual $is_manual"
  if $is_manual; then
     # PR was merged into <base> branch
     current_branch="origin/$(git branch --show-current)"

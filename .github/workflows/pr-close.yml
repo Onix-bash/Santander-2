@@ -27,8 +27,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Test
+      - name: Test ES
         run: |
           git config --global --add safe.directory /__w/Santander-2/Santander-2
-          chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh
+          chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
+          ./devops-scripts/includeChangedESIntoPackage.sh

@@ -1,6 +1,6 @@
 #!/bin/bash
 # $1 - PR was merged into <base> branch OR <release> branch was executed to be validated/deployed manually
-
+echo "This script was triggered by the $GITHUB_WORKFLOW workflow."
 current_branch="origin/$GITHUB_HEAD_REF"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 

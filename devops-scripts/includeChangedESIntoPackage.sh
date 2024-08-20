@@ -1,6 +1,7 @@
 #!/bin/bash
 # $1 - PR was merged into <base> branch OR <release> branch was executed to be validated/deployed manually
 echo "This script was triggered by the $GITHUB_WORKFLOW workflow."
+echo "GITHUB_WORKFLOW: $GITHUB_WORKFLOW"
 current_branch="origin/$GITHUB_HEAD_REF"
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 
@@ -14,11 +15,11 @@ elif [[ "$1" == "release" ]]; then
   source_to_check_changes="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
 fi
 
-ES_PATH='^src/.*/expressionSetDefinition/'
+# ES_PATH='^src/.*/expressionSetDefinition/'
 
-git fetch origin
-changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
+# git fetch origin
+# changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep -E $ES_PATH)
 
-for file_path in $changed_es_files; do
-  echo "!$file_path" >> .forceignore
-done
+# for file_path in $changed_es_files; do
+#   echo "!$file_path" >> .forceignore
+# done

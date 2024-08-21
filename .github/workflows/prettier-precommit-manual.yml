@@ -22,12 +22,12 @@ jobs:
         id: changed-files
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-          pr_number=${{ github.event.pull_request.number }}
-          files=$(gh pr view $pr_number --json files --jq '.files[].path' | grep '^src/')
+            pr_number=${{ github.event.pull_request.number }}
+            files=$(gh pr view $pr_number --json files --jq '.files[].path' | grep '^src/')
           else
-          current_branch="origin/$(git branch --show-current)"
-          base_branch="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
-          files=$(changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep '^src/')
+            current_branch="origin/$(git branch --show-current)"
+            base_branch="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
+            files=$(git diff --name-only $base_branch...$current_branch | grep '^src/')
           fi
           echo "Files: $files"
           echo "files=$files" >> "$GITHUB_OUTPUT"

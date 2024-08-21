@@ -23,18 +23,28 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const prNumber = context.payload.pull_request.number;
-            const repoOwner = context.repo.owner;
-            const repoName = context.repo.repo;
-            const { data: files } = await github.rest.pulls.listFiles({
-              owner: repoOwner,
-              repo: repoName,
-              pull_number: prNumber
-            })
-            console.log('files: ', files);
-            const nonDeletedFiles = files.filter(f => f.status !== 'removed');
-            const fileNames = nonDeletedFiles.map(f => f.filename).join(' ');
-            console.log('fileNames: ', fileNames);
+            const githubContext = context;
+            let files = [];
+            if (githubContext.eventName === 'pull_request') {
+              const prNumber = githubContext.payload.pull_request.number;
+              const repoOwner = githubContext.repo.owner;
+              const repoName = githubContext.repo.repo;
+              const { data } = await github.rest.pulls.listFiles({
+                owner: repoOwner,
+                repo: repoName,
+                pull_number: prNumber
+              });
+              files = data.filter(f => f.status !== 'removed');
+            } else if (githubContext.eventName === 'workflow_dispatch') {
+              // For manual runs, get the diff against the main branch
+              const { execSync } = require('child_process');
+              base_branch="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
+              const diff = execSync('git diff --name-only $base_branch').toString().trim();
+              files = diff.split('\n').filter(f => f.startsWith('src/'));
+            }
+
+            const fileNames = files.map(f => f.filename ? f.filename : f).join(' ');
+            console.log('Files:', fileNames);
             core.setOutput('files', fileNames);
       - name: Run Prettier
         if: steps.changed-files.outputs.files != ''

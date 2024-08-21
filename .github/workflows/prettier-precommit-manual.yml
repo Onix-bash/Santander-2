@@ -25,12 +25,15 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             pr_number=${{ github.event.pull_request.number }}
-            files=$(gh pr view $pr_number --json files --jq '.files[].path' | grep '^src/')
+            files=$(gh pr view $pr_number --json files --jq '.files[] | select(.status != "removed") | .path' | grep '^src/')
           else
             current_branch="origin/$(git branch --show-current)"
+            echo "current_branch: $current_branch"
             base_branch="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
+            echo "base_branch: $base_branch"
             git fetch origin
-            files=$(git diff --name-only $base_branch...$current_branch | grep '^src/')
+            files=$(git diff --name-status $base_branch...$current_branch | grep -E '^[AM]' | awk '{print $2}' | grep '^src/')
+  
           fi
           files=$(echo "$files" | tr '\n' ' ')
           echo "Files: $files"

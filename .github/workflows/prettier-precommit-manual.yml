@@ -16,7 +16,9 @@ jobs:
           fetch-depth: 0
 
       - name: Install Prettier and Plugins
-        run: npm install prettier prettier-plugin-apex @prettier/plugin-xml
+        run: |
+          npm install prettier prettier-plugin-apex @prettier/plugin-xml
+          git config --global --add safe.directory /__w/Santander-2/Santander-2
 
       - name: Get list of changed files
         id: changed-files

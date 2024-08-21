@@ -20,32 +20,17 @@ jobs:
 
       - name: Get list of changed files
         id: changed-files
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const githubContext = context;
-            let files = [];
-            if (githubContext.eventName === 'pull_request') {
-              const prNumber = githubContext.payload.pull_request.number;
-              const repoOwner = githubContext.repo.owner;
-              const repoName = githubContext.repo.repo;
-              const { data } = await github.rest.pulls.listFiles({
-                owner: repoOwner,
-                repo: repoName,
-                pull_number: prNumber
-              });
-              files = data.filter(f => f.status !== 'removed');
-            } else if (githubContext.eventName === 'workflow_dispatch') {
-              // For manual runs, get the diff against the main branch
-              const { execSync } = require('child_process');
-              base_branch="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
-              const diff = execSync('git diff --name-only $base_branch').toString().trim();
-              files = diff.split('\n').filter(f => f.startsWith('src/'));
-            }
-
-            const fileNames = files.map(f => f.filename ? f.filename : f).join(' ');
-            console.log('Files:', fileNames);
-            core.setOutput('files', fileNames);
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          pr_number=${{ github.event.pull_request.number }}
+          files=$(gh pr view $pr_number --json files --jq '.files[].path' | grep '^src/')
+          else
+          current_branch="origin/$(git branch --show-current)"
+          base_branch="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
+          files=$(changed_es_files=$(git diff --name-only $source_to_check_changes...$current_branch | grep '^src/')
+          fi
+          echo "Files: $files"
+          echo "files=$files" >> "$GITHUB_OUTPUT"
       - name: Run Prettier
         if: steps.changed-files.outputs.files != ''
         run: |

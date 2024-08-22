@@ -15,48 +15,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Prettier and Plugins
-        run: npm install prettier prettier-plugin-apex @prettier/plugin-xml
+      - name: Install Prettier
+        run: npm install --save-dev prettier prettier-plugin-apex @prettier/plugin-xml
 
       - name: Get list of changed files
         id: changed-files
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const githubContext = context;
-            let files = [];
-            if (githubContext.eventName === 'pull_request') {
-              const prNumber = githubContext.payload.pull_request.number;
-              const repoOwner = githubContext.repo.owner;
-              const repoName = githubContext.repo.repo;
-              const { data } = await github.rest.pulls.listFiles({
-                owner: repoOwner,
-                repo: repoName,
-                pull_number: prNumber
-              });
-              files = data.filter(f => f.status !== 'removed');
-            } else if (githubContext.eventName === 'workflow_dispatch') {
-              // For manual runs, get the diff against the main branch
-              const { execSync } = require('child_process');
-              base_branch="origin/$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')"
-              const diff = execSync('git diff --name-only $base_branch').toString().trim();
-              files = diff.split('\n').filter(f => f.startsWith('src/'));
-            }
+        run: |
+          git config --global --add safe.directory "*"
+          chmod +x ./devops-scripts/findChangedPrFiles.sh
+          ./devops-scripts/findChangedPrFiles.sh
 
-            const fileNames = files.map(f => f.filename ? f.filename : f).join(' ');
-            console.log('Files:', fileNames);
-            core.setOutput('files', fileNames);
       - name: Run Prettier
+        id: prettier_check
         if: steps.changed-files.outputs.files != ''
         run: |
-          files=${{ steps.changed-files.outputs.files }}
-          echo "$files"
-          npx prettier --write ${{ steps.changed-files.outputs.files }}
-      - name: Commit changes
-        if: steps.changed-files.outputs.files != ''
-        uses: stefanzweifel/git-auto-commit-action@v4
+          npx prettier --write ${{ steps.changed-files.outputs.files }} --ignore-unknown
+          modified_files=$(git diff --name-only --diff-filter=M | grep '^src/' | tr '\n' ' ')
+          echo "files=$modified_files" >> "$GITHUB_OUTPUT"
+
+      - name: Commit prettier changes
+        if: steps.prettier_check.outputs.files != ''
+        uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d
         with:
           commit_message: "Prettier code formatting"
-          file_pattern: ${{ steps.changed-files.outputs.files }}
+          file_pattern: ${{ steps.prettier_check.outputs.files }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

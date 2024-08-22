@@ -49,8 +49,7 @@ export default class CvPage extends NavigationMixin (LightningElement) {
     /**
      * Initiates data loading.
      */
-    async connectedCallback() {
-        this.sessionDetails = createSessionData(this.labels);
+    async connectedCallback() { this.sessionDetails = createSessionData(this.labels);
         this.currentUserName = this.sessionDetails.name;
         this.userRecordType = await fetchStatus(this.sessionDetails.username, JSON.stringify(this.sessionDetails));
 

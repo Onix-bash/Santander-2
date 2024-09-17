@@ -1,28 +1,113 @@
-# Changelog will be written to changelog branch
-
-name: 'Test includeChangedESIntoPackage.sh in manual run'
-
+name: 'Manual Deployment'
 on:
   workflow_dispatch:
+    inputs:
+      modules_to_deploy:
+        description: List of modules to deploy (space separated). If left blank then all modules will get deployed
+        type: string
+      environment:
+        description: Environment
+        type: environment
+        required: true
+
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        required: true
+      modules_to_deploy:
+        description: List of modules to deploy (space separated). If left blank then all modules will get deployed
+        required: true
+        type: string
+      base_ref:
+        description: Ref to compare (usually "develop"); Used to generate delta package
+        required: false
+        type: string
 
 jobs:
   deploy-changes:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     env:
+      WORKING_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
       SKIP_ORG_INTERACTION: ${{ vars.SKIP_ORG_INTERACTION }}
       # Sets the deployment destination from sfdx-project.json
       SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
-      DEPLOY_DESTINATION: ${{ vars.DEPLOY_DESTINATION }}
+      API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
+    outputs:
+      should_notify: ${{ steps.check.outputs.should_notify }}  
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
-      - name: es
-        id: es
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Generate delta package
+        if: ${{ inputs.base_ref != '' }}
         run: |
-          echo "Manual"
-          chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
-          ./devops-scripts/includeChangedESIntoPackage.sh
+          echo y | sf plugins install sfdx-git-delta
+          sf sgd source delta --from ${{ inputs.base_ref }} --to origin/$WORKING_BRANCH_NAME --output ./src --source ./src
+
+      - name: Authenticate
+        id: auth
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+        run: |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh --set-default
+
+      - name: Deploy Changes to ${{ github.event.inputs.environment }}
+        id: deploy_changes
+        run: |
+          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+          chmod +x ./devops-scripts/includeChangedBREMetadata.sh 
+          ./devops-scripts/includeChangedBREMetadata.sh
+          chmod +x ./devops-scripts/runDeployments.sh 
+          ./devops-scripts/runDeployments.sh ${{ github.event.inputs.modules_to_deploy }}
+          
+      - name: Create CalculationMatrixRow(s)
+        if: ${{ steps.deploy_changes.outputs.decision_matrix_files != '' }}
+        run: |
+          chmod +x ./devops-scripts/createDecisionMatrixDefinitionRows.sh 
+          ./devops-scripts/createDecisionMatrixDefinitionRows.sh ${{ steps.deploy_changes.outputs.decision_matrix_files }}     
+          
+      - name: Cancel Job
+        id: cancel
+        if: ${{ cancelled() }}
+        run: |
+          chmod +x ./devops-scripts/cancelJob.sh
+          ./devops-scripts/cancelJob.sh  ${{steps.deploy_changes.outputs.deployment_id}}
+
+      - name: Check failure
+        id: check
+        if: failure() && (steps.auth.outcome == 'failure' || steps.cancel.outcome == 'failure')
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT    
+  
+  notify:
+    runs-on: ubuntu-latest
+    needs: deploy-changes
+    if: always()
+      
+    steps:
+      - uses: actions/checkout@v2
+         
+      - name: Send Teams notification
+        if: ${{ needs.deploy-changes.outputs.should_notify == 'true' }}
+        run: |
+          chmod +x ./devops-scripts/runTeamsNotification.sh
+          ./devops-scripts/runTeamsNotification.sh
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_URL: ${{ github.server_url }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_RUN: ${{ github.run_id }}

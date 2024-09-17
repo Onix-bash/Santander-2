@@ -29,11 +29,11 @@ jobs:
 #          chmod +x ./devops-scripts/authenticate.sh
 #          ./devops-scripts/authenticate.sh --set-default
 
-      - name: Deploy Changes to ${{ github.event.inputs.environment }}
+      - name: Deploy Changes to ${{ inputs.environment }}
         id: deploy_changes
         run: |
           echo "environment"
-          echo "${{ github.event.inputs.environment }}"
+          echo "${{ inputs.environment }}"
           git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
           chmod +x ./devops-scripts/runDeployments.sh 
           ./devops-scripts/runDeployments.sh

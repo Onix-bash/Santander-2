@@ -28,3 +28,4 @@ jobs:
     uses: ./.github/workflows/run-release-deploy.yml
     with:
       environment: 'PRE-PROD'
+    secrets: inherit

@@ -9,23 +9,25 @@ on:
 jobs:
   deploy-to-homes-sit:
     name: Deploy to HomesSIT
-    uses: ./.github/workflows/run-release-deploy.yml
+    uses: ./.github/workflows/deploy-manual.yml
     with:
       environment: 'HomesSIT'
     secrets: inherit
 
   deploy-to-homes-qa:
+    name: Deploy to HomesQA
     needs:
       - deploy-to-homes-sit
-    uses: ./.github/workflows/run-release-deploy.yml
+    uses: ./.github/workflows/deploy-manual.yml
     with:
       environment: 'HomesQA'
     secrets: inherit
 
   deploy-to-pre-prod:
+    name: Deploy to Pre-PROD
     needs:
       - deploy-to-homes-qa
-    uses: ./.github/workflows/run-release-deploy.yml
+    uses: ./.github/workflows/deploy-manual.yml
     with:
       environment: 'PRE-PROD'
     secrets: inherit

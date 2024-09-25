@@ -1,0 +1,50 @@
+name: 'Push to Release Branch PoC'
+on:
+  push:
+    branches:
+      - release/*
+      - chore/release-automation-test  
+      
+  workflow_dispatch:
+    inputs:
+      test_level:
+        description: Apex Unit Tests Level
+        type: choice
+        required: true
+        default: RunLocalTests
+        options:
+          - NoTestRun
+          - RunAllTestsInOrg
+          - RunLocalTests
+
+jobs:
+  validate-homes-qa:
+    name: Validate HomesQA
+    uses: ./.github/workflows/validate-manual.yml
+    with:
+      environment: 'HomesQA'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_validate: ''
+    secrets: inherit
+    
+  validate-homes-sit:
+    name: Validate HomesSIT
+    needs:
+      - validate-homes-qa
+    uses: ./.github/workflows/validate-manual.yml
+    with:
+      environment: 'HomesSIT'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_validate: ''
+    secrets: inherit
+
+  validate-pre-prod:
+    name: Validate PrePROD
+    needs:
+      - validate-homes-sit
+    uses: ./.github/workflows/validate-manual.yml
+    with:
+      environment: 'PrePROD'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_validate: ''
+    secrets: inherit

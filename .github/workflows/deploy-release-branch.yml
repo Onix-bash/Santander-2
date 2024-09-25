@@ -12,6 +12,7 @@ jobs:
     uses: ./.github/workflows/deploy-manual.yml
     with:
       environment: 'HomesSIT'
+      modules_to_deploy: ''
     secrets: inherit
 
   deploy-to-homes-qa:
@@ -21,6 +22,7 @@ jobs:
     uses: ./.github/workflows/deploy-manual.yml
     with:
       environment: 'HomesQA'
+      modules_to_deploy: ''
     secrets: inherit
 
   deploy-to-pre-prod:
@@ -30,4 +32,5 @@ jobs:
     uses: ./.github/workflows/deploy-manual.yml
     with:
       environment: 'PRE-PROD'
+      modules_to_deploy: ''
     secrets: inherit

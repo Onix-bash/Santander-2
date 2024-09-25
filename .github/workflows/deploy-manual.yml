@@ -57,57 +57,58 @@ jobs:
           echo y | sf plugins install sfdx-git-delta
           sf sgd source delta --from ${{ inputs.base_ref }} --to origin/$WORKING_BRANCH_NAME --output ./src --source ./src
 
-      - name: Authenticate
-        id: auth
-        env:
-          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
-        run: |
-          chmod +x ./devops-scripts/authenticate.sh
-          ./devops-scripts/authenticate.sh --set-default
-
+#      - name: Authenticate
+#        id: auth
+#        env:
+#          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+#        run: |
+#          chmod +x ./devops-scripts/authenticate.sh
+#          ./devops-scripts/authenticate.sh --set-default
+#
       - name: Deploy Changes to ${{ github.event.inputs.environment }}
         id: deploy_changes
         run: |
-          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
-          chmod +x ./devops-scripts/includeChangedBREMetadata.sh 
-          ./devops-scripts/includeChangedBREMetadata.sh
-          chmod +x ./devops-scripts/runDeployments.sh 
-          ./devops-scripts/runDeployments.sh ${{ github.event.inputs.modules_to_deploy }}
-          
-      - name: Create CalculationMatrixRow(s)
-        if: ${{ steps.deploy_changes.outputs.decision_matrix_files != '' }}
-        run: |
-          chmod +x ./devops-scripts/createDecisionMatrixDefinitionRows.sh 
-          ./devops-scripts/createDecisionMatrixDefinitionRows.sh ${{ steps.deploy_changes.outputs.decision_matrix_files }}     
-          
-      - name: Cancel Job
-        id: cancel
-        if: ${{ cancelled() }}
-        run: |
-          chmod +x ./devops-scripts/cancelJob.sh
-          ./devops-scripts/cancelJob.sh  ${{steps.deploy_changes.outputs.deployment_id}}
-
-      - name: Check failure
-        id: check
-        if: failure() && (steps.auth.outcome == 'failure' || steps.cancel.outcome == 'failure')
-        run: echo "should_notify=true" >> $GITHUB_OUTPUT    
-  
-  notify:
-    runs-on: ubuntu-latest
-    needs: deploy-changes
-    if: always()
-      
-    steps:
-      - uses: actions/checkout@v2
-         
-      - name: Send Teams notification
-        if: ${{ needs.deploy-changes.outputs.should_notify == 'true' }}
-        run: |
-          chmod +x ./devops-scripts/runTeamsNotification.sh
-          ./devops-scripts/runTeamsNotification.sh
-        env:
-          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_URL: ${{ github.server_url }}
-          GITHUB_REPO: ${{ github.repository }}
-          GITHUB_RUN: ${{ github.run_id }}
+           echo "Deploy for ${{ inputs.environment }}"
+#          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+#          chmod +x ./devops-scripts/includeChangedBREMetadata.sh
+#          ./devops-scripts/includeChangedBREMetadata.sh
+#          chmod +x ./devops-scripts/runDeployments.sh
+#          ./devops-scripts/runDeployments.sh ${{ github.event.inputs.modules_to_deploy }}
+#
+#      - name: Create CalculationMatrixRow(s)
+#        if: ${{ steps.deploy_changes.outputs.decision_matrix_files != '' }}
+#        run: |
+#          chmod +x ./devops-scripts/createDecisionMatrixDefinitionRows.sh
+#          ./devops-scripts/createDecisionMatrixDefinitionRows.sh ${{ steps.deploy_changes.outputs.decision_matrix_files }}
+#
+#      - name: Cancel Job
+#        id: cancel
+#        if: ${{ cancelled() }}
+#        run: |
+#          chmod +x ./devops-scripts/cancelJob.sh
+#          ./devops-scripts/cancelJob.sh  ${{steps.deploy_changes.outputs.deployment_id}}
+#
+#      - name: Check failure
+#        id: check
+#        if: failure() && (steps.auth.outcome == 'failure' || steps.cancel.outcome == 'failure')
+#        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+#
+#  notify:
+#    runs-on: ubuntu-latest
+#    needs: deploy-changes
+#    if: always()
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Send Teams notification
+#        if: ${{ needs.deploy-changes.outputs.should_notify == 'true' }}
+#        run: |
+#          chmod +x ./devops-scripts/runTeamsNotification.sh
+#          ./devops-scripts/runTeamsNotification.sh
+#        env:
+#          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+#          GITHUB_REF: ${{ github.ref }}
+#          GITHUB_URL: ${{ github.server_url }}
+#          GITHUB_REPO: ${{ github.repository }}
+#          GITHUB_RUN: ${{ github.run_id }}

@@ -6,17 +6,17 @@
  * @date        17.01.2024
  * @revision 1    17.01.2024 - [Vladislav V.] - Initial version
  */
-import {LightningElement, track, api} from 'lwc';
-import PROFILE from '@salesforce/resourceUrl/Profile_Photo';
-import getEmployeeDetails from '@salesforce/apex/EmployeeHandler.getEmployeeDetails';
-import updateEmployeeDetails from '@salesforce/apex/EmployeeHandler.updateEmployeeDetails';
-import createNewEmployeeRole from '@salesforce/apex/EmployeeHandler.createNewEmployeeRole';
-import updateEmployeeRoles from '@salesforce/apex/EmployeeHandler.updateEmployeeRoles';
-import deleteEmployeeRole from '@salesforce/apex/EmployeeHandler.deleteEmployeeRole';
-import {NavigationMixin} from 'lightning/navigation';
-import {LABELS} from "c/labels";
-import {createSessionData, fetchStatus, redirectToPage} from "c/service";
-export default class CvPage extends NavigationMixin (LightningElement) {
+import { LightningElement, track, api } from "lwc";
+import PROFILE from "@salesforce/resourceUrl/Profile_Photo";
+import getEmployeeDetails from "@salesforce/apex/EmployeeHandler.getEmployeeDetails";
+import updateEmployeeDetails from "@salesforce/apex/EmployeeHandler.updateEmployeeDetails";
+import createNewEmployeeRole from "@salesforce/apex/EmployeeHandler.createNewEmployeeRole";
+import updateEmployeeRoles from "@salesforce/apex/EmployeeHandler.updateEmployeeRoles";
+import deleteEmployeeRole from "@salesforce/apex/EmployeeHandler.deleteEmployeeRole";
+import { NavigationMixin } from "lightning/navigation";
+import { LABELS } from "c/labels";
+import { createSessionData, fetchStatus, redirectToPage } from "c/service";
+export default class CvPage extends NavigationMixin(LightningElement) {
     @track employeeDetails = {};
     @track showEmployeeModal = false;
     @track storeSession = false;
@@ -52,15 +52,21 @@ export default class CvPage extends NavigationMixin (LightningElement) {
     async connectedCallback() {
         this.sessionDetails = createSessionData(this.labels);
         this.currentUserName = this.sessionDetails.name;
-        this.userRecordType = await fetchStatus(this.sessionDetails.username, JSON.stringify(this.sessionDetails));
+        this.userRecordType = await fetchStatus(
+            this.sessionDetails.username,
+            JSON.stringify(this.sessionDetails)
+        );
 
-        this.avatar = JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).avatar ?
-            JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).avatar : this.defaultPhoto;
+        this.avatar = JSON.parse(
+            localStorage.getItem(this.labels.SESSION_DETAILS)
+        ).avatar
+            ? JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS))
+                  .avatar
+            : this.defaultPhoto;
 
         this.getEmployeeDetails();
 
-        for (let i = 0; i < 5; i++)
-            console.log('qwe');
+        for (let i = 0; i < 5; i++) console.log("qwe");
     }
 
     /**
@@ -68,7 +74,10 @@ export default class CvPage extends NavigationMixin (LightningElement) {
      * @returns {boolean} True if the user is an owner or an assistant manager, false otherwise.
      */
     get isOwnerOrAssistingManager() {
-        return this.userRecordType === 'Sales Manager' || this.userRecordType === 'Brand Manager';
+        return (
+            this.userRecordType === "Sales Manager" ||
+            this.userRecordType === "Brand Manager"
+        );
     }
 
     /**
@@ -98,12 +107,14 @@ export default class CvPage extends NavigationMixin (LightningElement) {
      */
     getEmployeeDetails() {
         this.noExperience = false;
-        const username = this.selectedEmployeeUsername || this.sessionDetails.username;
+        const username =
+            this.selectedEmployeeUsername || this.sessionDetails.username;
         const sessionData = JSON.stringify(this.sessionDetails);
 
         getEmployeeDetails({
-            username: this.selectedEmployeeUsername || this.sessionDetails.username,
-            sessionData: JSON.stringify(this.sessionDetails),
+            username:
+                this.selectedEmployeeUsername || this.sessionDetails.username,
+            sessionData: JSON.stringify(this.sessionDetails)
         })
             .then((employee) => {
                 if (employee) {
@@ -120,7 +131,7 @@ export default class CvPage extends NavigationMixin (LightningElement) {
             .catch((error) => {
                 this.setLoading();
                 if (error.body.message.includes(this.labels.INVALID_SESSION)) {
-                    redirectToPage('profile', 'login');
+                    redirectToPage("profile", "login");
                 }
             });
     }
@@ -195,8 +206,10 @@ export default class CvPage extends NavigationMixin (LightningElement) {
         let sessionData = createSessionData(this.labels);
 
         createNewEmployeeRole({
-            username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).username,
-            sessionData: JSON.stringify(sessionData),
+            username: JSON.parse(
+                localStorage.getItem(this.labels.SESSION_DETAILS)
+            ).username,
+            sessionData: JSON.stringify(sessionData)
         })
             .then((result) => {
                 if (result) {
@@ -224,21 +237,41 @@ export default class CvPage extends NavigationMixin (LightningElement) {
 
         let details;
 
-        if (type === 'skills') {
+        if (type === "skills") {
             details = {
-                salesforceCRM: this.salesforceCRM != null ? this.salesforceCRM : this.employeeDetails.salesforceCRM,
-                generalSoftwareDevelopment: this.generalSoftwareDevelopment != null ? this.generalSoftwareDevelopment :
-                    this.employeeDetails.generalSoftwareDevelopment,
-                other: this.other != null ? this.other : this.employeeDetails.other,
-                otherProgrammingLanguages: this.otherProgrammingLanguages != null ? this.otherProgrammingLanguages :
-                    this.employeeDetails.otherProgrammingLanguages,
-                languages: this.languages != null ? this.languages : this.employeeDetails.languages,
-                username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).username
+                salesforceCRM:
+                    this.salesforceCRM != null
+                        ? this.salesforceCRM
+                        : this.employeeDetails.salesforceCRM,
+                generalSoftwareDevelopment:
+                    this.generalSoftwareDevelopment != null
+                        ? this.generalSoftwareDevelopment
+                        : this.employeeDetails.generalSoftwareDevelopment,
+                other:
+                    this.other != null
+                        ? this.other
+                        : this.employeeDetails.other,
+                otherProgrammingLanguages:
+                    this.otherProgrammingLanguages != null
+                        ? this.otherProgrammingLanguages
+                        : this.employeeDetails.otherProgrammingLanguages,
+                languages:
+                    this.languages != null
+                        ? this.languages
+                        : this.employeeDetails.languages,
+                username: JSON.parse(
+                    localStorage.getItem(this.labels.SESSION_DETAILS)
+                ).username
             };
-        } else if (type === 'title') {
+        } else if (type === "title") {
             details = {
-                title: this.title != null ? this.title : this.employeeDetails.title,
-                username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).username
+                title:
+                    this.title != null
+                        ? this.title
+                        : this.employeeDetails.title,
+                username: JSON.parse(
+                    localStorage.getItem(this.labels.SESSION_DETAILS)
+                ).username
             };
         }
         updateEmployeeDetails({
@@ -250,7 +283,8 @@ export default class CvPage extends NavigationMixin (LightningElement) {
                 if (result) {
                 }
                 this.connectedCallback();
-                this[`isEdit${type.charAt(0).toUpperCase() + type.slice(1)}`] = false;
+                this[`isEdit${type.charAt(0).toUpperCase() + type.slice(1)}`] =
+                    false;
                 this.setLoading();
             })
             .catch((error) => {
@@ -268,11 +302,11 @@ export default class CvPage extends NavigationMixin (LightningElement) {
     handleCancel(event) {
         const sectionType = event.target.dataset.section;
 
-        if (sectionType === 'skills') {
+        if (sectionType === "skills") {
             this.isEditSkills = false;
-        } else if (sectionType === 'title') {
+        } else if (sectionType === "title") {
             this.isEditTitle = false;
-        } else if (sectionType === 'experience') {
+        } else if (sectionType === "experience") {
             this.isEditExperience = false;
         }
     }
@@ -298,7 +332,9 @@ export default class CvPage extends NavigationMixin (LightningElement) {
                 startDate: role.startDate,
                 endDate: role.endDate,
                 description: role.description,
-                username: JSON.parse(localStorage.getItem(this.labels.SESSION_DETAILS)).username,
+                username: JSON.parse(
+                    localStorage.getItem(this.labels.SESSION_DETAILS)
+                ).username
             };
 
             updatedRoles.push(roleDetails);
@@ -307,7 +343,7 @@ export default class CvPage extends NavigationMixin (LightningElement) {
         if (updatedRoles.length > 0) {
             updateEmployeeRoles({
                 rolesData: JSON.stringify(updatedRoles),
-                sessionData: JSON.stringify(sessionData),
+                sessionData: JSON.stringify(sessionData)
             })
                 .then((result) => {
                     if (result) {
@@ -337,7 +373,7 @@ export default class CvPage extends NavigationMixin (LightningElement) {
 
         deleteEmployeeRole({
             roleId: this.employeeDetails.roles[index].roleId,
-            sessionData: JSON.stringify(sessionData),
+            sessionData: JSON.stringify(sessionData)
         })
             .then((result) => {
                 if (result) {
@@ -356,17 +392,19 @@ export default class CvPage extends NavigationMixin (LightningElement) {
      * It then navigates to the generated CV page using the 'NavigationMixin' and a standard web page type.
      */
     handleGenerateCV() {
-        const username = this.selectedEmployeeUsername || this.sessionDetails.username;
-        const vfPageUrl = 'https://onixconsulting--portal--c.sandbox.vf.force.com/apex/CVGenerator?username=' +
+        const username =
+            this.selectedEmployeeUsername || this.sessionDetails.username;
+        const vfPageUrl =
+            "https://onixconsulting--portal--c.sandbox.vf.force.com/apex/CVGenerator?username=" +
             username;
 
         this[NavigationMixin.Navigate]({
-            type: 'standard__webPage',
+            type: "standard__webPage",
             attributes: {
                 url: vfPageUrl
             }
-        }).catch(error => {
-            console.error('Error navigating to VF page:', error);
+        }).catch((error) => {
+            console.error("Error navigating to VF page:", error);
         });
     }
 
@@ -376,17 +414,18 @@ export default class CvPage extends NavigationMixin (LightningElement) {
      * It then navigates to the generated CV page using the 'NavigationMixin' and a standard web page type.
      */
     handleGenerateUnnamedCV() {
-        const username = this.selectedEmployeeUsername || this.sessionDetails.username;
-        const isUnnamed = 'true';
+        const username =
+            this.selectedEmployeeUsername || this.sessionDetails.username;
+        const isUnnamed = "true";
         const vfPageUrl = `https://onixconsulting--portal--c.sandbox.vf.force.com/apex/CVGenerator?username=${username}&isUnnamed=${isUnnamed}`;
 
         this[NavigationMixin.Navigate]({
-            type: 'standard__webPage',
+            type: "standard__webPage",
             attributes: {
                 url: vfPageUrl
             }
-        }).catch(error => {
-            console.error('Error navigating to VF page:', error);
+        }).catch((error) => {
+            console.error("Error navigating to VF page:", error);
         });
     }
 
@@ -409,7 +448,11 @@ export default class CvPage extends NavigationMixin (LightningElement) {
      * @param {CustomEvent} event - Event containing the selected employee's details.
      */
     handleEmployeeSelection(event) {
-        const {selectedEmployeeUsername, selectedEmployeeName, selectedEmployeeAvatar} = event.detail;
+        const {
+            selectedEmployeeUsername,
+            selectedEmployeeName,
+            selectedEmployeeAvatar
+        } = event.detail;
 
         this.currentUserName = selectedEmployeeName;
         this.avatar = selectedEmployeeAvatar ? selectedEmployeeAvatar : PROFILE;

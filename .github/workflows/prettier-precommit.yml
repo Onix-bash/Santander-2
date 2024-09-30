@@ -15,9 +15,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Prettier
-        run: npm install --save-dev prettier prettier-plugin-apex @prettier/plugin-xml
-
       - name: Get list of changed files
         id: changed-files
         run: |
@@ -29,6 +26,7 @@ jobs:
         id: prettier_check
         if: steps.changed-files.outputs.files != ''
         run: |
+          npm install --save-dev prettier prettier-plugin-apex @prettier/plugin-xml
           npx prettier --write ${{ steps.changed-files.outputs.files }} --ignore-unknown
           modified_files=$(git diff --name-only --diff-filter=M | grep '^src/' | tr '\n' ' ')
           echo "files=$modified_files" >> "$GITHUB_OUTPUT"

@@ -121,12 +121,6 @@ jobs:
 #          echo y | sf plugins install sfdx-git-delta
 #          sf sgd source delta --from ${{ inputs.base_ref }} --to origin/$WORKING_BRANCH_NAME --output ./src --source ./src
 
-      - name: Set Apex Tests Level
-        if: ${{ inputs.test_level }}
-        run: |
-          chmod +x ./devops-scripts/setApexUnitTestsToRun.sh
-          ./devops-scripts/setApexUnitTestsToRun.sh "${{ inputs.test_level }}" "${{ inputs.specified_tests }}"
-
       - name: Validate Changes on ${{ inputs.environment }}
         id: validate_changes
         env:
@@ -136,6 +130,7 @@ jobs:
           git config --global --add safe.directory "*"
           chmod +x ./devops-scripts/includeChangedBREMetadata.sh 
           ./devops-scripts/includeChangedBREMetadata.sh
+          cat .forceignore
           chmod +x ./devops-scripts/runValidations.sh
           ./devops-scripts/runValidations.sh ${{ inputs.modules_to_validate }}
           

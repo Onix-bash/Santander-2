@@ -15,6 +15,10 @@ on:
           - NoTestRun
           - RunAllTestsInOrg
           - RunLocalTests
+      is_release_branch:
+        description: Indicates if this is a release branch
+        type: boolean
+        required: false
 
 jobs:
   validate-homes-qa:

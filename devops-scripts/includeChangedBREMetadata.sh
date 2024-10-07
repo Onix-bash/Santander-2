@@ -16,6 +16,7 @@ fi
 
 echo "current_branch $current_branch"
 echo "source_to_check_changes $source_to_check_changes"
+echo "Full Reference (GITHUB_REF): $GITHUB_REF"
 
 # BRE - Business Rules Engine Metadata
 BRE_PATH='^src/.*/(expressionSetDefinition|decisionMatrixDefinition)/'

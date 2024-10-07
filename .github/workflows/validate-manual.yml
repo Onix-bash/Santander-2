@@ -49,6 +49,10 @@ on:
         description: Apex Unit Tests (space separated). Keep input empty if you didn't select RunSpecifiedTests
         required: false
         type: string
+      is_release_branch:
+        description: Indicates if this is a release branch
+        type: boolean
+        required: false  
 
 jobs:
   validate-changes:

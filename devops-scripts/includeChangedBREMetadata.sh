@@ -13,8 +13,10 @@ else
     current_branch="origin/$GITHUB_HEAD_REF"
     source_to_check_changes="origin/$GITHUB_BASE_REF"
 fi
+
 echo "current_branch $current_branch"
 echo "source_to_check_changes $source_to_check_changes"
+
 # BRE - Business Rules Engine Metadata
 BRE_PATH='^src/.*/(expressionSetDefinition|decisionMatrixDefinition)/'
 

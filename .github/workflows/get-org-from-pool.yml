@@ -1,0 +1,97 @@
+name: Get CI-Org from Pool
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        default: Scratch_Orgs
+      ci_ref_branch:
+        description: Branch for initial deployment
+        type: string
+        default: develop
+    outputs:
+        ci_org_id:
+          description: 'Id of the Org from pool'
+          value: ${{ jobs.get-org-from-pool.outputs.ci_org_id }}
+        pool_org_count:
+          description: 'Count of orgs in pool'
+          value: ${{ jobs.get-org-from-pool.outputs.pool_org_count }}
+        org_taken_from_pool:
+          description: 'Has Org been taken from pool?'
+          value: ${{ jobs.get-org-from-pool.outputs.org_taken_from_pool }}
+        auth_url:
+          description: 'Org Auth Url'
+          value: ${{ jobs.get-org-from-pool.outputs.auth_url }}
+        should_notify:
+          description: 'Should send teams notification about failure?'
+          value: ${{ jobs.get-org-from-pool.outputs.should_notify }}
+
+
+jobs:
+  get-org-from-pool:
+    name: 'Get Org from Pool'
+    runs-on: ubuntu-latest
+
+    environment:  ${{ inputs.environment }}
+    outputs:
+      ci_org_id: ${{ steps.get_ci_org.outputs.ci_org_id }}
+      pool_org_count: ${{ steps.get_ci_org.outputs.ci_orgs_count }}
+      org_taken_from_pool: ${{ steps.get_ci_org.outputs.org_taken_from_pool }}
+      auth_url: ${{ steps.get_ci_org.outputs.sfdx_auth_url }}
+      should_notify: ${{ steps.check.outputs.should_notify }}
+    env:
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+      # Sets the deployment destination from sfdx-project.json
+      SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+      API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'develop'
+
+      - name: Install Salesforce CLI
+        run: |
+          echo "branch"
+          echo ${{ inputs.ci_ref_branch }}
+#
+#      - name: Authenticate Pool Org
+#        id: auth
+#        env:
+#          SFDXAUTHURL: ${{secrets.POOL_AUTH_URL}}
+#        run: |
+#          chmod +x ./devops-scripts/authenticate.sh
+#          ./devops-scripts/authenticate.sh --alias=PoolOrg
+#
+#      - name: Get Ci-Org from Pool
+#        id: get_ci_org
+#        run: |
+#          exit_code=1
+#          while [ "$exit_code" -ne 0 ]
+#          do
+#            query_result=$(sf data query --query "SELECT Id, Name, SfdxAuthUrl__c FROM ScratchOrg__c ORDER BY CreatedDate ASC" -o PoolOrg --json )
+#            echo "Orgs query result: $query_result"
+#            org_count=$(echo "$query_result" | jq '.result.totalSize')
+#            echo "ci_orgs_count=$org_count" >> "$GITHUB_OUTPUT"
+#            ci_org=$(echo $query_result | jq -r '.result.records[0]')
+#            echo "CI Org: $ci_org"
+#            sfdx_auth_url=$(echo $ci_org | jq -r '.SfdxAuthUrl__c')
+#            ci_org_id=$(echo $ci_org | jq -r '.Id')
+#            sf data delete record --record-id $ci_org_id --sobject ScratchOrg__c --target-org PoolOrg
+#            auth_attempt_result=$(echo $sfdx_auth_url | sf org login sfdx-url --alias ci-org --json --sfdx-url-stdin)
+#            echo $auth_attempt_result
+#            exit_code=$(echo $auth_attempt_result | jq '.status')
+#          done
+#          encoded_secret=$(echo $sfdx_auth_url | base64 -w0 -)
+#          echo "ci_org_id=$ci_org_id" >> "$GITHUB_OUTPUT"
+#          echo "sfdx_auth_url=$encoded_secret" >> "$GITHUB_OUTPUT"
+#          echo "org_taken_from_pool=\"true\"" >> "$GITHUB_OUTPUT"
+#      - name: Initial deployment
+#        id: deploy
+#        run: |
+#          chmod +x ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh
+#          ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh ci-org
+#      - name: Check failure
+#        id: check
+#        if: failure() && (steps.auth.outcome == 'failure' || steps.get_ci_org.outcome == 'failure' || steps.deploy.outcome == 'failure')
+#        run: echo "should_notify=true" >> $GITHUB_OUTPUT

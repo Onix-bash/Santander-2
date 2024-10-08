@@ -127,12 +127,13 @@ jobs:
             echo "result $result"
           done
 
-      - name: Assign Permission Set To ${USERS_FOR_PM_ASSIGNMENT[*]}
+      - name: Assign Permission Set To ${env.USERS_FOR_PM_ASSIGNMENT[@]}
         if: ${{ inputs.is_release_branch && env.USERS_FOR_PS_ASSIGNMENT != '' && env.PS_API_NAME != '' }}
         run: |
           IFS=$'\n' read -r -a USERS_ARRAY <<< "$(echo "$USERS_FOR_PS_ASSIGNMENT" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
           users_assignment_params=''
           for user_email in "${USERS_ARRAY[@]}"; do
+            echo "$user_email"
             users_assignment_params+="--on-behalf-of $user_email "
           done
           echo "users: $users_assignment_params"

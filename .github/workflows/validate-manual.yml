@@ -67,7 +67,9 @@ jobs:
       API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
       SEVERITY: ${{ vars.SEVERITY }}
       IGNORED_SCAN_MODULES: ${{ vars.IGNORED_SCAN_MODULES }}
-      COMMUNITY_TO_PUBLISHING: ${{ vars.COMMUNITY_TO_PUBLISHING}}
+      COMMUNITY_TO_PUBLISHING: ${{ vars.COMMUNITY_TO_PUBLISHING }}
+      USERS_FOR_PS_ASSIGNMENT: ${{ vars.USERS_FOR_PS_ASSIGNMENT }}
+      PS_API_NAME: ${{ vars.PS_API_NAME }}
     outputs:
       should_notify: ${{ steps.check.outputs.should_notify }} 
     steps:
@@ -116,15 +118,27 @@ jobs:
           ./devops-scripts/authenticate.sh --set-default
 
       - name: Publish Community
-        if: ${{ inputs.is_release_branch && env.COMMUNITY_TO_PUBLISHING != '' && env.COMMUNITY_TO_PUBLISHING != ' ' }}
+        if: ${{ inputs.is_release_branch && env.COMMUNITY_TO_PUBLISHING != '' }}
         run: |
-          echo "$COMMUNITY_TO_PUBLISHING"
-          IFS=$'\n' read -r -a COMMUNITIES_ARRAY <<< "$(echo "$COMMUNITY_TO_PUBLISHING" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          IFS=$'\n' read -r -a USERS_ARRAY <<< "$(echo "$COMMUNITY_TO_PUBLISHING" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
           for community_name in "${COMMUNITIES_ARRAY[@]}"; do
             echo "Publishing $community_name"
             result=$(sf community publish --name "$community_name")
             echo "$result"
           done
+
+      - name: Assign Permission Set To ${USERS_FOR_PM_ASSIGNMENT[*]}
+        if: ${{ inputs.is_release_branch && env.USERS_FOR_PS_ASSIGNMENT != '' && env.PS_API_NAME != '' }}
+        run: |
+          IFS=$'\n' read -r -a USERS_ARRAY <<< "$(echo "$USERS_FOR_PS_ASSIGNMENT" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          users_assignment_params=''
+          for user_email in "${USERS_ARRAY[@]}"; do
+            users_assignment_params+="--on-behalf-of $user_email "
+          done
+          IFS=$'\n' read -r -a PS_NAMES_ARRAY <<< "$(echo "$PS_API_NAME" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          for ps_name in "${COMMUNITIES_ARRAY[@]}"; do
+            sf org assign permset --name $ps_name $users_assignment_params
+          fi
 
 #  IFS=',' read -r -a COMMUNITIES_ARRAY <<< "$(echo "$COMMUNITY_TO_PUBLISHING" | sed 's/[[:space:]]*,[[:space:]]*/,/g')"  # Comma separated
 #      - name: Generate delta package

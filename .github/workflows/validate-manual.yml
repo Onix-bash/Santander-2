@@ -138,7 +138,7 @@ jobs:
           IFS=$'\n' read -r -a PS_NAMES_ARRAY <<< "$(echo "$PS_API_NAME" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
           for ps_name in "${PS_NAMES_ARRAY[@]}"; do
             sf org assign permset --name "$ps_name" $users_assignment_params
-          fi
+          done
 
 
 #  IFS=',' read -r -a COMMUNITIES_ARRAY <<< "$(echo "$COMMUNITY_TO_PUBLISHING" | sed 's/[[:space:]]*,[[:space:]]*/,/g')"  # Comma separated

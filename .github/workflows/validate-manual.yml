@@ -135,6 +135,7 @@ jobs:
           for user_email in "${USERS_ARRAY[@]}"; do
             users_assignment_params+="--on-behalf-of $user_email "
           done
+          echo "users: $users_assignment_params"
           IFS=$'\n' read -r -a PS_NAMES_ARRAY <<< "$(echo "$PS_API_NAME" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
           for ps_name in "${PS_NAMES_ARRAY[@]}"; do
             sf org assign permset --name "$ps_name" $users_assignment_params

@@ -119,7 +119,7 @@ jobs:
         if: ${{ inputs.is_release_branch && env.COMMUNITY_TO_PUBLISHING != '' && env.COMMUNITY_TO_PUBLISHING != ' ' }}
         run: |
           echo "$COMMUNITY_TO_PUBLISHING"
-          IFS=$'\n' read -r -d '' -a COMMUNITIES_ARRAY <<< "$(echo "$COMMUNITY_TO_PUBLISHING" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+          IFS=$'\n' read -r -a COMMUNITIES_ARRAY <<< "$(echo "$COMMUNITY_TO_PUBLISHING" | sed '/^\s*$/d' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
           for community_name in "${COMMUNITIES_ARRAY[@]}"; do
             echo "Publishing $community_name"
             result=$(sf community publish --name "$community_name")

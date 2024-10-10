@@ -43,7 +43,9 @@ start() {
 
 filter_modules_to_scan() {
   local modules_to_scan=("$@")
+  echo "Ignored:"
   echo "${IGNORED_MODULES_ARRAY[*]}"
+  echo "Modules to scan:"
   echo "${modules_to_scan[@]}"
   for module in "${modules_to_scan[@]}"; do
     echo "module: $module"

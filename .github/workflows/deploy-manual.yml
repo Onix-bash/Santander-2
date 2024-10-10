@@ -9,6 +9,20 @@ on:
         description: Environment
         type: environment
         required: true
+      test_level:
+        description: Apex Unit Tests Level
+        type: choice
+        required: true
+        options:
+          - NoTestRun
+          - RunAllTestsInOrg
+          - RunLocalTests
+          - RunSpecifiedTests
+        default: RunLocalTests  
+      specified_tests:
+        description: Apex Unit Tests (space separated). Keep input empty if you didn't select RunSpecifiedTests
+        type: string
+        required: false
 
   workflow_call:
     inputs:
@@ -24,6 +38,18 @@ on:
         description: Ref to compare (usually "develop"); Used to generate delta package
         required: false
         type: string
+      test_level:
+        description: Apex Unit Tests Level
+        required: false
+        type: string
+      specified_tests:
+        description: Apex Unit Tests (space separated). Keep input empty if you didn't select RunSpecifiedTests
+        required: false
+        type: string  
+      is_release_branch:
+        description: Indicates if this is a release branch
+        type: boolean
+        required: false    
 
 jobs:
   deploy-changes:
@@ -40,8 +66,17 @@ jobs:
     outputs:
       should_notify: ${{ steps.check.outputs.should_notify }}  
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Validate ServiceNow Ticket
+        uses: santandergroup-uk/alm-openshift-reusable-workflows/.github/actions/snow@ctask_proxy
+        with:
+          snow-reference: ${{ vars.SNOW_REFERENCE }}
+          project-name: ${{ vars.SNOW_PROJECT_NAME }}
+          snow-user: ${{ secrets.SNOW_SVC_USER }}
+          snow-pass: ${{ secrets.SNOW_SVC_PASS }}
+          snow-url: ${{ secrets.SNOW_SVC_URL }}
+          region: ${{ vars.SNOW_REGION }}
+        if: ${{ vars.IS_DEPLOY_DESTINATION_PRODUCTION == 'true' }}
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -64,9 +99,20 @@ jobs:
         run: |
           chmod +x ./devops-scripts/authenticate.sh
           ./devops-scripts/authenticate.sh --set-default
+          
+      - name: Set Apex Tests Level
+        if: ${{ inputs.test_level }}
+        env:
+          IS_RELEASE_BRANCH: ${{ inputs.is_release_branch }}
+        run: |
+          chmod +x ./devops-scripts/setApexUnitTestsToRun.sh
+          ./devops-scripts/setApexUnitTestsToRun.sh "${{ inputs.test_level }}" "${{ inputs.specified_tests }}" # Set TEST_LEVEL and SPECIFIED_TESTS to GITHUB_ENV
 
       - name: Deploy Changes to ${{ github.event.inputs.environment }}
         id: deploy_changes
+        env:
+          TEST_LEVEL: ${{ env.TEST_LEVEL }}
+          SPECIFIED_TESTS: ${{ env.SPECIFIED_TESTS }}
         run: |
           git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
           chmod +x ./devops-scripts/includeChangedBREMetadata.sh 
@@ -79,7 +125,7 @@ jobs:
         run: |
           chmod +x ./devops-scripts/createDecisionMatrixDefinitionRows.sh 
           ./devops-scripts/createDecisionMatrixDefinitionRows.sh ${{ steps.deploy_changes.outputs.decision_matrix_files }}     
-          
+
       - name: Cancel Job
         id: cancel
         if: ${{ cancelled() }}
@@ -92,13 +138,13 @@ jobs:
         if: failure() && (steps.auth.outcome == 'failure' || steps.cancel.outcome == 'failure')
         run: echo "should_notify=true" >> $GITHUB_OUTPUT    
   
-  notify:
+  notify-teams:
     runs-on: ubuntu-latest
     needs: deploy-changes
     if: always()
       
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
          
       - name: Send Teams notification
         if: ${{ needs.deploy-changes.outputs.should_notify == 'true' }}
@@ -111,3 +157,10 @@ jobs:
           GITHUB_URL: ${{ github.server_url }}
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_RUN: ${{ github.run_id }}
+  notify-kafka:
+    needs: deploy-changes
+    if: always()
+    uses: ./.github/workflows/notify-kafka.yml
+    with:
+      deploy_environment: ${{ inputs.environment }}
+      workflow_status: ${{ needs.deploy-changes.result }}

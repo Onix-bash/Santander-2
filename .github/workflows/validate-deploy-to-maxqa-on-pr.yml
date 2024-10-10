@@ -1,0 +1,50 @@
+name: 'PR Open/Update Triggered - Validate Deploy to MaxQA'
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    paths:
+      - 'src/**'
+      - 'src-org-dependent/**'
+      - 'devops-scripts/**'
+      - '.github/workflows/**'
+    branches:
+      - 'develop'
+
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        required: true
+      modules_to_validate:
+        description: List of modules to validate (space separated). If left blank then all modules will get validated
+        required: true
+        type: string
+
+jobs:
+  get-changed-modules:
+    outputs:
+      changed_modules: ${{ steps.detect_changes.outputs.changed_modules }}
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Changed Packages
+        id: detect_changes
+        run: |
+          chmod +x ./devops-scripts/findChangedModules.sh
+          ./devops-scripts/findChangedModules.sh
+  
+  validate-changes:
+    name: 'Validate Deployment'
+    needs:
+      - get-changed-modules
+    uses: ./.github/workflows/validate-manual.yml
+    with:
+      environment: 'MaxQA'
+      modules_to_validate: ${{ needs.get-changed-modules.outputs.changed_modules || inputs.modules_to_validate }}
+      base_ref: 'origin/develop'
+    secrets: inherit

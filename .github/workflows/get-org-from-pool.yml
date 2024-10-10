@@ -6,10 +6,6 @@ on:
         description: Environment
         type: string
         default: Scratch_Orgs
-      ci_ref_branch:
-        description: Branch for initial deployment
-        type: string
-        default: develop
     outputs:
         ci_org_id:
           description: 'Id of the Org from pool'
@@ -51,47 +47,45 @@ jobs:
           ref: 'develop'
 
       - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Authenticate Pool Org
+        id: auth
+        env:
+          SFDXAUTHURL: ${{secrets.POOL_AUTH_URL}}
         run: |
-          echo "branch"
-          echo ${{ inputs.ci_ref_branch }}
-#
-#      - name: Authenticate Pool Org
-#        id: auth
-#        env:
-#          SFDXAUTHURL: ${{secrets.POOL_AUTH_URL}}
-#        run: |
-#          chmod +x ./devops-scripts/authenticate.sh
-#          ./devops-scripts/authenticate.sh --alias=PoolOrg
-#
-#      - name: Get Ci-Org from Pool
-#        id: get_ci_org
-#        run: |
-#          exit_code=1
-#          while [ "$exit_code" -ne 0 ]
-#          do
-#            query_result=$(sf data query --query "SELECT Id, Name, SfdxAuthUrl__c FROM ScratchOrg__c ORDER BY CreatedDate ASC" -o PoolOrg --json )
-#            echo "Orgs query result: $query_result"
-#            org_count=$(echo "$query_result" | jq '.result.totalSize')
-#            echo "ci_orgs_count=$org_count" >> "$GITHUB_OUTPUT"
-#            ci_org=$(echo $query_result | jq -r '.result.records[0]')
-#            echo "CI Org: $ci_org"
-#            sfdx_auth_url=$(echo $ci_org | jq -r '.SfdxAuthUrl__c')
-#            ci_org_id=$(echo $ci_org | jq -r '.Id')
-#            sf data delete record --record-id $ci_org_id --sobject ScratchOrg__c --target-org PoolOrg
-#            auth_attempt_result=$(echo $sfdx_auth_url | sf org login sfdx-url --alias ci-org --json --sfdx-url-stdin)
-#            echo $auth_attempt_result
-#            exit_code=$(echo $auth_attempt_result | jq '.status')
-#          done
-#          encoded_secret=$(echo $sfdx_auth_url | base64 -w0 -)
-#          echo "ci_org_id=$ci_org_id" >> "$GITHUB_OUTPUT"
-#          echo "sfdx_auth_url=$encoded_secret" >> "$GITHUB_OUTPUT"
-#          echo "org_taken_from_pool=\"true\"" >> "$GITHUB_OUTPUT"
-#      - name: Initial deployment
-#        id: deploy
-#        run: |
-#          chmod +x ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh
-#          ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh ci-org
-#      - name: Check failure
-#        id: check
-#        if: failure() && (steps.auth.outcome == 'failure' || steps.get_ci_org.outcome == 'failure' || steps.deploy.outcome == 'failure')
-#        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh --alias=PoolOrg
+
+      - name: Get Ci-Org from Pool
+        id: get_ci_org
+        run: |
+          exit_code=1
+          while [ "$exit_code" -ne 0 ]
+          do
+            query_result=$(sf data query --query "SELECT Id, Name, SfdxAuthUrl__c FROM ScratchOrg__c ORDER BY CreatedDate ASC" -o PoolOrg --json )
+            echo "Orgs query result: $query_result"
+            org_count=$(echo "$query_result" | jq '.result.totalSize')
+            echo "ci_orgs_count=$org_count" >> "$GITHUB_OUTPUT"
+            ci_org=$(echo $query_result | jq -r '.result.records[0]')
+            echo "CI Org: $ci_org"
+            sfdx_auth_url=$(echo $ci_org | jq -r '.SfdxAuthUrl__c')
+            ci_org_id=$(echo $ci_org | jq -r '.Id')
+            sf data delete record --record-id $ci_org_id --sobject ScratchOrg__c --target-org PoolOrg
+            auth_attempt_result=$(echo $sfdx_auth_url | sf org login sfdx-url --alias ci-org --json --sfdx-url-stdin)
+            echo $auth_attempt_result
+            exit_code=$(echo $auth_attempt_result | jq '.status')
+          done
+          encoded_secret=$(echo $sfdx_auth_url | base64 -w0 -)
+          echo "ci_org_id=$ci_org_id" >> "$GITHUB_OUTPUT"
+          echo "sfdx_auth_url=$encoded_secret" >> "$GITHUB_OUTPUT"
+          echo "org_taken_from_pool=\"true\"" >> "$GITHUB_OUTPUT"
+      - name: Initial deployment
+        id: deploy
+        run: |
+          chmod +x ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh
+          ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh ci-org
+      - name: Check failure
+        id: check
+        if: failure() && (steps.auth.outcome == 'failure' || steps.get_ci_org.outcome == 'failure' || steps.deploy.outcome == 'failure')
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT

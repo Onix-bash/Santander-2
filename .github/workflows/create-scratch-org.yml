@@ -1,0 +1,113 @@
+name: 'Create CI-Org' #Name mismatch with yml file name, further refactoring needed
+#Dev Org should have separate pool
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        type: environment
+        default: Scratch_Orgs
+      duration:
+        description: Duration of the Scratch Org (1-30 days)
+        type: number
+        default: 3
+      release:
+        description: Release for a Scratch Org (previous, current or preview). Keep it empty to take the release from Repository settings (CI_ORG_RELEASE) 
+        type: string
+        required: false  
+
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        default: Scratch_Orgs
+      duration:
+        description: Duration of the Scratch Org (1-30 days)
+        type: number
+        default: 3
+
+jobs:
+  create-scratch-org:
+    name: 'Create Scratch Org for Pool'
+    runs-on: ubuntu-latest
+    environment:
+      ${{ inputs.environment }}
+    env:
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+    outputs:
+      should_notify: ${{ steps.check.outputs.should_notify }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Authenticate Pool Org
+        id: auth_pool_org
+        env:
+          SFDXAUTHURL: ${{secrets.POOL_AUTH_URL}}
+        run: |
+          echo "Authenticating MaxDevOps Org: "
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh --alias=MaxDevOps 
+
+      - name: Authenticate DEV-HUB
+        id: auth_devhub
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+        run: |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--set-default-dev-hub --alias DevHub"
+
+      - name: Install Browserforce Plugin
+        run: echo Y | sf plugins install sfdx-browserforce-plugin
+
+      - name: Display current DevHub limits
+        run: sf org list limits --target-org DevHub
+
+      - name: Create Scratch-Org for Pool
+        env:
+          PING_CRT_PASSWORD: ${{ secrets.PING_CRT_PASSWORD }}
+          DURATION: ${{ inputs.duration }}
+          CI_ORG_RELEASE: ${{ inputs.release || vars.CI_ORG_RELEASE }}
+        id: create-scratch-org
+        run: |
+          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+          chmod +x ./devops-scripts/scratchOrgs/buildNewSourceOrg.sh 
+          source ./devops-scripts/scratchOrgs/buildNewSourceOrg.sh scratch-org $DURATION "" $CI_ORG_RELEASE
+          sf data create record --sobject ScratchOrg__c --values "SfdxAuthUrl__c=$SCRATCH_AUTHURL DurationDays__c=$DURATION_DAYS" --target-org MaxDevOps
+          echo "Output: $GITHUB_OUTPUT"
+
+      - name: Cleanup on Failure
+        id: cleanup
+        if: ${{ failure() || cancelled() }}
+        continue-on-error: true
+        run: |
+          sf org delete scratch --no-prompt --target-org scratch-org
+          sf data delete record --record-id ${{ steps.create-scratch-org.outputs.poolOrgId }} --sobject ScratchOrg__c --target-org MaxDevOps
+
+      - name: Check failure
+        id: check
+        if: failure() && (steps.auth_pool_org.outcome == 'failure' || steps.auth_devhub.outcome == 'failure' || steps.create-scratch-org.outcome == 'failure' || steps.cleanup.outcome == 'failure')
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: create-scratch-org
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+         
+      - name: Send Teams notification
+        if: ${{ needs.create-scratch-org.outputs.should_notify == 'true' }}
+        run: |
+          chmod +x ./devops-scripts/runTeamsNotification.sh
+          ./devops-scripts/runTeamsNotification.sh
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_URL: ${{ github.server_url }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_RUN: ${{ github.run_id }}

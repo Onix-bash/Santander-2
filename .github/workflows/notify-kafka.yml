@@ -1,0 +1,89 @@
+name: 'Notify Kafka'
+on:
+  workflow_call:
+    inputs:
+      deploy_environment:
+        description: Environment
+        type: string
+        default: 'DEV'
+      workflow_status:
+        description: Status of the workflow
+        required: true
+        type: string
+jobs:
+  notify-kafka:
+    runs-on: [self-hosted, ose-runner]
+
+    steps:
+      - name: Sending Information to Kafka
+        id: Kafka_summary
+        if: always()
+        continue-on-error: true
+        run: |
+          echo '{' >> "${{github.run_id}}-summary.json"
+          echo "\"date"\": "\"$(date +%Y-%m-%d)"\", >> "${{github.run_id}}-summary.json"
+          echo "\"time"\": "\"$(date +%H:%M:%S)"\", >> "${{github.run_id}}-summary.json"
+          echo '"github_run_id": "${{github.run_id}}",' >> "${{github.run_id}}-summary.json"
+          echo '"deployment_type": "paas",' >> "${{github.run_id}}-summary.json"
+          echo '"deploy_environment": "${{ inputs.deploy_environment }}",' >> "${{github.run_id}}-summary.json"
+          echo '"project_name": "HOMES Salesforce",' >> "${{github.run_id}}-summary.json"
+          echo '"alm_team": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"owner": "${{ github.repository }}",' >> "${{github.run_id}}-summary.json"
+          echo '"repo": "${{ github.event.repository.name }}",' >> "${{github.run_id}}-summary.json"
+          echo '"actor": "${{ github.actor }}",' >> "${{github.run_id}}-summary.json"
+          echo '"commit": "${{ github.sha }}",' >> "${{github.run_id}}-summary.json"
+          echo '"branch": "${{ github.ref_name }}",' >> "${{github.run_id}}-summary.json"
+          echo '"workflow_url": "https://github.com/${{ github.repository }}/${{ github.ref_name }}/.github/workflows/build.yml",' >> "${{github.run_id}}-summary.json"
+          echo '"app_technology": "Salesforce",' >> "${{github.run_id}}-summary.json"  
+          echo '"resuable_workflow": "${{ github.job }}",' >> "${{github.run_id}}-summary.json"
+          echo '"execution_url": "https://github.com/${{ github.repository }}/actions/runs/${{github.run_id}}",' >> "${{github.run_id}}-summary.json"
+          echo '"workflow_status": "${{ inputs.workflow_status }}",' >> "${{github.run_id}}-summary.json"
+          echo '"sonar_status": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"sonar_coverage": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"cvesDetected": "0",' >> "${{github.run_id}}-summary.json"
+          echo '"cvesMitigated": "0",' >> "${{github.run_id}}-summary.json"
+          echo '"cvesSupressed": "0",' >> "${{github.run_id}}-summary.json"
+          echo '"base_image": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"base_image_version": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"base_image_technology": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"openshift_cluster": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"openshift_namespace": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"app_name": "Not Applicable",' >> "${{github.run_id}}-summary.json" 
+          echo '"harbor_registry": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"harbor_project": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"image_name": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"image_tag": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"image_sha": "Not Applicable",' >> "${{github.run_id}}-summary.json"
+          echo '"image_vulnerabilities_on_date_deployed": "Not Applicable"' >> "${{github.run_id}}-summary.json"
+          echo '}' >> "${{github.run_id}}-summary.json"
+          cat ./${{github.run_id}}-summary.json
+      - name: Generate audit.json
+        if: always()
+        run: |
+          python /opt/fill-json-template/fill-json-template.py --templatejson /opt/auditjson/audit.json --inputjson "${{github.run_id}}-summary.json"
+          cat audit_jsonfilled.json
+      - name: Send Audit to Kafka
+        env:
+          KAFKA_TOPIC: ${{ vars.KAFKA_TOPIC }}
+        if: always()
+        continue-on-error: true
+        run: |
+          python /opt/kafkaupload/kafkaupload.py --brokers-file /opt/kafkabrokers/kafkabrokers.txt --kafka-topic $KAFKA_TOPIC --json-file audit_jsonfilled.json
+  notify-teams:
+    runs-on: ubuntu-latest
+    needs: 
+      - notify-kafka
+    steps:
+      - uses: actions/checkout@v2
+                         
+      - name: Send Teams notification
+        if: ${{ needs.get-current-pool-size.outputs.should_notify == 'true' || needs.maintain-ci-orgs-pool.outputs.should_notify == 'true' }}
+        run: |
+          chmod +x ./devops-scripts/runTeamsNotification.sh
+          ./devops-scripts/runTeamsNotification.sh
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_URL: ${{ github.server_url }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_RUN: ${{ github.run_id }}

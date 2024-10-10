@@ -1,0 +1,101 @@
+name: 'Manual Validation'
+
+on:
+  workflow_dispatch:
+    inputs:
+      modules_to_validate:
+        description: List of modules to validate (space separated). If left blank then all modules will get validated
+        type: string
+      environment:
+        description: Environment
+        type: environment
+        required: true
+      test_level:
+        description: Apex Unit Tests Level
+        type: choice
+        required: true
+        options:
+          - NoTestRun
+          - RunAllTestsInOrg
+          - RunLocalTests
+          - RunSpecifiedTests
+        default: RunLocalTests  
+      specified_tests:
+        description: Apex Unit Tests (space separated). Keep input empty if you didn't select RunSpecifiedTests
+        type: string
+        required: false
+  workflow_call:
+    secrets:
+        SFDX_AUTH_URL:
+          required: false
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        required: true
+      modules_to_validate:
+        description: List of modules to validate (space separated). If left blank then all modules will get validated
+        required: true
+        type: string
+      base_ref:
+        description: Ref to compare (usually "develop"); Used to generate delta package
+        required: false
+        type: string
+      test_level:
+        description: Apex Unit Tests Level
+        required: false
+        type: string
+      specified_tests:
+        description: Apex Unit Tests (space separated). Keep input empty if you didn't select RunSpecifiedTests
+        required: false
+        type: string  
+      is_release_branch:
+        description: Indicates if this is a release branch
+        type: boolean
+        required: false
+jobs:
+  validate-changes:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      WORKING_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+      SKIP_ORG_INTERACTION: ${{ vars.SKIP_ORG_INTERACTION }}
+      # Sets the deployment destination from sfdx-project.json
+      SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+      API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
+      SEVERITY: ${{ vars.SEVERITY }}
+      IGNORED_SCAN_MODULES: ${{ vars.IGNORED_SCAN_MODULES }}
+    outputs:
+      should_notify: ${{ steps.check.outputs.should_notify }} 
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --globa
+
+      - name: Authenticate
+        id: auth
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+        run:  |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh --set-default
+
+      - name: Validate Changes on ${{ inputs.environment }}
+        id: validate_changes
+        env:
+          TEST_LEVEL: ${{ env.TEST_LEVEL }}
+          SPECIFIED_TESTS: ${{ env.SPECIFIED_TESTS }}
+        run: |
+          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+          chmod +x ./devops-scripts/includeChangedBREMetadata.sh 
+          ./devops-scripts/includeChangedBREMetadata.sh
+          cat .forceignore
+#          chmod +x ./devops-scripts/runValidations.sh
+#          ./devops-scripts/runValidations.sh ${{ inputs.modules_to_validate }}
+          

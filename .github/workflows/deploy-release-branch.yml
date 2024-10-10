@@ -1,0 +1,30 @@
+name: Push to Release Branch PoC
+on:
+  push:
+    branches:
+      - release/*
+      - chore/release-automation
+  workflow_dispatch:
+
+jobs:
+  deploy-to-homes-sit:
+    name: Deploy to HomesSIT
+    uses: ./.github/workflows/run-release-deploy.yml
+    with:
+      environment: 'HomesSIT'
+    secrets: inherit
+
+  deploy-to-homes-qa:
+    needs:
+      - deploy-to-homes-sit
+    uses: ./.github/workflows/run-release-deploy.yml
+    with:
+      environment: 'HomesQA'
+    secrets: inherit
+
+  deploy-to-pre-prod:
+    needs:
+      - deploy-to-homes-qa
+    uses: ./.github/workflows/run-release-deploy.yml
+    with:
+      environment: 'PRE-PROD'

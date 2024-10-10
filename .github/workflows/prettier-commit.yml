@@ -1,0 +1,41 @@
+name: Prettier Commit
+
+on:
+  workflow_call:
+
+jobs:
+  prettier:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Get Changed files
+        id: changed-files
+        run: |
+          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+          chmod +x ./devops-scripts/findChangedPRFiles.sh
+          ./devops-scripts/findChangedPRFiles.sh
+
+      - name: Run Prettier
+        id: prettier_check
+        if: steps.changed-files.outputs.files != ''
+        run: |
+          git stash push -m "Push stash" # Stash modifed files for old branches 
+          npx prettier --write ${{ steps.changed-files.outputs.files }} --ignore-unknown
+          modified_files=$(git diff --name-only --diff-filter=M | grep '^src/.*/\(classes\|lwc\)/' | tr '\n' ' ')
+          echo "files=$modified_files" >> "$GITHUB_OUTPUT"
+
+      - name: Commit Prettier Changes
+        if: steps.prettier_check.outputs.files != ''
+        uses: stefanzweifel/git-auto-commit-action@8756aa072ef5b4a080af5dc8fef36c5d586e521d
+        with:
+          commit_message: "Code formatting by Prettier"
+          status_options: '--untracked-files=no'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

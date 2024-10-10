@@ -1,152 +1,164 @@
 name: 'Validation using Scratch'
 on:
-  workflow_dispatch: 
+  workflow_call:
+    inputs:
+      auth_url:
+        required: true
+        type: string
+        description: Auth URL of Org to be used for validation
+      base_ref:
+        required: false
+        type: string
+        description: Ref to compare (usually "develop"); Used to generate delta package
+    secrets:
+      SFDXAUTHURL:
+        description: 'Salesforce Auth URL to MaxDevOps'
+        required: true 
 
 jobs:
   validate-changes:
     name: CI Org Validation
     runs-on: ubuntu-latest
-    container:
-      image: salesforce/cli:latest-full
     env:
+      WORKING_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+      # Sets the deployment destination from sfdx-project.json
+      SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+      API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      BRANCH_REF: ${{ github.ref }}
+      SEVERITY: ${{ vars.SEVERITY }}
+      UNIT_TEST_IGNORE_CLASSES: ${{ vars.UNIT_TEST_IGNORE_CLASSES }}
+      UNIT_TEST_MIN_COVERAGE: ${{ vars.UNIT_TEST_MIN_COVERAGE }}
+      IGNORED_SCAN_MODULES: ${{ vars.IGNORED_SCAN_MODULES }}
+
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-          #      - name: Validate src-temp folder changes
-          #        run: |
-          #          chmod +x ./devops-scripts/tempFolder.sh
-          #          ./devops-scripts/tempFolder.sh
-          #
-          #      - name: Validate SFDX health
-          #        run: sf -v
-          #
-          #      - name: Get Changed Modules
-          #        id: detect_changes
-          #        run: |
-          #          chmod +x ./devops-scripts/findChangedModules.sh
-          #          ./devops-scripts/findChangedModules.sh
-          #          deleted_files=$(git diff origin/$GITHUB_BASE_REF --name-status --diff-filter=D)
-          #
-          #      - name: Install SFDX Code Analyser
-          #        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
-          #
-          #      - name: Run SFDX Code Analyser
-          #        run: |
-          #          chmod +x ./devops-scripts/runScanner.sh
-          #          ./devops-scripts/runScanner.sh ${{steps.detect_changes.outputs.changed_modules}}
-          #
-          #      - name: Show Scan Results on PR
-          #        uses: actions/github-script@v7
-          #        if: always()
-          #        with:
-          #          script: |
-          #            const script = require('./devops-scripts/showScanPR.js')
-          #            await script({ github, context });
-          #
-          #      - name: Install Flow Analyser
-          #        run: echo Y | sf plugins install lightning-flow-scanner
-          #
-          #      - name: Run Flow Analyser
-          #        run: |
-          #          chmod +x ./devops-scripts/runFlowScanner.sh
-          #          ./devops-scripts/runFlowScanner.sh ${{steps.detect_changes.outputs.changed_modules}}
-          #
-          #      - name: Authenticate CI-Org
-          #        env:
-          #          ENCODED_SECRET: ${{ inputs.auth_url }}
-          #        run: |
-          #          export SFDXAUTHURL=$(echo $ENCODED_SECRET | base64 -di | tr -d '\n')
-          #          chmod +x ./devops-scripts/authenticate.sh
-          #          ./devops-scripts/authenticate.sh "--alias=CI-Org --set-default"
-          #
-          #      - name: Get CI-Org Info
-          #        id: ci_org_info
-          #        run: |
-          #          org_info=$(sf org display --verbose --json --target-org CI-Org | sed s/\\\\n//g)
-          #          org_id=$(echo "$org_info" | jq -r '.result.id')
-          #          echo "org_id=$org_id" >> "$GITHUB_OUTPUT"
-          #
-          #      - name: Restore Source Tracking
-          #        uses: actions/cache/restore@v4
-          #        with:
-          #          key: source-tracking-${{ steps.ci_org_info.outputs.org_id }}
-          #          path: |
-          #            .sf
-          #            .sfdx
-          #
-          #      - name: Re-Authenticate CI-Org
-          #        env:
-          #          ENCODED_SECRET: ${{ inputs.auth_url }}
-          #        run: |
-          #          export SFDXAUTHURL=$(echo $ENCODED_SECRET | base64 -di | tr -d '\n')
-          #          chmod +x ./devops-scripts/authenticate.sh
-          #          ./devops-scripts/authenticate.sh "--alias=CI-Org --set-default"
+      - name: Validate src-temp folder changes
+        run: | 
+          chmod +x ./devops-scripts/tempFolder.sh
+          ./devops-scripts/tempFolder.sh
 
-          # - name: Deploy sources
-          # run: |
-          # chmod +x ./devops-scripts/includeChangedESIntoPackage.sh
-          # ./devops-scripts/includeChangedESIntoPackage.sh
-          # sf project deploy start --ignore-conflicts --target-org CI-Org --verbose --ignore-warnings
-          # git checkout -- .forceignore
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
 
-          # - name: Deploy Module Changes to Ci-Org
-          # id: deploy_changes
-          # run: |
-          # chmod +x ./devops-scripts/runDeploymentsToScratchOrg.sh
-          # ./devops-scripts/runDeploymentsToScratchOrg.sh ${{ steps.detect_changes.outputs.changed_modules }}
+      - name: Validate SFDX health
+        run: sf -v
 
-          # - name: Run Unit Tests
-          # shell: bash
-          # run: |
-          # chmod +x ./devops-scripts/runApexTests.sh
-          # ./devops-scripts/runApexTests.sh
+      - name: Get Changed Modules
+        id: detect_changes
+        run: |
+          chmod +x ./devops-scripts/findChangedModules.sh
+          ./devops-scripts/findChangedModules.sh
+          deleted_files=$(git diff origin/$GITHUB_BASE_REF --name-status --diff-filter=D)
+
+      - name: Install SFDX Code Analyser
+        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
+
+      - name: Run SFDX Code Analyser
+        run: |
+          chmod +x ./devops-scripts/runScanner.sh
+          ./devops-scripts/runScanner.sh ${{steps.detect_changes.outputs.changed_modules}}
+          
+      - name: Show Scan Results on PR 
+        uses: actions/github-script@v7
+        if: always()
+        with:
+            script: |
+              const script = require('./devops-scripts/showScanPR.js')
+              await script({ github, context });
+
+      - name: Install Flow Analyser
+        run: echo Y | sf plugins install lightning-flow-scanner
+
+      - name: Run Flow Analyser
+        continue-on-error: true
+        run: |
+          chmod +x ./devops-scripts/runFlowScanner.sh
+          ./devops-scripts/runFlowScanner.sh ${{steps.detect_changes.outputs.changed_modules}}
+
+      - name: Authenticate CI-Org
+        env:
+          ENCODED_SECRET: ${{ inputs.auth_url }}
+        run: |
+          export SFDXAUTHURL=$(echo $ENCODED_SECRET | base64 -di | tr -d '\n')
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--alias=CI-Org --set-default"
+
+      - name: Get CI-Org Info
+        id: ci_org_info
+        run: |
+          org_info=$(sf org display --verbose --json --target-org CI-Org | sed s/\\\\n//g)
+          org_id=$(echo "$org_info" | jq -r '.result.id')
+          echo "org_id=$org_id" >> "$GITHUB_OUTPUT"
+
+      - name: Generate delta package
+        if: ${{ inputs.base_ref != '' }}
+        run: |
+          echo y | sf plugins install sfdx-git-delta
+          sf sgd source delta --from origin/${{ inputs.base_ref }} --to origin/$WORKING_BRANCH_NAME --output ./src --source ./src
+
+      - name: Deploy Module Changes to Ci-Org
+        id: deploy_changes
+        run: |
+          chmod +x ./devops-scripts/includeChangedBREMetadata.sh 
+          ./devops-scripts/includeChangedBREMetadata.sh
+          chmod +x ./devops-scripts/runDeploymentsToScratchOrg.sh 
+          ./devops-scripts/runDeploymentsToScratchOrg.sh ${{ steps.detect_changes.outputs.changed_modules }} 
+          git checkout -- .forceignore
+          
+      - name: Run Unit Tests
+        shell: bash
+        run: |
+          chmod +x ./devops-scripts/runApexTests.sh
+          ./devops-scripts/runApexTests.sh
+
+      - name: Assign QMS PS
+        run: sf org assign permset --name HM_QMS_Data_Access_Sys_Admins --target-org CI-Org
+
+      - name: Validate QMS records upload
+        run: |
+          chmod +x ./devops-scripts/qms/uploadQmsData.sh
+          ./devops-scripts/qms/uploadQmsData.sh CI-Org
+
+      - name: Validate QMS records download
+        run: |
+          chmod +x ./devops-scripts/qms/downloadQmsData.sh
+          ./devops-scripts/qms/downloadQmsData.sh CI-Org
 
       - name: Validate Full Metadata
         id: full_validate
+        env:
+          SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+          API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
         run: |
-          git config --global --add safe.directory "*"
-          current_branch=$(git branch --show-current)
-          echo "Current branch: $current_branch"
+          echo "Validating dependencies of deleted files..."
+          sf project delete tracking --target-org CI-Org --no-prompt
+          sf project deploy start --source-dir ./src --target-org CI-Org --ignore-conflicts
 
-          # Get the default branch (e.g., develop)
-          default_branch=$(git remote show origin | grep 'HEAD branch' | sed 's/.*: //')
-          echo "Default branch: $default_branch"
-          chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "$default_branch" "$current_branch"
-          cat .forceignore
-          echo "Simulating a failure condition"
-          exit 1
+      - name: Check coverage for flows
+        env:
+          REQUIRED_FLOW_COVERAGE: ${{ vars.REQUIRED_FLOW_COVERAGE }}
+        run: |
+          npm ci
+          npm run check-flow-coverage -- --required-coverage $REQUIRED_FLOW_COVERAGE --target-org CI-Org
 
-      - name: Set Output Based on Step Result
-        id: full_validate_result
+      - name: Create Error Log
         if: ${{ failure() && steps.full_validate.outcome == 'failure' }}
-        run: echo "full_validation_failed=true" >> $GITHUB_OUTPUT
-
-    outputs:
-      full_validation_failed: ${{ steps.full_validate_result.outputs.full_validation_failed }}
-
-  capture-error-message:
-    name: Capture Error message
-    runs-on: ubuntu-latest
-    container:
-      image: salesforce/cli:latest-full
-    env:
-      PR_NUMBER: ${{ github.event.pull_request.number }}
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      PR_LINK: ${{ github.event.pull_request.html_url }}
-      BRANCH_REF: ${{ github.ref }}
-      environment: "MaxDevOps"
-    needs: [ validate-changes ]
-    if: ${{ always() && needs.validate-changes.outputs.full_validation_failed == 'true' && ! contains(needs.*.result, 'cancelled') }}
-    steps:
-      - name: Set Error Log
+        env:
+          SFDXAUTHURL: ${{ secrets.SFDXAUTHURL }}
+          GITHUB_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SERVER: ${{ github.server_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_LINK: ${{ github.event.pull_request.html_url }}
         run: |
-          echo "run script set error"
-          chmod +x ./devops-scripts/es-exclude-forceignore.sh
-          ./devops-scripts/es-exclude-forceignore.sh "${{ env.BRANCH_REF }}" "original/develop"
-
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--set-default"
+          chmod +x ./devops-scripts/createErrorLog.sh
+          ./devops-scripts/createErrorLog.sh

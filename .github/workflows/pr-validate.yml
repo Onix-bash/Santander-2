@@ -17,8 +17,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Es changes
-        run: |
-          chmod +x ./devops-scripts/includeChangesESIntoPackage.sh
-          ./devops-scripts/includeChangesESIntoPackage.sh 
+  get-ci-org-from-pool:
+    name: Get CI-Org from Pool
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'specific_org') }}
+    secrets: inherit
+    with:
+      environment: Scratch_Orgs
+      ci_ref_branch: ${{ contains(github.event.pull_request.labels.*.name, 'specific_ref_branch') && github.head_ref || 'develop' }}
 
+    uses: ./.github/workflows/get-org-from-pool.yml

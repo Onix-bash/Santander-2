@@ -1,0 +1,48 @@
+name: 'Release Validation'
+on:
+  pull_request:
+    branches:
+      - release/*
+      
+  workflow_dispatch:
+    inputs:
+      test_level:
+        description: Apex Unit Tests Level
+        type: choice
+        required: true
+        default: RunLocalTests
+        options:
+          - NoTestRun
+          - RunAllTestsInOrg
+          - RunLocalTests
+
+jobs:
+  validate-homes-qa:
+    name: Validate HomesQA
+    uses: ./.github/workflows/validate-manual.yml
+    with:
+      environment: 'HomesQA'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_validate: ''
+      is_release_branch: true
+    secrets: inherit
+    
+  validate-homes-sit:
+    name: Validate HomesSIT
+    uses: ./.github/workflows/validate-manual.yml
+    with:
+      environment: 'HomesSIT'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_validate: ''
+      is_release_branch: true
+    secrets: inherit
+
+  validate-pre-prod:
+    name: Validate PrePROD
+    uses: ./.github/workflows/validate-manual.yml
+    with:
+      environment: 'PrePROD'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_validate: ''
+      is_release_branch: true
+    secrets: inherit

@@ -1,0 +1,68 @@
+name: 'Validation using Sandbox'
+on:
+  workflow_dispatch:
+    inputs:
+      modules_to_validate:
+        description: List of modules to validate (space separated). If left blank then all modules will get validated
+        type: string
+      environment:
+        description: Environment
+        type: environment
+        required: true
+jobs:
+  validate-changes:
+    name: ${{ github.event.inputs.environment }} Validation
+    runs-on: ubuntu-latest
+    environment:
+      ${{ github.event.inputs.environment }}
+    env:
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+      SKIP_ORG_INTERACTION: ${{ vars.SKIP_ORG_INTERACTION }}
+      # Sets the deployment destination from sfdx-project.json
+      SF_APPLY_REPLACEMENTS_ON_CONVERT: ${{ vars.SF_APPLY_REPLACEMENTS_ON_CONVERT }}
+      API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
+      SEVERITY: ${{ vars.SEVERITY }}
+      IGNORED_SCAN_MODULES: ${{ vars.IGNORED_SCAN_MODULES }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate src-temp folder changes
+        run: | 
+          chmod +x ./devops-scripts/tempFolder.sh
+          ./devops-scripts/tempFolder.sh
+
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Validate SFDX health
+        run: sf -v
+
+      - name: Install SFDX Code Analyser
+        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
+
+      - name: Run Code Analyser
+        run: | 
+          chmod +x ./devops-scripts/runScanner.sh
+          ./devops-scripts/runScanner.sh ${{ github.event.inputs.modules_to_validate }}
+
+      - name: Authenticate to ${{ github.event.inputs.environment }}
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+        run:  |
+          chmod +x ./devops-scripts/authenticate.sh 
+          ./devops-scripts/authenticate.sh "--set-default"
+
+      - name: Validate Changes on ${{ github.event.inputs.environment }}
+        id: validate_changes
+        run: |
+          chmod +x ./devops-scripts/runValidations.sh
+          ./devops-scripts/runValidations.sh ${{ github.event.inputs.modules_to_validate }}
+
+      - name: Cancel Job
+        if: ${{ cancelled() }}
+        run: |
+          chmod +x ./devops-scripts/cancelJob.sh
+          ./devops-scripts/cancelJob.sh  ${{steps.validate_changes.outputs.deployment_id}}

@@ -1,0 +1,138 @@
+name: 'Pull Request Validation - CI-Org'
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize, labeled ]
+
+jobs:
+  get-auth-url-from-pr:
+    name: Get Auth URL from PR Description
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'specific_org') }}
+    environment:  ${{ 'Scratch_Orgs'}}
+    outputs:
+      auth_url: ${{ steps.get_auth_url.outputs.sfdx_auth_url }}
+      should_notify: ${{ steps.check.outputs.should_notify }}
+    env:
+      PR_NUMBER: ${{ github.event.number }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get Auth URL from PR Description
+        id: get_auth_url
+        shell: bash
+        run: |
+          sfdx_auth_url=$(gh pr view $PR_NUMBER --json body | jq -r '.body' | grep SFDX_AUTH_URL | sed  -e "s/SFDX_AUTH_URL=//g")
+          echo "Auth URL from PR: $sfdx_auth_url"
+          encoded_secret=$(echo $sfdx_auth_url | base64 -w0 - )
+          echo "sfdx_auth_url=$encoded_secret" >> $GITHUB_OUTPUT
+
+      - name: Check failure
+        id: check
+        if: failure() && steps.get_auth_url.outcome == 'failure'
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+
+  get-ci-org-from-pool:
+    name: Get CI-Org from Pool
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'specific_org') }}
+    secrets: inherit
+    with:
+      environment: Scratch_Orgs
+    uses: ./.github/workflows/get-org-from-pool.yml
+
+  validate-changes:
+    name: CI-Org Validation
+    uses: ./.github/workflows/scratch-org-validation.yml
+    if: ${{ always() && contains(join(needs.*.result, ','), 'success') }}
+    needs:
+      - get-auth-url-from-pr
+      - get-ci-org-from-pool
+    with:
+      base_ref: ${{ github.base_ref }}
+      auth_url: ${{ needs.get-auth-url-from-pr.outputs.auth_url || needs.get-ci-org-from-pool.outputs.auth_url }}
+    secrets:
+      SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL_MAX_DEVOPS}}
+
+  cleanup:
+    needs:
+      - validate-changes
+      - get-ci-org-from-pool
+    name: Remove Utilized CI-Org
+    if: always() && needs.get-ci-org-from-pool.outputs.org_taken_from_pool != ''
+    runs-on: ubuntu-latest
+    env:
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+    environment:  ${{ 'Scratch_Orgs' }}
+    outputs:
+      should_notify: ${{ steps.check.outputs.should_notify }}
+    steps:
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Authenticate DEV-HUB
+        id: auth
+        env:
+          DEVHUB_AUTH_URL: ${{ secrets.SFDX_AUTH_URL }}
+        run: |
+          echo $DEVHUB_AUTH_URL | sf org login sfdx-url --set-default-dev-hub --sfdx-url-stdin 
+
+      - name: Remove Utilized CI-Org
+        id: remove_ci_org
+        env:
+          ENCODED_SECRET: ${{ needs.get-ci-org-from-pool.outputs.auth_url }}
+        run: |
+          export SFDXAUTHURL=$(echo $ENCODED_SECRET | base64 -di | tr -d '\n')
+          echo $SFDXAUTHURL | sf org login sfdx-url --alias CI-Org --sfdx-url-stdin 
+          sf org delete scratch --no-prompt --target-org CI-Org
+
+      - name: Check failure
+        id: check
+        if: failure() && (steps.auth.outcome == 'failure' || steps.remove_ci_org.outcome == 'failure')
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+
+  create-pool-org:
+    name: 'Dispatch CI-Org Creation Job'
+    runs-on: ubuntu-latest
+    env:
+      auth_url: ${{ needs.get-ci-org-from-pool.outputs.auth_url }}
+    needs:
+      - get-ci-org-from-pool
+    if: always() && needs.get-ci-org-from-pool.outputs.org_taken_from_pool != '' && needs.get-ci-org-from-pool.outputs.pool_org_count < vars.CI_ORGS_POOL_SIZE
+    outputs:
+      should_notify: ${{ steps.check.outputs.should_notify }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Create CI-Org Workflow
+        id: create_ci_org
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_ORG_ID: ${{ needs.get-ci-org-from-pool.outputs.ci_org_id }}
+        run: |
+          gh workflow run create-scratch-org.yml 
+
+      - name: Check failure
+        id: check
+        if: failure() && steps.create_ci_org.outcome == 'failure'
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: 
+      - get-auth-url-from-pr
+      - get-ci-org-from-pool
+      - cleanup
+      - create-pool-org
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+                  
+      - name: Send Teams notification
+        if: ${{ needs.get-auth-url-from-pr.outputs.should_notify == 'true' || needs.get-ci-org-from-pool.outputs.should_notify == 'true' || needs.cleanup.outputs.should_notify == 'true' || needs.create-pool-org.outputs.should_notify == 'true' }}
+        run: |
+          chmod +x ./devops-scripts/runTeamsNotification.sh
+          ./devops-scripts/runTeamsNotification.sh
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_URL: ${{ github.server_url }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_RUN: ${{ github.run_id }}

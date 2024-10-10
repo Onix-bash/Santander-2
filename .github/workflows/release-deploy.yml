@@ -1,0 +1,52 @@
+name: 'Release Deployment'
+on:
+  push:
+    branches:
+      - release/*
+
+  workflow_dispatch:
+    inputs:
+      test_level:
+        description: Apex Unit Tests Level
+        type: choice
+        required: true
+        default: RunLocalTests
+        options:
+          - NoTestRun
+          - RunAllTestsInOrg
+          - RunLocalTests
+
+jobs:
+  deploy-to-homes-qa:
+    name: Deploy to HomesQA
+    uses: ./.github/workflows/deploy-manual.yml
+    with:
+      environment: 'HomesQA'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_deploy: ''
+      is_release_branch: true
+    secrets: inherit
+    
+  deploy-to-homes-sit:
+    name: Deploy to HomesSIT
+    needs:
+      - deploy-to-homes-qa
+    uses: ./.github/workflows/deploy-manual.yml
+    with:
+      environment: 'HomesSIT'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_deploy: ''
+      is_release_branch: true
+    secrets: inherit
+
+  deploy-to-pre-prod:
+    name: Deploy to PrePROD
+    needs:
+      - deploy-to-homes-sit
+    uses: ./.github/workflows/deploy-manual.yml
+    with:
+      environment: 'PrePROD'
+      test_level: ${{ inputs.test_level || vars.RELEASE_UNIT_TEST_LEVEL }}
+      modules_to_deploy: ''
+      is_release_branch: true
+    secrets: inherit

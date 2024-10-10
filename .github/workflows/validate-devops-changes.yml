@@ -1,0 +1,29 @@
+name: 'DevOps PR Validation'
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    branches:
+      - 'develop'
+    paths:
+      - 'devops-scripts/**'
+      - '.github/**'
+
+jobs:
+  build-ci-org-test:
+    name: CI-Org Build Test
+    uses: ./.github/workflows/create-scratch-org.yml
+    with:
+      environment: 'Scratch_Orgs'
+      duration: 14
+    secrets: inherit
+
+  build-scratch-dev:
+    name: Dev Scratch Org Build
+    uses: ./.github/workflows/create-dev-scratch-org.yml
+    with:
+      environment: 'Dev_Scratch_Orgs'
+    secrets: inherit
+
+  daily-scanner-test:
+    name: Daily Scanner Test
+    uses: ./.github/workflows/scanner-schedule.yml

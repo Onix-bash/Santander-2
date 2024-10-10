@@ -1,0 +1,40 @@
+name: 'Upload QMS Data'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment where QMS data will be uploaded
+        type: environment
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment where QMS data will be uploaded
+        type: string
+
+jobs:
+  upload-qms-data:
+    name: 'Upload QMS Data'
+    runs-on: ubuntu-latest
+    env:
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+    environment:
+      ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Authenticate ${{ inputs.environment }}
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+        run: |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--set-default --alias target-org"
+
+      - name: Upload QMS Data
+        run: |
+          chmod +x ./devops-scripts/qms/uploadQmsData.sh
+          ./devops-scripts/qms/uploadQmsData.sh target-org
+

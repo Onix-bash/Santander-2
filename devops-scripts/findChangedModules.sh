@@ -1,14 +1,12 @@
 #!/bin/bash
 
-#git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm #fix for dubious ownership issue TODO check more deeply for better solution
-git config --global --add safe.directory "*"
+git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm #fix for dubious ownership issue TODO check more deeply for better solution
 
 source_to_check_changes="origin/$GITHUB_BASE_REF"
 current_branch="origin/$GITHUB_HEAD_REF"
 
 if [ -n "$1" ]; then
   source_to_check_changes=$1
-  current_branch=""
 fi
 
 git fetch origin
@@ -55,7 +53,7 @@ modules=( $( cd src/ ;ls -1p | grep / | sed 's/^\(.*\)/\1/') )
  #externalize module names
 # Base branch to compare against, adjust according to your workflow
 
-
+ 
 # Loop through each module to check for changes
 for module in "${modules[@]}"; do
     # Check if the module has changes compared to the base branch

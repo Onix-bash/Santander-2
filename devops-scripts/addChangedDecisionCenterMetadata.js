@@ -57,7 +57,7 @@ function removeUnchangedExpressionSetsFromManifest(changedExpressionSets) {
                 } else {
                     // Set Rows/Members
                     const changedFilesNames = changedExpressionSets.map(file => file.split('.')[0])
-                    result.Package.types.map(type => {
+                    result.Package.types.filter(type => {
                         if (type.name[0] === EXCLUDE_TYPE) {
                             type.members = type.members.filter(member => changedFilesNames.includes(member))
                         }

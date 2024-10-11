@@ -1,6 +1,6 @@
 /**
  * @author : Darshan S Almiya
- * @description : Controller class of hmCaseIdSearch related Components 
+ * @description : Controller class of hmCaseIdSearch related Components
  */
 public with sharing class HMFlexiSearchController {
     @TestVisible
@@ -11,11 +11,10 @@ public with sharing class HMFlexiSearchController {
      */
 
     @AuraEnabled(cacheable=true)
-    public static List<HMFlexiSearchService.SearchType> getSearchTypes(){
+    public static List<HMFlexiSearchService.SearchType> getSearchTypes() {
         try {
             return flexiService.getSearchTypes();
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             Logger.error(ex.getMessage());
             Logger.saveLog();
         }
@@ -28,10 +27,12 @@ public with sharing class HMFlexiSearchController {
      * @return List of ResidentialLoanApplication record based on Name
      */
     @AuraEnabled
-    public static List<ResidentialLoanApplication> getResidentialLoanApplicationCaseId(final String caseId){
-        try{
+    public static List<ResidentialLoanApplication> getResidentialLoanApplicationCaseId(
+        final String caseId
+    ) {
+        try {
             return flexiService.getRLABasedOnCaseId(caseId);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             Logger.error(ex.getMessage());
             Logger.saveLog();
         }
@@ -39,19 +40,23 @@ public with sharing class HMFlexiSearchController {
     }
 
     /**
-    * @description : Get the ResidentialLoanApplication based on the Mortgage Account Number
-    * @param mortgageAccNumber : Pass the Mortgage Account Number
-    * @return List of ResidentialLoanApplication record based on Mortgaage Account Number
-    */
-   
-   @AuraEnabled
-   public static List<ResidentialLoanApplication> getResidentialLoanApplicationAccountNo(final String mortgageAccNumber){
-       try{
-            return flexiService.getRLABasedOnMortgageAccNumber(mortgageAccNumber);
-       }catch(Exception ex){
-           Logger.error(ex.getMessage());
-           Logger.saveLog();
-       }
-       return null;
-   }
+     * @description : Get the ResidentialLoanApplication based on the Mortgage Account Number
+     * @param mortgageAccNumber : Pass the Mortgage Account Number
+     * @return List of ResidentialLoanApplication record based on Mortgaage Account Number
+     */
+
+    @AuraEnabled
+    public static List<ResidentialLoanApplication> getResidentialLoanApplicationAccountNo(
+        final String mortgageAccNumber
+    ) {
+        try {
+            return flexiService.getRLABasedOnMortgageAccNumber(
+                mortgageAccNumber
+            );
+        } catch (Exception ex) {
+            Logger.error(ex.getMessage());
+            Logger.saveLog();
+        }
+        return null;
+    }
 }

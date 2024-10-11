@@ -38,14 +38,14 @@ jobs:
           chmod +x ./devops-scripts/findChangedModules.sh
           ./devops-scripts/findChangedModules.sh HEAD^   #compare changes vs previous commit in develop branch
 
-      - name: Install SFDX Git Delta Plugin
-        run: echo y | sf plugins:install sfdx-git-delta
+      # - name: Install SFDX Git Delta Plugin
+      #   run: echo y | sf plugins:install sfdx-git-delta
 
-      - name: 'Create delta packages for new, modified or deleted metadata'
-        id: delta_package
-        run: |  
-          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
-          sf sgd:source:delta --to "HEAD" --from "HEAD~1" --output ./src --source src/
+      # - name: 'Create delta packages for new, modified or deleted metadata'
+      #   id: delta_package
+      #   run: |  
+      #     git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+      #     sf sgd:source:delta --to "HEAD" --from "HEAD~1" --output ./src --source src/
 
       - name: Authenticate
         id: auth

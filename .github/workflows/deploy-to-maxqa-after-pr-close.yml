@@ -1,8 +1,6 @@
 name: 'Push to develop branch - Deploy to MaxQA'
 on:
-  push:
-    branches:
-      - 'develop'
+  merge_group:
     paths:
       - 'src/**'
 

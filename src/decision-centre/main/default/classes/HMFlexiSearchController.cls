@@ -57,6 +57,7 @@ public with sharing class HMFlexiSearchController {
             Logger.error(ex.getMessage());
             Logger.saveLog();
         }
+
         return null;
     }
 }

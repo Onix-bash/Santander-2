@@ -1,6 +1,6 @@
 name: 'Pull Request Validation - CI-Org'
 on:
-  pull_request:
+  workflow_dispatch:
     types: [ opened, reopened, synchronize, labeled ]
 
 jobs:

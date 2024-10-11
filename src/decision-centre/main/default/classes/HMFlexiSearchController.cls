@@ -12,7 +12,7 @@ public with sharing class HMFlexiSearchController {
 
     @AuraEnabled(cacheable=true)
     public static List<HMFlexiSearchService.SearchType> getSearchTypes(){
-        try{
+        try {
             return flexiService.getSearchTypes();
         }
         catch(Exception ex){

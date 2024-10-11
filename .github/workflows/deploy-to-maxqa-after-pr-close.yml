@@ -1,8 +1,6 @@
 name: 'Push to develop branch - Deploy to MaxQA'
 on:
   merge_group:
-    paths:
-      - 'src/**'
 
 jobs:
   deploy-to-maxqa:

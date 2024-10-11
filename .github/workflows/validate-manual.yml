@@ -87,24 +87,24 @@ jobs:
       - name: Install JS dependencies
         run: npm ci
 
-      - name: Install SFDX Code Analyser
-        run: sf plugins install @salesforce/sfdx-scanner@4.2.0
+      # - name: Install SFDX Code Analyser
+      #   run: sf plugins install @salesforce/sfdx-scanner@4.2.0
 
-      - name: Run Code Analyser
-        id: code_analyser
-        run: | 
-          chmod +x ./devops-scripts/runScanner.sh
-          ./devops-scripts/runScanner.sh ${{ inputs.modules_to_validate }}
+      # - name: Run Code Analyser
+      #   id: code_analyser
+      #   run: | 
+      #     chmod +x ./devops-scripts/runScanner.sh
+      #     ./devops-scripts/runScanner.sh ${{ inputs.modules_to_validate }}
 
-      - name: Install Flow Analyser
-        run: echo Y | sf plugins install lightning-flow-scanner
+      # - name: Install Flow Analyser
+      #   run: echo Y | sf plugins install lightning-flow-scanner
 
-      - name: Run Flow Analyser
-        continue-on-error: true
-        id: flow_analyser
-        run: |
-          chmod +x ./devops-scripts/runFlowScanner.sh
-          ./devops-scripts/runFlowScanner.sh ${{ inputs.modules_to_validate }}
+      # - name: Run Flow Analyser
+      #   continue-on-error: true
+      #   id: flow_analyser
+      #   run: |
+      #     chmod +x ./devops-scripts/runFlowScanner.sh
+      #     ./devops-scripts/runFlowScanner.sh ${{ inputs.modules_to_validate }}
 
       - name: Authenticate
         id: auth

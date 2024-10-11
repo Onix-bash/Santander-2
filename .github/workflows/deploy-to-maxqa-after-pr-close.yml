@@ -1,6 +1,10 @@
-name: 'Push to develop branch - Deploy to MaxQA (merge_group)'
+name: 'Push to develop branch - Deploy to MaxQA'
 on:
-  merge_group:
+  push:
+    branches:
+      - 'develop'
+    paths:
+      - 'src/**'
 
 jobs:
   deploy-to-maxqa:

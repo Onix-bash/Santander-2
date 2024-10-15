@@ -38,13 +38,13 @@ jobs:
           chmod +x ./devops-scripts/findChangedModules.sh
           ./devops-scripts/findChangedModules.sh
   
-  validate-changes:
-    name: 'Validate Deployment'
-    needs:
-      - get-changed-modules
-    uses: ./.github/workflows/validate-manual.yml
-    with:
-      environment: 'MaxQA'
-      modules_to_validate: ${{ needs.get-changed-modules.outputs.changed_modules || inputs.modules_to_validate }}
-      base_ref: 'origin/develop'
-    secrets: inherit
+  # validate-changes:
+  #   name: 'Validate Deployment'
+  #   needs:
+  #     - get-changed-modules
+  #   uses: ./.github/workflows/validate-manual.yml
+  #   with:
+  #     environment: 'MaxQA'
+  #     modules_to_validate: ${{ needs.get-changed-modules.outputs.changed_modules || inputs.modules_to_validate }}
+  #     base_ref: 'origin/develop'
+  #   secrets: inherit

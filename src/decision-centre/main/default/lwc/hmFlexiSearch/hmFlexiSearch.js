@@ -3,10 +3,6 @@ import getSearchTypes from '@salesforce/apex/HMFlexiSearchController.getSearchTy
 import NO_SEARCH_COMP_ACCESS_MSG from '@salesforce/label/c.HMNoSearchCompAccessMsg';
 import SEARCH_PAGE_NAME from '@salesforce/label/c.HMSearchPageName';
 
-/**
- * @description : This is hmFlexiSearch Component where we inject the all kind of child search component to display based on type on type search
- * @author : Darshan S Almiya
-*/
 export default class HmFlexiSearch extends LightningElement {
     genericMessage =  'There is an issue please contact to the Administrator';
     @track options = [];

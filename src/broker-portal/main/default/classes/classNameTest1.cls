@@ -8,8 +8,7 @@ public with sharing class classNameTest {
         // Large duplicated code block
         Integer a = 10;
         Integer b = 20;
-        Integer c = a + b;
-        System.debug(c);
+        System.debug(a);
 
         String str1 = 'Hello';
         String str2 = 'World';

@@ -9,6 +9,7 @@ on:
       - '.github/workflows/**'
     branches:
       - 'develop'
+  merge_group:
 
   workflow_call:
     inputs:

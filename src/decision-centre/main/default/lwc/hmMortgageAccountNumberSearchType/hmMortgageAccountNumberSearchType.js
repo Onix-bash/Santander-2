@@ -46,10 +46,7 @@ export default class HmMortgageAccountNumberSearch extends NavigationMixin(Light
             });
     }
 
-    /**
-     * @description : In this method we get the input values from HTML and match with the regex based on that we display an error message
-     * @param {*} event  : event we get from HTML
-     */
+
 
     handleInput(event){
         this.mortgageAccNumber = event.target.value;

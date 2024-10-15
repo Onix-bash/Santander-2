@@ -80,7 +80,6 @@ if [ -n "$deleted_files" ]; then
   echo "Deleted files found:"
   echo "$deleted_files"
   echo "deleted_files_found=true" >> "$GITHUB_OUTPUT"
-  exit 1
 else
   echo "No deleted files found."
 fi

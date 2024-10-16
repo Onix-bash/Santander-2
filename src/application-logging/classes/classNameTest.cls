@@ -1,5 +1,5 @@
 /**
- * @created by Stanislav Grinko
+ * @created by 
  */
 
 public with sharing class classNameTest {

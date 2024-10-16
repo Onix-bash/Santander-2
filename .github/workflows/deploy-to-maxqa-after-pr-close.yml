@@ -1,8 +1,8 @@
-name: 'Push to develop branch - Deploy to MaxQA'
+name: 'Merge to develop branch - Deploy to MaxQA'
 on:
-  push:
+  merge_group:
     branches:
-      - 'main'
+      - 'develop'
     paths:
       - 'src/**'
 

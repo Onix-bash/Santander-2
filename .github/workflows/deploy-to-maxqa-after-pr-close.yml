@@ -3,8 +3,6 @@ on:
   merge_group:
     branches:
       - 'develop'
-    paths:
-      - 'src/**'
 
 jobs:
   deploy-to-maxqa:

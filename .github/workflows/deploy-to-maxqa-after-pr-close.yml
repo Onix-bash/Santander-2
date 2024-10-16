@@ -2,7 +2,7 @@ name: 'Push to develop branch - Deploy to MaxQA'
 on:
   push:
     branches:
-      - 'develop'
+      - 'main'
     paths:
       - 'src/**'
 

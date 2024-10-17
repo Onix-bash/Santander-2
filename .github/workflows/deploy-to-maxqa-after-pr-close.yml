@@ -1,8 +1,9 @@
 name: 'Merge to develop branch - Deploy to MaxQA'
 on:
+  pull_request:
+    branches: [ "develop" ]
   merge_group:
-    branches:
-      - 'develop'
+    types: [checks_requested]
 
 jobs:
   deploy-to-maxqa:

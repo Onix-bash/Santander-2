@@ -1,0 +1,97 @@
+name: 'CI-Orgs Generator'
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * 1-5'
+
+jobs:
+  get-current-pool-size:
+    name: 'Get Current Pool Size'
+    runs-on: ubuntu-latest
+    environment: Scratch_Orgs
+    env:
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+    outputs:
+      current_pool_size: ${{ steps.get_pool_size.outputs.org_count }}
+      should_notify: ${{ steps.check.outputs.should_notify }} 
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Authenticate Pool Org
+        id: auth
+        env:
+          SFDXAUTHURL: ${{secrets.POOL_AUTH_URL}}
+        run: |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh --alias=PoolOrg
+
+      - name: Remove Expired Orgs
+        continue-on-error: true
+        run: |
+          sf data delete record --where "IsExpired__c=TRUE" --sobject ScratchOrg__c --target-org PoolOrg
+
+      - name: Get current number of CI-Orgs
+        id: get_pool_size
+        run: |
+          command_result=$(sf data query --query "SELECT Id FROM ScratchOrg__c WHERE IsExpired__c = FALSE" --json --target-org=PoolOrg)
+          org_count=$(echo "$command_result" | jq '.result.totalSize')
+          echo "org_count=$org_count"
+          echo "org_count=$org_count" >> "$GITHUB_OUTPUT"
+
+      - name: Check failure
+        id: check
+        if: failure() && (steps.auth.outcome == 'failure' || steps.get_pool_size.outcome == 'failure')
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+  
+  maintain-ci-orgs-pool:
+    # The type of runner that the job will run on
+    name: 'CI Orgs Pool Maintenance'
+    runs-on: ubuntu-latest
+    needs: get-current-pool-size
+    outputs:
+      should_notify: ${{ steps.check.outputs.should_notify }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install NPM dependencies
+        run: |
+          npm install
+
+      - name: Maintain CI Orgs Pool
+        id: maintain_ci_pool
+        env:
+          GITHUB_TOKEN: ${{ secrets.CLI_TOKEN }}
+          CURRENT_POOL_SIZE: ${{ needs.get-current-pool-size.outputs.current_pool_size }}
+          DESIRED_POOL_SIZE: ${{ vars.CI_ORGS_POOL_SIZE }}
+        run: |
+          echo "Current pool size with ready CI Orgs : $CURRENT_POOL_SIZE" >> "$GITHUB_STEP_SUMMARY"
+          echo "Desired pool size: $DESIRED_POOL_SIZE" >> "$GITHUB_STEP_SUMMARY"
+          node ./devops-scripts/scratchOrgs/generateCIOrgs.js --current-size $CURRENT_POOL_SIZE --desired-size $DESIRED_POOL_SIZE
+
+      - name: Check failure
+        id: check
+        if: failure() && steps.maintain_ci_pool.outcome == 'failure'
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: 
+      - get-current-pool-size
+      - maintain-ci-orgs-pool
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+                         
+      - name: Send Teams notification
+        if: ${{ needs.get-current-pool-size.outputs.should_notify == 'true' || needs.maintain-ci-orgs-pool.outputs.should_notify == 'true' }}
+        run: |
+          chmod +x ./devops-scripts/runTeamsNotification.sh
+          ./devops-scripts/runTeamsNotification.sh
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_URL: ${{ github.server_url }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_RUN: ${{ github.run_id }}

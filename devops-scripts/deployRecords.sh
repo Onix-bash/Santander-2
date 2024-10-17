@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 git config --global --add safe.directory "*"
-source_to_check_changes="origin/develop" # Will be origin/develop after tests
+source_to_check_changes="origin/chore/MAXSF-2578-lookup-table-data" # Will be origin/develop after tests
 acceptable_folders=(
   "lookupTable"
 )

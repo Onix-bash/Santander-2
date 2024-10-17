@@ -2,10 +2,6 @@ import { LightningElement } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getResidentialLoanApplication from '@salesforce/apex/HMFlexiSearchController.getResidentialLoanApplicationAccountNo';
 
-/**
- * @description : This is HmMortgageAccountNumberSearch Component belong to the MortgageAccountNumberSearch search.
- * @author : Darshan S Almiya
-*/
 export default class HmMortgageAccountNumberSearch extends NavigationMixin(LightningElement) {
     strAccountNumberLabel = 'Mortgage Account Number';
     strvalidationHelptext = 'Must enter a number (up to a maximum of a 9 digit number)';
@@ -46,10 +42,7 @@ export default class HmMortgageAccountNumberSearch extends NavigationMixin(Light
             });
     }
 
-    /**
-     * @description : In this method we get the input values from HTML and match with the regex based on that we display an error message
-     * @param {*} event  : event we get from HTML
-     */
+
 
     handleInput(event){
         this.mortgageAccNumber = event.target.value;

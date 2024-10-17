@@ -1,0 +1,137 @@
+name: 'Create Dev Scratch Org'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment
+        type: environment
+        default: Dev_Scratch_Orgs
+      duration:
+        description: Duration of the Scratch Org (1-30 days)
+        type: number
+        default: 14
+      email:
+        description: Email where org notification will be sent (put your email)
+        type: string
+        required: false
+      release:
+        description: Release for a Scratch Org (previous, current or preview). Keep it empty to take the release from Repository settings (CI_ORG_RELEASE) 
+        type: string
+        required: false       
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        default: Dev_Scratch_Orgs
+      duration:
+        description: Duration of the Scratch Org (1-30 days)
+        type: number
+        default: 14
+
+jobs:
+  prepare-scratch-org:
+    name: 'Prepare Dev Scratch Org'
+    runs-on: ubuntu-latest
+    environment:
+      ${{ inputs.environment }}
+    env:
+      SF_CLI_VERSION: ${{ vars.SF_CLI_VERSION }}
+      API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
+    outputs:
+      should_notify: ${{ steps.check.outputs.should_notify }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+      - name: Authenticate DEV-HUB
+        id: auth_devhub
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+        run: |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--set-default-dev-hub --alias DevHub"
+
+      - name: Install Browserforce Plugin
+        run: echo Y | sf plugins install sfdx-browserforce-plugin
+
+      - name: Display current DevHub limits
+        run: sf org list limits --target-org DevHub
+
+      - name: Create Dev Scratch-Org
+        env:
+          PING_CRT_PASSWORD: ${{ secrets.PING_CRT_PASSWORD }}
+          DURATION: ${{ inputs.duration }}
+          ADMIN_EMAIL: ${{ inputs.email || vars.SHARED_HOMES_EMAIL }}
+          CI_ORG_RELEASE: ${{ inputs.release || vars.CI_ORG_RELEASE }}
+        id: create-scratch-org
+        run: |
+          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+          chmod +x ./devops-scripts/scratchOrgs/buildNewSourceOrg.sh 
+          sh ./devops-scripts/scratchOrgs/buildNewSourceOrg.sh dev-org $DURATION $ADMIN_EMAIL $CI_ORG_RELEASE
+          
+
+      - name: Deploy sources
+        run: |
+          chmod +x ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh
+          ./devops-scripts/scratchOrgs/initialDeploymentToCIOrg.sh dev-org
+
+      - name: Upload QMS Data
+        id: upload-qms-data
+        run: |
+          sf org assign permset --name HM_QMS_Data_Access_Sys_Admins --target-org dev-org
+          chmod +x ./devops-scripts/qms/uploadQmsData.sh
+          ./devops-scripts/qms/uploadQmsData.sh dev-org
+
+      - name: 'Create users'
+        run: |
+          sf apex run --file ./devops-scripts/scratchOrgs/createUnderwriterTestUser.apex --target-org dev-org
+
+      - name: Print Org details
+        id: print-org-details
+        run: |
+          sf org generate password --target-org dev-org
+          echo "Use below Org details to authenticate Dev Org in your local CLI:" >> "$GITHUB_STEP_SUMMARY" 
+          echo "Org details:" >> "$GITHUB_STEP_SUMMARY"
+          echo "Instance URL: $(sf org display --target-org dev-org --json | jq -r '.result.instanceUrl')" >> "$GITHUB_STEP_SUMMARY"
+          echo "Username: $(sf org display --target-org dev-org --json | jq -r '.result.username')" >> "$GITHUB_STEP_SUMMARY"
+          echo "Password: $(sf org display --target-org dev-org --json | jq -r '.result.password')" >> "$GITHUB_STEP_SUMMARY"
+          echo "Command to authorize via browser: sf org login web --alias <your_alias_here> --set-default --instance-url <your_instance_url_here>" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup on Failure
+        id: cleanup
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+        if: ${{ failure() || cancelled() }}
+        continue-on-error: true
+        run: |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--set-default-dev-hub --alias DevHub"
+          sf org delete scratch --no-prompt --target-org dev-org
+
+      - name: Check failure
+        id: check
+        if: failure() && ( steps.print-org-details.outcome == 'failure' || steps.upload-qms-data.outcome == 'failure' || steps.cleanup.outcome == 'failure')
+        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+  notify:
+    runs-on: ubuntu-latest
+    needs:
+     - prepare-scratch-org
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+         
+      - name: Send Teams notification
+        if: ${{ needs.prepare-scratch-org.outputs.should_notify == 'true' }}
+        run: |
+          chmod +x ./devops-scripts/runTeamsNotification.sh
+          ./devops-scripts/runTeamsNotification.sh
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_URL: ${{ github.server_url }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_RUN: ${{ github.run_id }}

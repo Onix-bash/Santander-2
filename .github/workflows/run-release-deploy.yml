@@ -1,0 +1,46 @@
+name: 'Run Release Deployment'
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment
+        type: string
+        required: true
+
+jobs:
+  deploy-changes:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      API_MORTGAGE_ONBOARDING_PASSTHRU: ${{ vars.API_MORTGAGE_ONBOARDING_PASSTHRU }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Salesforce CLI
+        run: npm install @salesforce/cli@${SF_CLI_VERSION} --global
+
+#      - name: Authenticate
+#        id: auth
+#        env:
+#          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL}}
+#        run: |
+#          chmod +x ./devops-scripts/authenticate.sh
+#          ./devops-scripts/authenticate.sh --set-default
+
+      - name: Deploy Changes to ${{ github.event.inputs.environment }}
+        id: deploy_changes
+        run: |
+          echo "environment"
+          echo "${{ github.event.inputs.environment }}"
+          git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
+          chmod +x ./devops-scripts/runDeployments.sh 
+          ./devops-scripts/runDeployments.sh
+
+      - name: Cancel Job
+        id: cancel
+        if: ${{ cancelled() }}
+        run: |
+          chmod +x ./devops-scripts/cancelJob.sh
+          ./devops-scripts/cancelJob.sh  ${{steps.deploy_changes.outputs.deployment_id}}

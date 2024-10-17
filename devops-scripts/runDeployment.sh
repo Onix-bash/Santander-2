@@ -27,11 +27,11 @@ else
   if [ $set_decision_centre_status -ne 0 ]; then
    exit 1
   fi
-
+ echo "sf project deploy start --manifest sourcePackage.xml --post-destructive-changes "src/destructiveChanges/destructiveChanges.xml" --test-level RunSpecifiedTests --tests "${testClasses[*]}" --ignore-conflicts --ignore-warnings --async --json"
   # Track "Deployment Id" allowing to Cancel the Job
-  deploy_command_result=$(sf project deploy start --manifest sourcePackage.xml --post-destructive-changes "src/destructiveChanges/destructiveChanges.xml" --test-level RunSpecifiedTests --tests "${testClasses[@]}" --ignore-conflicts --ignore-warnings --async --json)
-  echo "Deployment job details: $deploy_command_result"
-  deployment_id=$(echo "$deploy_command_result" | jq -r .result.id)
-  echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
-  sf project deploy resume --job-id $deployment_id
+#  deploy_command_result=$(sf project deploy start --manifest sourcePackage.xml --post-destructive-changes "src/destructiveChanges/destructiveChanges.xml" --test-level RunSpecifiedTests --tests "${testClasses[@]}" --ignore-conflicts --ignore-warnings --async --json)
+#  echo "Deployment job details: $deploy_command_result"
+#  deployment_id=$(echo "$deploy_command_result" | jq -r .result.id)
+#  echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
+#  sf project deploy resume --job-id $deployment_id
 fi

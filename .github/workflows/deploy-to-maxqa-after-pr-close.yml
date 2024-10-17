@@ -1,7 +1,5 @@
 name: 'Merge to develop branch - Deploy to MaxQA'
 on:
-  pull_request:
-    branches: [ "develop" ]
   merge_group:
     types: [checks_requested]
 
@@ -46,13 +44,13 @@ jobs:
       #     git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
       #     sf sgd:source:delta --to "HEAD" --from "HEAD~1" --output ./src --source src/
 
-#      - name: Authenticate
-#        id: auth
-#        env:
-#          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL_MAX_QA}}  #TODO Use the real environment variables from github
-#        run: |
-#          chmod +x ./devops-scripts/authenticate.sh
-#          ./devops-scripts/authenticate.sh "--set-default --alias MaxQA"
+      - name: Authenticate
+        id: auth
+        env:
+          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL_MAX_QA}}  #TODO Use the real environment variables from github
+        run: |
+          chmod +x ./devops-scripts/authenticate.sh
+          ./devops-scripts/authenticate.sh "--set-default --alias MaxQA"
 #
 #      - name: Deploy Changes To MaxQA
 #        id: deploy_changes

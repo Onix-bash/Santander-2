@@ -45,44 +45,44 @@ jobs:
       #     git config --global --add safe.directory /__w/mortgagesfdc-homes-crm/mortgagesfdc-homes-crm
       #     sf sgd:source:delta --to "HEAD" --from "HEAD~1" --output ./src --source src/
 
-      - name: Authenticate
-        id: auth
-        env:
-          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL_MAX_QA}}  #TODO Use the real environment variables from github
-        run: |
-          chmod +x ./devops-scripts/authenticate.sh
-          ./devops-scripts/authenticate.sh "--set-default --alias MaxQA"
-
-      - name: Deploy Changes To MaxQA
-        id: deploy_changes
-        run: |
-          chmod +x ./devops-scripts/includeChangedBREMetadata.sh 
-          ./devops-scripts/includeChangedBREMetadata.sh
-          chmod +x ./devops-scripts/runDeployments.sh
-          ./devops-scripts/runDeployments.sh ${{steps.detect_changes.outputs.changed_modules}}
-
-      - name: Create CalculationMatrixRow(s)
-        if: ${{ steps.deploy_changes.outputs.decision_matrix_files != '' }}
-        run: |
-          chmod +x ./devops-scripts/createDecisionMatrixDefinitionRows.sh 
-          ./devops-scripts/createDecisionMatrixDefinitionRows.sh ${{ steps.deploy_changes.outputs.decision_matrix_files }}         
-
-      - name: Check coverage for flows
-        id: flow_coverage
-        env:
-          REQUIRED_FLOW_COVERAGE: ${{ vars.REQUIRED_FLOW_COVERAGE }}
-        run: |
-          npm run check-flow-coverage -- --required-coverage $REQUIRED_FLOW_COVERAGE --target-org MaxQA
-
-      - name: Cancel Job
-        id: cancel
-        if: ${{ cancelled() }}
-        run: |
-          chmod +x ./devops-scripts/cancelJob.sh
-          ./devops-scripts/cancelJob.sh  ${{steps.deploy_changes.outputs.deployment_id}}
-
-      - name: Check failure
-        id: check
-        if: failure() && (steps.delta_package.outcome == 'failure' || steps.auth.outcome == 'failure' || steps.flow_coverage.outcome == 'failure' || steps.cancel.outcome == 'failure' || steps.detect_changes.outcome == 'failure')
-        run: echo "should_notify=true" >> $GITHUB_OUTPUT
-
+#      - name: Authenticate
+#        id: auth
+#        env:
+#          SFDXAUTHURL: ${{secrets.SFDX_AUTH_URL_MAX_QA}}  #TODO Use the real environment variables from github
+#        run: |
+#          chmod +x ./devops-scripts/authenticate.sh
+#          ./devops-scripts/authenticate.sh "--set-default --alias MaxQA"
+#
+#      - name: Deploy Changes To MaxQA
+#        id: deploy_changes
+#        run: |
+#          chmod +x ./devops-scripts/includeChangedBREMetadata.sh
+#          ./devops-scripts/includeChangedBREMetadata.sh
+#          chmod +x ./devops-scripts/runDeployments.sh
+#          ./devops-scripts/runDeployments.sh ${{steps.detect_changes.outputs.changed_modules}}
+#
+#      - name: Create CalculationMatrixRow(s)
+#        if: ${{ steps.deploy_changes.outputs.decision_matrix_files != '' }}
+#        run: |
+#          chmod +x ./devops-scripts/createDecisionMatrixDefinitionRows.sh
+#          ./devops-scripts/createDecisionMatrixDefinitionRows.sh ${{ steps.deploy_changes.outputs.decision_matrix_files }}
+#
+#      - name: Check coverage for flows
+#        id: flow_coverage
+#        env:
+#          REQUIRED_FLOW_COVERAGE: ${{ vars.REQUIRED_FLOW_COVERAGE }}
+#        run: |
+#          npm run check-flow-coverage -- --required-coverage $REQUIRED_FLOW_COVERAGE --target-org MaxQA
+#
+#      - name: Cancel Job
+#        id: cancel
+#        if: ${{ cancelled() }}
+#        run: |
+#          chmod +x ./devops-scripts/cancelJob.sh
+#          ./devops-scripts/cancelJob.sh  ${{steps.deploy_changes.outputs.deployment_id}}
+#
+#      - name: Check failure
+#        id: check
+#        if: failure() && (steps.delta_package.outcome == 'failure' || steps.auth.outcome == 'failure' || steps.flow_coverage.outcome == 'failure' || steps.cancel.outcome == 'failure' || steps.detect_changes.outcome == 'failure')
+#        run: echo "should_notify=true" >> $GITHUB_OUTPUT
+#
